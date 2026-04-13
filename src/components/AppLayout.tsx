@@ -1,6 +1,5 @@
 import { Outlet, Navigate } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
-import SmsSidebar from "./SmsSidebar";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AppLayout() {
@@ -8,7 +7,7 @@ export default function AppLayout() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -17,21 +16,13 @@ export default function AppLayout() {
   if (!user) return <Navigate to="/login" replace />;
 
   return (
-    <div className="min-h-screen flex">
-      {/* SMS Services - fixed left */}
-      <SmsSidebar />
-
-      {/* Nav Sidebar */}
-      <div style={{ marginLeft: "240px" }}>
-        <AppSidebar />
-      </div>
-
-      {/* Main content */}
-      <main className="flex-1 transition-all" style={{ marginLeft: "calc(240px + var(--sidebar-width))" }}>
+    <div className="min-h-screen">
+      <AppSidebar />
+      <main className="transition-all" style={{ marginLeft: "var(--sidebar-width)" }}>
         <div className="p-8">
           <Outlet />
         </div>
-        <footer className="border-t text-xs text-muted-foreground flex items-center justify-between px-8 py-3">
+        <footer className="border-t border-border/50 text-xs text-muted-foreground flex items-center justify-between px-8 py-3">
           <div className="flex gap-3">
             <span>Status</span>
             <span>/</span>
