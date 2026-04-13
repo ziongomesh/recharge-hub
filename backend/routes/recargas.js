@@ -18,7 +18,7 @@ router.post('/detect', authMiddleware, async (req, res) => {
     const { phone } = req.body;
     logger.recarga.detect(phone, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, { headers: poekiHeaders() });
-    res.json(data);
+    res.json(data.data || data);
   } catch (err) {
     console.error('Detect error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Erro ao detectar operadora' });
@@ -30,11 +30,12 @@ router.post('/check-phone', authMiddleware, async (req, res) => {
     const { phoneNumber, carrierName } = req.body;
     logger.recarga.checkPhone(phoneNumber, carrierName, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/utils/check-phone`, { phoneNumber, carrierName }, { headers: poekiHeaders() });
+    const result = data.data || data;
     res.json({
-      status: data.status,
-      message: data.message || '',
-      isCooldown: data.status === 'COOLDOWN',
-      isBlacklisted: data.status === 'blacklisted',
+      status: result.status,
+      message: result.message || '',
+      isCooldown: result.isCooldown || result.status === 'COOLDOWN',
+      isBlacklisted: result.isBlacklisted || result.status === 'blacklisted',
     });
   } catch (err) {
     console.error('Check phone error:', err.response?.data || err.message);
@@ -63,19 +64,20 @@ router.post('/', authMiddleware, async (req, res) => {
     const idempotencyKey = `req_${uuidv4()}`;
     const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/poeki`;
 
-    const { data } = await axios.post(`${POEKI_URL}/recharges`, {
+    const { data: poekiRes } = await axios.post(`${POEKI_URL}/recharges`, {
       operator: ops[0].name.toLowerCase(),
       phone,
       amount: parseFloat(plano.amount),
       webhookUrl,
       idempotencyKey,
     }, { headers: poekiHeaders() });
+    const poekiData = poekiRes.data || poekiRes;
 
     await db.query('UPDATE users SET balance = balance - ? WHERE id = ?', [plano.cost, req.userId]);
 
     const [result] = await db.query(
       'INSERT INTO recargas (user_id, operadora_id, phone, amount, cost, status, poeki_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.userId, operadora_id, phone, plano.amount, plano.cost, 'pendente', data.id]
+      [req.userId, operadora_id, phone, plano.amount, plano.cost, 'pendente', poekiData.id]
     );
 
     const [recargas] = await db.query('SELECT * FROM recargas WHERE id = ?', [result.insertId]);
