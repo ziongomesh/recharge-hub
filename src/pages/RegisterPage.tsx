@@ -44,7 +44,6 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register({ ...form, cpf: cpfDigits, phone: phoneDigits });
-      navigate("/");
     } catch (err: any) {
       toast.error(err.message || "Erro ao registrar");
     } finally {
