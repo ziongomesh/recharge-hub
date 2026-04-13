@@ -105,6 +105,7 @@ export const planosApi = {
     api<{ planos: Plano[] }>(`/planos?operadora_id=${operadoraId}`).then((response) => ({
       planos: response.planos.map(normalizePlano),
     })),
+  sync: () => api<{ message: string; synced: number }>("/planos/sync", { method: "POST" }),
   create: (data: Omit<Plano, "id">) =>
     api<Plano>("/planos", { method: "POST", body: data }).then((plano) => normalizePlano(plano)),
   update: (id: number, data: Partial<Plano>) =>

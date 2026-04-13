@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, RefreshCw } from "lucide-react";
 
 export default function AdminOperadorasPage() {
   const [operadoras, setOperadoras] = useState<Operadora[]>([]);
@@ -16,6 +16,7 @@ export default function AdminOperadorasPage() {
   const [planos, setPlanos] = useState<Plano[]>([]);
   const [newPlano, setNewPlano] = useState({ amount: "", cost: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     loadOperadoras();
@@ -47,6 +48,19 @@ export default function AdminOperadorasPage() {
     } catch { setPlanos([]); }
   };
 
+  const syncCatalog = async () => {
+    setSyncing(true);
+    try {
+      const result = await planosApi.sync();
+      toast.success(result.message);
+      if (selected) selectOperadora(selected);
+    } catch {
+      toast.error("Erro ao sincronizar catálogo");
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const addPlano = async () => {
     if (!selected || !newPlano.amount || !newPlano.cost) return;
     try {
@@ -68,7 +82,13 @@ export default function AdminOperadorasPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-semibold mb-6">Operadoras</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-lg font-semibold">Operadoras</h1>
+        <Button variant="outline" size="sm" onClick={syncCatalog} disabled={syncing}>
+          <RefreshCw size={14} className={`mr-1 ${syncing ? "animate-spin" : ""}`} />
+          {syncing ? "Sincronizando..." : "Sincronizar Poeki"}
+        </Button>
+      </div>
       <div className="grid grid-cols-3 gap-4 mb-8">
         {operadoras.map((op) => (
           <Card key={op.id} className={`cursor-pointer ${selected?.id === op.id ? "ring-1 ring-primary" : ""}`} onClick={() => selectOperadora(op)}>
