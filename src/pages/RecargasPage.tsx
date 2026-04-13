@@ -259,7 +259,7 @@ export default function RecargasPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2 mb-4">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>3</span>
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>2</span>
                 <span className="font-semibold text-foreground">Escolha o Valor</span>
               </div>
 
