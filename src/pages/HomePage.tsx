@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { operadorasApi, type Operadora } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Smartphone, MessageSquare, Sim } from "lucide-react";
+import { ArrowRight, Smartphone, MessageSquare, SimCard } from "lucide-react";
 import cometaImg from "@/assets/cometa.png";
 
 export default function HomePage() {
