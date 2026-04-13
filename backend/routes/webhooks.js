@@ -4,31 +4,32 @@ const logger = require('../logger');
 
 const router = express.Router();
 
-// VizzionPay webhook - pagamento PIX confirmado
-router.post('/vizzion/:identifier', async (req, res) => {
+// VizzionPay webhook - URL fixa (limite de 20 webhooks)
+router.post('/vizzion', async (req, res) => {
   try {
     const { event, transaction } = req.body;
-    logger.webhook.vizzionReceived(event, req.params.identifier);
+    const txId = transaction?.id || '';
+    logger.webhook.vizzionReceived(event, txId);
 
     if (event === 'TRANSACTION_PAID' && transaction) {
-      const txId = transaction.id || req.params.identifier;
+      // Buscar por transactionId ou identifier
+      let pagamento = null;
+      const [byTx] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [txId]);
+      if (byTx.length > 0) {
+        pagamento = byTx[0];
+      } else if (transaction.clientIdentifier) {
+        const [byIdent] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [transaction.clientIdentifier]);
+        if (byIdent.length > 0) pagamento = byIdent[0];
+      }
 
-      const [pagamentos] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [txId]);
-      if (pagamentos.length === 0) {
-        const [byIdent] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [req.params.identifier]);
-        if (byIdent.length === 0) return res.status(404).json({ message: 'Pagamento não encontrado' });
-        
-        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['confirmed', byIdent[0].id]);
-        await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [byIdent[0].amount, byIdent[0].user_id]);
+      if (!pagamento) return res.status(404).json({ message: 'Pagamento não encontrado' });
+
+      if (pagamento.status !== 'confirmed') {
+        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['confirmed', pagamento.id]);
+        await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [pagamento.amount, pagamento.user_id]);
         await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
-          [byIdent[0].user_id, 'deposit_confirmed', `PIX confirmado R$ ${byIdent[0].amount}`]);
-        logger.webhook.vizzionConfirmed(byIdent[0].user_id, byIdent[0].amount);
-      } else {
-        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['confirmed', pagamentos[0].id]);
-        await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [pagamentos[0].amount, pagamentos[0].user_id]);
-        await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
-          [pagamentos[0].user_id, 'deposit_confirmed', `PIX confirmado R$ ${pagamentos[0].amount}`]);
-        logger.webhook.vizzionConfirmed(pagamentos[0].user_id, pagamentos[0].amount);
+          [pagamento.user_id, 'deposit_confirmed', `PIX confirmado R$ ${pagamento.amount}`]);
+        logger.webhook.vizzionConfirmed(pagamento.user_id, pagamento.amount);
       }
     }
 
