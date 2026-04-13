@@ -24,8 +24,11 @@ export default function AppSidebar() {
   const isAdmin = user?.role === "admin";
 
   return (
-    <aside className="fixed left-0 top-0 h-screen flex flex-col border-r bg-sidebar" style={{ width: "var(--sidebar-width)" }}>
-      <div className="p-4 border-b border-sidebar-border">
+    <aside
+      className="fixed top-0 h-screen flex flex-col border-r bg-card"
+      style={{ left: "240px", width: "var(--sidebar-width)" }}
+    >
+      <div className="p-4 border-b border-border">
         <h1 className="text-lg font-bold text-foreground">CometaSMS</h1>
       </div>
 
@@ -60,14 +63,14 @@ export default function AppSidebar() {
         )}
       </nav>
 
-      <div className="border-t border-sidebar-border p-4">
+      <div className="border-t border-border p-4">
         <div className="text-sm font-medium text-foreground">{user?.username}</div>
         <div className="text-sm text-muted-foreground">
           R$ <span className="font-bold text-foreground">{(user?.balance ?? 0).toFixed(2)}</span>
         </div>
         <button
           onClick={logout}
-          className="mt-2 text-xs text-sidebar-active hover:underline flex items-center gap-1"
+          className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
         >
           <LogOut size={12} />
           Sair
