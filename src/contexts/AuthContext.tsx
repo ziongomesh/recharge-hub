@@ -65,10 +65,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/login");
   };
 
-  const logout = () => {
-    removeToken();
-    setUser(null);
-  };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
