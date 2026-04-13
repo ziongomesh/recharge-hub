@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { operadorasApi, type Operadora } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Smartphone, MessageSquare, Wifi } from "lucide-react";
+import { ArrowRight, Smartphone } from "lucide-react";
 import cometaImg from "@/assets/cometa.png";
 
 export default function HomePage() {
@@ -98,8 +98,8 @@ export default function HomePage() {
             )}
           </div>
 
-          {/* Modules */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-2xl mb-12">
+          {/* Module */}
+          <div className="w-full max-w-sm mb-12">
             <div
               className="glow-card rounded-xl p-5 cursor-pointer transition-transform hover:scale-105"
               style={{ background: "hsl(var(--card))" }}
@@ -108,24 +108,6 @@ export default function HomePage() {
               <Smartphone size={28} className="mb-3" style={{ color: "hsl(var(--primary))" }} />
               <h3 className="font-semibold text-foreground mb-1">Recargas de Créditos</h3>
               <p className="text-xs text-muted-foreground">Claro, TIM, Vivo e mais</p>
-            </div>
-
-            <div
-              className="rounded-xl p-5 opacity-60"
-              style={{ background: "hsl(var(--card))" }}
-            >
-              <MessageSquare size={28} className="mb-3 text-muted-foreground" />
-              <h3 className="font-semibold text-foreground mb-1">SMS Virtual</h3>
-              <p className="text-xs text-muted-foreground">Em breve</p>
-            </div>
-
-            <div
-              className="rounded-xl p-5 opacity-60"
-              style={{ background: "hsl(var(--card))" }}
-            >
-              <Wifi size={28} className="mb-3 text-muted-foreground" />
-              <h3 className="font-semibold text-foreground mb-1">eSIM</h3>
-              <p className="text-xs text-muted-foreground">Em breve</p>
             </div>
           </div>
 
