@@ -3,11 +3,11 @@ import { Home, RefreshCw, Clock, CreditCard, Settings, Shield, Users, Newspaper,
 import { useAuth } from "@/contexts/AuthContext";
 
 const userLinks = [
-  { to: "/", label: "Inicio", icon: Home },
+  { to: "/", label: "Início", icon: Home },
   { to: "/recargas", label: "Recargas", icon: RefreshCw },
-  { to: "/historico", label: "Historico", icon: Clock },
+  { to: "/historico", label: "Histórico", icon: Clock },
   { to: "/pagamentos", label: "Pagamentos", icon: CreditCard },
-  { to: "/configuracoes", label: "Configuracoes", icon: Settings },
+  { to: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
 const adminLinks = [
