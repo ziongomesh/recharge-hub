@@ -95,16 +95,17 @@
 @layer components {
   .sidebar-link {
     @apply flex items-center gap-3 px-4 py-2.5 text-sm rounded-md transition-colors;
-    color: hsl(var(--sidebar-foreground));
+    color: hsl(var(--muted-foreground));
   }
   .sidebar-link:hover {
-    background: hsl(var(--sidebar-active-bg));
+    background: hsl(var(--accent));
+    color: hsl(var(--foreground));
   }
   .sidebar-link.active {
-    color: hsl(var(--sidebar-active));
-    background: hsl(var(--sidebar-active-bg));
+    color: hsl(var(--foreground));
+    background: hsl(var(--accent));
     font-weight: 500;
-    border-left: 3px solid hsl(var(--sidebar-active));
+    border-left: 3px solid hsl(var(--primary));
   }
   .status-badge {
     @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
