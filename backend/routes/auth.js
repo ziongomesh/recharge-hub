@@ -48,9 +48,11 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
-    if (rows.length === 0) return res.status(401).json({ message: 'Usuário ou senha incorretos' });
+    const { email, username, password } = req.body;
+    const loginField = email || username;
+    if (!loginField || !password) return res.status(400).json({ message: 'Email e senha são obrigatórios' });
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ? OR username = ?', [loginField, loginField]);
+    if (rows.length === 0) return res.status(401).json({ message: 'Email ou senha incorretos' });
 
     const user = rows[0];
     const valid = await bcrypt.compare(password, user.password);
