@@ -44,7 +44,7 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
 
 // Auth
 export const authApi = {
-  login: (data: { username: string; password: string }) =>
+  login: (data: { email: string; password: string }) =>
     api<{ token: string; user: User }>("/auth/login", { method: "POST", body: data }),
   register: (data: { username: string; email: string; password: string; phone: string; cpf: string }) =>
     api<{ token: string; user: User }>("/auth/register", { method: "POST", body: data }),
