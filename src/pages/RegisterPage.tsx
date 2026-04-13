@@ -7,20 +7,43 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
+function formatCPF(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 7) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
+  return `${digits.slice(0, 2)} ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 export default function RegisterPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const update = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm((f) => ({ ...f, [field]: e.target.value }));
+  const update = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    if (field === "cpf") value = formatCPF(value);
+    if (field === "phone") value = formatPhone(value);
+    setForm((f) => ({ ...f, [field]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cpfDigits = form.cpf.replace(/\D/g, "");
+    const phoneDigits = form.phone.replace(/\D/g, "");
+    if (cpfDigits.length !== 11) { toast.error("CPF deve ter 11 dígitos"); return; }
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) { toast.error("Telefone inválido"); return; }
     setLoading(true);
     try {
-      await register(form);
+      await register({ ...form, cpf: cpfDigits, phone: phoneDigits });
       navigate("/");
     } catch (err: any) {
       toast.error(err.message || "Erro ao registrar");
@@ -48,7 +71,7 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label>Telefone</Label>
-              <Input value={form.phone} onChange={update("phone")} placeholder="11999999999" required />
+              <Input value={form.phone} onChange={update("phone")} placeholder="11 99999-9999" required />
             </div>
             <div className="space-y-2">
               <Label>CPF</Label>
