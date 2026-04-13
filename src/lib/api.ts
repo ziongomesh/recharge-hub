@@ -18,6 +18,41 @@ export function removeToken() {
   localStorage.removeItem("token");
 }
 
+function toNumber(value: unknown): number {
+  const parsed = typeof value === "number" ? value : Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizeUser(user: User): User {
+  return {
+    ...user,
+    balance: toNumber(user.balance),
+  };
+}
+
+function normalizePlano(plano: Plano): Plano {
+  return {
+    ...plano,
+    amount: toNumber(plano.amount),
+    cost: toNumber(plano.cost),
+  };
+}
+
+function normalizePagamento(pagamento: Pagamento): Pagamento {
+  return {
+    ...pagamento,
+    amount: toNumber(pagamento.amount),
+  };
+}
+
+function normalizeRecarga(recarga: Recarga): Recarga {
+  return {
+    ...recarga,
+    amount: toNumber(recarga.amount),
+    cost: toNumber(recarga.cost),
+  };
+}
+
 export async function api<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -45,10 +80,16 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
 // Auth
 export const authApi = {
   login: (data: { email: string; password: string }) =>
-    api<{ token: string; user: User }>("/auth/login", { method: "POST", body: data }),
+    api<{ token: string; user: User }>("/auth/login", { method: "POST", body: data }).then((response) => ({
+      ...response,
+      user: normalizeUser(response.user),
+    })),
   register: (data: { username: string; email: string; password: string; phone: string; cpf: string }) =>
-    api<{ token: string; user: User }>("/auth/register", { method: "POST", body: data }),
-  me: () => api<{ user: User }>("/auth/me"),
+    api<{ token: string; user: User }>("/auth/register", { method: "POST", body: data }).then((response) => ({
+      ...response,
+      user: normalizeUser(response.user),
+    })),
+  me: () => api<{ user: User }>("/auth/me").then((response) => ({ user: normalizeUser(response.user) })),
 };
 
 // Operadoras
@@ -60,9 +101,14 @@ export const operadorasApi = {
 
 // Planos
 export const planosApi = {
-  listByOperadora: (operadoraId: number) => api<{ planos: Plano[] }>(`/planos?operadora_id=${operadoraId}`),
-  create: (data: Omit<Plano, "id">) => api<Plano>("/planos", { method: "POST", body: data }),
-  update: (id: number, data: Partial<Plano>) => api<Plano>(`/planos/${id}`, { method: "PUT", body: data }),
+  listByOperadora: (operadoraId: number) =>
+    api<{ planos: Plano[] }>(`/planos?operadora_id=${operadoraId}`).then((response) => ({
+      planos: response.planos.map(normalizePlano),
+    })),
+  create: (data: Omit<Plano, "id">) =>
+    api<Plano>("/planos", { method: "POST", body: data }).then((plano) => normalizePlano(plano)),
+  update: (id: number, data: Partial<Plano>) =>
+    api<Plano>(`/planos/${id}`, { method: "PUT", body: data }).then((plano) => normalizePlano(plano)),
   delete: (id: number) => api(`/planos/${id}`, { method: "DELETE" }),
 };
 
@@ -75,9 +121,19 @@ export const recargasApi = {
       "/recargas/check-phone", { method: "POST", body: { phoneNumber, carrierName } }
     ),
   create: (data: { operadora_id: number; phone: string; plano_id: number }) =>
-    api<{ recarga: Recarga }>("/recargas", { method: "POST", body: data }),
-  list: (params?: string) => api<{ recargas: Recarga[]; total: number }>(`/recargas${params ? `?${params}` : ""}`),
-  listAll: (params?: string) => api<{ recargas: Recarga[]; total: number }>(`/admin/recargas${params ? `?${params}` : ""}`),
+    api<{ recarga: Recarga }>("/recargas", { method: "POST", body: data }).then((response) => ({
+      recarga: normalizeRecarga(response.recarga),
+    })),
+  list: (params?: string) =>
+    api<{ recargas: Recarga[]; total: number }>(`/recargas${params ? `?${params}` : ""}`).then((response) => ({
+      ...response,
+      recargas: response.recargas.map(normalizeRecarga),
+    })),
+  listAll: (params?: string) =>
+    api<{ recargas: Recarga[]; total: number }>(`/admin/recargas${params ? `?${params}` : ""}`).then((response) => ({
+      ...response,
+      recargas: response.recargas.map(normalizeRecarga),
+    })),
 };
 
 // Pagamentos
@@ -85,10 +141,20 @@ export const pagamentosApi = {
   deposit: (amount: number) =>
     api<{ pagamento: Pagamento; qrCode: string; qrCodeBase64: string; pixCopiaECola: string }>(
       "/pagamentos/deposit", { method: "POST", body: { amount } }
-    ),
+    ).then((response) => ({
+      ...response,
+      pagamento: normalizePagamento(response.pagamento),
+    })),
   checkStatus: (txId: string) =>
-    api<{ status: string; pagamento: Pagamento }>(`/pagamentos/status/${txId}`),
-  list: (params?: string) => api<{ pagamentos: Pagamento[]; total: number }>(`/pagamentos${params ? `?${params}` : ""}`),
+    api<{ status: string; pagamento: Pagamento }>(`/pagamentos/status/${txId}`).then((response) => ({
+      ...response,
+      pagamento: normalizePagamento(response.pagamento),
+    })),
+  list: (params?: string) =>
+    api<{ pagamentos: Pagamento[]; total: number }>(`/pagamentos${params ? `?${params}` : ""}`).then((response) => ({
+      ...response,
+      pagamentos: response.pagamentos.map(normalizePagamento),
+    })),
 };
 
 // Noticias
@@ -104,8 +170,9 @@ export const noticiasApi = {
 // Admin
 export const adminApi = {
   users: {
-    list: () => api<{ users: User[] }>("/admin/users"),
-    update: (id: number, data: Partial<User>) => api<User>(`/admin/users/${id}`, { method: "PUT", body: data }),
+    list: () => api<{ users: User[] }>("/admin/users").then((response) => ({ users: response.users.map(normalizeUser) })),
+    update: (id: number, data: Partial<User>) =>
+      api<User>(`/admin/users/${id}`, { method: "PUT", body: data }).then((user) => normalizeUser(user)),
     delete: (id: number) => api(`/admin/users/${id}`, { method: "DELETE" }),
   },
   logs: (params?: string) => api<{ logs: ActivityLog[]; total: number }>(`/admin/logs${params ? `?${params}` : ""}`),
