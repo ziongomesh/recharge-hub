@@ -1,6 +1,19 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+function formatCPF(cpf: string) {
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length !== 11) return cpf;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+function formatPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return phone;
+}
+
 export default function ConfiguracoesPage() {
   const { user } = useAuth();
 
@@ -20,11 +33,11 @@ export default function ConfiguracoesPage() {
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Telefone</span>
-            <span className="font-medium">{user?.phone}</span>
+            <span className="font-medium">{user?.phone ? formatPhone(user.phone) : "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">CPF</span>
-            <span className="font-medium">{user?.cpf}</span>
+            <span className="font-medium">{user?.cpf ? formatCPF(user.cpf) : "-"}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Saldo</span>
