@@ -18,7 +18,7 @@ router.post('/deposit', authMiddleware, async (req, res) => {
     const user = users[0];
 
     const identifier = uuidv4();
-    const callbackUrl = `${process.env.NGROK_URL}/api/webhooks/vizzion/${identifier}`;
+    const callbackUrl = `${process.env.NGROK_URL}/api/webhooks/vizzion`;
 
     const { data } = await axios.post(`${VIZZION_URL}/gateway/pix/receive`, {
       identifier,
