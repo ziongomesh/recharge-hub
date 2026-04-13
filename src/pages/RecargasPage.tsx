@@ -215,12 +215,23 @@ export default function RecargasPage() {
       </div>
 
       <div className="space-y-4">
-        {/* Step 1: Phone */}
+        {/* Step 1: Phone + detected operator */}
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>1</span>
               <span className="font-semibold text-foreground">Informe o Número</span>
+              {detectedOp && !detecting && (
+                <span className="ml-auto text-xs font-semibold px-3 py-1 rounded-full" style={{ background: "hsl(var(--primary) / 0.15)", color: "hsl(var(--primary))" }}>
+                  {detectedOp.toUpperCase()}
+                </span>
+              )}
+              {detecting && (
+                <span className="ml-auto flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Loader2 className="animate-spin" size={12} />
+                  Detectando...
+                </span>
+              )}
             </div>
             <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2 block">
               Telefone com DDD
@@ -242,49 +253,6 @@ export default function RecargasPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* Step 2: Operadora */}
-        {phoneValid && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>2</span>
-                <span className="font-semibold text-foreground">Selecione a Operadora</span>
-              </div>
-
-              {detecting && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
-                  <Loader2 className="animate-spin" size={14} />
-                  Detectando operadora...
-                </div>
-              )}
-
-              {detectedOp && !detecting && (
-                <div className="rounded-lg px-3 py-2 mb-3 text-sm" style={{ background: "hsl(var(--primary) / 0.1)", color: "hsl(var(--primary))" }}>
-                  Detectamos sua operadora como <strong>{detectedOp.toUpperCase()}</strong>.
-                </div>
-              )}
-
-              <div className="grid grid-cols-3 gap-3">
-                {operadoras.map((op) => (
-                  <div
-                    key={op.id}
-                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                      selectedOp?.id === op.id
-                        ? "border-primary"
-                        : "border-border/50 hover:border-border"
-                    }`}
-                    style={selectedOp?.id === op.id ? { boxShadow: "0 0 0 1px hsl(var(--primary))" } : {}}
-                    onClick={() => selectOperadora(op)}
-                  >
-                    <span className="font-bold text-lg text-foreground">{op.name}</span>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{op.name}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Step 3: Planos */}
         {selectedOp && planos.length > 0 && (
