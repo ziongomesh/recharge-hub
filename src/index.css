@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    --primary: 231 58% 55%;
+    --primary: 24 70% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 10% 96%;
@@ -24,8 +24,8 @@
     --muted: 220 10% 96%;
     --muted-foreground: 220 10% 50%;
 
-    --accent: 231 58% 95%;
-    --accent-foreground: 231 58% 40%;
+    --accent: 24 70% 95%;
+    --accent-foreground: 24 70% 35%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -38,16 +38,16 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 231 58% 55%;
+    --ring: 24 70% 45%;
 
     --radius: 0.5rem;
 
     --sidebar-width: 220px;
-    --sidebar-bg: 231 58% 45%;
+    --sidebar-bg: 24 70% 40%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-active: 0 0% 100%;
-    --sidebar-active-bg: 231 58% 38%;
-    --sidebar-border: 231 58% 40%;
+    --sidebar-active-bg: 24 70% 33%;
+    --sidebar-border: 24 70% 35%;
 
     --status-pending: 38 92% 50%;
     --status-confirmed: 142 60% 40%;
@@ -62,23 +62,23 @@
     --card-foreground: 220 10% 95%;
     --popover: 220 15% 11%;
     --popover-foreground: 220 10% 95%;
-    --primary: 231 58% 60%;
+    --primary: 24 70% 55%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 15% 15%;
     --secondary-foreground: 220 10% 85%;
     --muted: 220 15% 15%;
     --muted-foreground: 220 10% 55%;
-    --accent: 231 58% 15%;
-    --accent-foreground: 231 58% 70%;
+    --accent: 24 70% 15%;
+    --accent-foreground: 24 70% 65%;
     --destructive: 0 62% 30%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 15% 18%;
     --input: 220 15% 18%;
-    --ring: 231 58% 60%;
+    --ring: 24 70% 55%;
     --sidebar-bg: 220 15% 10%;
     --sidebar-foreground: 220 10% 60%;
-    --sidebar-active: 231 58% 60%;
-    --sidebar-active-bg: 231 58% 12%;
+    --sidebar-active: 24 70% 55%;
+    --sidebar-active-bg: 24 70% 12%;
     --sidebar-border: 220 15% 15%;
   }
 }
@@ -113,7 +113,7 @@
     background: hsl(var(--status-pending) / 0.1);
     color: hsl(var(--status-pending));
   }
-  .status-confirmed, .status-feita {
+  .status-confirmed, .status-feita, .status-paid {
     background: hsl(var(--status-confirmed) / 0.1);
     color: hsl(var(--status-confirmed));
   }
