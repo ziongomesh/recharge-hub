@@ -27,25 +27,36 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "hsl(var(--background))" }}>
       {/* Header */}
-      <header className="w-full px-6 py-3 flex items-center justify-between border-b border-border/30 z-40">
-        <div className="flex items-center gap-2">
-          <img src={cometaImg} alt="CometaSMS" className="w-7 h-7" />
-          <span className="text-lg font-bold" style={{ color: "hsl(var(--primary))" }}>CometaSMS</span>
-        </div>
+      <header className="w-full px-8 py-4 flex items-center justify-between z-40 backdrop-blur-md" style={{ background: "hsl(var(--background) / 0.6)" }}>
         <div className="flex items-center gap-3">
+          <div className="relative">
+            <img src={cometaImg} alt="CometaSMS" className="w-8 h-8" />
+            <div className="absolute inset-0 rounded-full" style={{ boxShadow: "0 0 12px hsl(var(--primary) / 0.4)" }} />
+          </div>
+          <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+            Cometa<span style={{ color: "hsl(var(--primary))" }}>SMS</span>
+          </span>
+        </div>
+        <nav className="hidden md:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Recargas</a>
+          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Preços</a>
+          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">API</a>
+          <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Suporte</a>
+        </nav>
+        <div className="flex items-center gap-2">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground">{user.username}</span>
-              <Button size="sm" variant="outline" onClick={() => navigate("/recargas")}>
+              <span className="text-sm text-muted-foreground mr-1">{user.username}</span>
+              <Button size="sm" onClick={() => navigate("/recargas")} className="rounded-full px-5">
                 Painel
               </Button>
             </>
           ) : (
             <>
-              <Button size="sm" variant="ghost" onClick={() => navigate("/login")}>
-                Login
+              <Button size="sm" variant="ghost" className="text-sm" onClick={() => navigate("/login")}>
+                Entrar
               </Button>
-              <Button size="sm" onClick={() => navigate("/register")}>
+              <Button size="sm" className="rounded-full px-5" onClick={() => navigate("/register")}>
                 Criar conta
               </Button>
             </>
