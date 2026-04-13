@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { operadorasApi, noticiasApi, type Operadora, type Noticia } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
-import { RefreshCw, MessageSquare, Sim } from "lucide-react";
+import { RefreshCw, MessageSquare, CreditCard } from "lucide-react";
 
 export default function HomePage() {
   const { user } = useAuth();
@@ -50,7 +50,7 @@ export default function HomePage() {
       id: "esim",
       title: "eSIM",
       description: "Compre chips virtuais eSIM para qualquer operadora",
-      icon: Sim,
+      icon: CreditCard,
       color: "bg-purple-50 text-purple-600 border-purple-200",
       iconBg: "bg-purple-100",
       route: "/esim",
