@@ -24,8 +24,8 @@ router.post('/vizzion', async (req, res) => {
 
       if (!pagamento) return res.status(404).json({ message: 'Pagamento não encontrado' });
 
-      if (pagamento.status !== 'confirmed') {
-        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['confirmed', pagamento.id]);
+      if (pagamento.status !== 'paid') {
+        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['paid', pagamento.id]);
         await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [pagamento.amount, pagamento.user_id]);
         await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
           [pagamento.user_id, 'deposit_confirmed', `PIX confirmado R$ ${pagamento.amount}`]);

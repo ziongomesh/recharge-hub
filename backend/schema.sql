@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS pagamentos (
   user_id INT NOT NULL,
   transaction_id VARCHAR(255) UNIQUE NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
-  status ENUM('pending','confirmed','failed') DEFAULT 'pending',
+  status ENUM('pending','paid','failed') DEFAULT 'pending',
   used BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
