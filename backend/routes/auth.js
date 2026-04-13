@@ -12,6 +12,8 @@ function generateToken(user) {
 
 function sanitizeUser(user) {
   const { password, ...safe } = user;
+  // MySQL2 retorna DECIMAL como string — converter para number
+  if (safe.balance !== undefined) safe.balance = Number(safe.balance);
   return safe;
 }
 
