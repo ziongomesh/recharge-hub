@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
-  const navigate = useNavigate();
+  
 
   const update = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
