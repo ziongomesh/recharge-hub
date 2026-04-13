@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { operadorasApi, type Operadora } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Smartphone, MessageSquare, SimCard } from "lucide-react";
+import { ArrowRight, Smartphone, MessageSquare, Wifi } from "lucide-react";
 import cometaImg from "@/assets/cometa.png";
 
 export default function HomePage() {
@@ -123,7 +123,7 @@ export default function HomePage() {
               className="rounded-xl p-5 opacity-60"
               style={{ background: "hsl(var(--card))" }}
             >
-              <Sim size={28} className="mb-3 text-muted-foreground" />
+              <Wifi size={28} className="mb-3 text-muted-foreground" />
               <h3 className="font-semibold text-foreground mb-1">eSIM</h3>
               <p className="text-xs text-muted-foreground">Em breve</p>
             </div>
