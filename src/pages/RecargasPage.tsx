@@ -1,35 +1,39 @@
-import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
 import { recargasApi, planosApi, operadorasApi, type Operadora, type Plano } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
-import { ArrowLeft, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader2, Check, Phone } from "lucide-react";
 
-type Step = "operadora" | "phone" | "plano" | "confirm" | "done";
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
+function rawPhone(value: string): string {
+  return value.replace(/\D/g, "");
+}
 
 export default function RecargasPage() {
-  const [searchParams] = useSearchParams();
-  const [step, setStep] = useState<Step>("operadora");
   const [operadoras, setOperadoras] = useState<Operadora[]>([]);
-  const [selectedOp, setSelectedOp] = useState<Operadora | null>(null);
   const [phone, setPhone] = useState("");
-  const [phoneStatus, setPhoneStatus] = useState<string | null>(null);
+  const [phoneValid, setPhoneValid] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+  const [detectedOp, setDetectedOp] = useState<string | null>(null);
+  const [selectedOp, setSelectedOp] = useState<Operadora | null>(null);
   const [planos, setPlanos] = useState<Plano[]>([]);
+  const [loadingPlanos, setLoadingPlanos] = useState(false);
   const [selectedPlano, setSelectedPlano] = useState<Plano | null>(null);
+  const [phoneStatus, setPhoneStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"form" | "confirm" | "done">("form");
 
   useEffect(() => {
     operadorasApi.list().then((r) => {
-      const ops = r.operadoras.filter((o) => o.enabled);
-      setOperadoras(ops);
-      const preselect = searchParams.get("operadora");
-      if (preselect) {
-        const op = ops.find((o) => o.id === Number(preselect));
-        if (op) { setSelectedOp(op); setStep("phone"); }
-      }
+      setOperadoras(r.operadoras.filter((o) => o.enabled));
     }).catch(() => {
       setOperadoras([
         { id: 1, name: "Claro", enabled: true },
@@ -37,32 +41,89 @@ export default function RecargasPage() {
         { id: 3, name: "Vivo", enabled: true },
       ]);
     });
-  }, [searchParams]);
+  }, []);
+
+  const detectOperator = useCallback(async (digits: string) => {
+    if (digits.length < 10) return;
+    setDetecting(true);
+    try {
+      const result = await recargasApi.detectOperator(digits);
+      if (result.operator) {
+        const opName = result.operator.charAt(0).toUpperCase() + result.operator.slice(1).toLowerCase();
+        setDetectedOp(opName);
+        const op = operadoras.find(
+          (o) => o.name.toLowerCase() === result.operator.toLowerCase()
+        );
+        if (op) {
+          setSelectedOp(op);
+          loadPlanos(op.id);
+        }
+      }
+    } catch {
+      // Detection failed silently, user can pick manually
+    } finally {
+      setDetecting(false);
+    }
+  }, [operadoras]);
+
+  const loadPlanos = async (opId: number) => {
+    setLoadingPlanos(true);
+    try {
+      const { planos } = await planosApi.listByOperadora(opId);
+      setPlanos(planos);
+    } catch {
+      setPlanos([]);
+    } finally {
+      setLoadingPlanos(false);
+    }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhone(value);
+    setPhone(formatted);
+    const digits = rawPhone(formatted);
+    const valid = digits.length >= 10;
+    setPhoneValid(valid);
+
+    if (valid && digits.length >= 10) {
+      detectOperator(digits);
+    } else {
+      setDetectedOp(null);
+      setSelectedOp(null);
+      setPlanos([]);
+      setSelectedPlano(null);
+    }
+  };
 
   const selectOperadora = (op: Operadora) => {
     setSelectedOp(op);
-    setStep("phone");
+    setSelectedPlano(null);
+    loadPlanos(op.id);
   };
 
-  const handleCheckPhone = async () => {
-    if (!phone || phone.length < 10) { toast.error("Número inválido"); return; }
+  const handleSelectPlano = async (plano: Plano) => {
+    const digits = rawPhone(phone);
+    if (digits.length < 10) return;
+
+    setSelectedPlano(plano);
     setLoading(true);
     try {
-      const result = await recargasApi.checkPhone(phone, selectedOp?.name.toLowerCase());
+      const result = await recargasApi.checkPhone(digits, selectedOp?.name.toLowerCase());
       if (result.isBlacklisted) {
         setPhoneStatus("Número na blacklist");
         toast.error("Número está na blacklist");
+        setSelectedPlano(null);
       } else if (result.isCooldown) {
         setPhoneStatus("Cooldown ativo");
         toast.error(result.message);
+        setSelectedPlano(null);
       } else {
-        setPhoneStatus("OK");
-        const plans = await planosApi.listByOperadora(selectedOp!.id);
-        setPlanos(plans.planos);
-        setStep("plano");
+        setPhoneStatus(null);
+        setStep("confirm");
       }
     } catch (err: any) {
       toast.error(err.message || "Erro ao verificar número");
+      setSelectedPlano(null);
     } finally {
       setLoading(false);
     }
@@ -72,7 +133,7 @@ export default function RecargasPage() {
     if (!selectedOp || !selectedPlano) return;
     setLoading(true);
     try {
-      await recargasApi.create({ operadora_id: selectedOp.id, phone, plano_id: selectedPlano.id });
+      await recargasApi.create({ operadora_id: selectedOp.id, phone: rawPhone(phone), plano_id: selectedPlano.id });
       setStep("done");
       toast.success("Recarga solicitada com sucesso!");
     } catch (err: any) {
@@ -83,110 +144,195 @@ export default function RecargasPage() {
   };
 
   const reset = () => {
-    setStep("operadora");
-    setSelectedOp(null);
     setPhone("");
-    setPhoneStatus(null);
+    setPhoneValid(false);
+    setDetectedOp(null);
+    setSelectedOp(null);
     setPlanos([]);
     setSelectedPlano(null);
+    setPhoneStatus(null);
+    setStep("form");
   };
 
-  return (
-    <div className="max-w-lg">
-      <div className="flex items-center gap-3 mb-6">
-        {step !== "operadora" && step !== "done" && (
-          <button onClick={() => setStep(step === "plano" ? "phone" : step === "confirm" ? "plano" : "operadora")} className="text-muted-foreground hover:text-foreground">
-            <ArrowLeft size={20} />
-          </button>
-        )}
-        <h1 className="text-lg font-semibold text-foreground">Nova Recarga</h1>
-      </div>
-
-      {step === "operadora" && (
-        <div className="space-y-3">
-          <span className="section-label">Escolha a operadora</span>
-          <div className="flex gap-4 mt-2">
-            {operadoras.map((op) => (
-              <div key={op.id} className="operator-card min-w-[120px]" onClick={() => selectOperadora(op)}>
-                <span className="font-semibold text-foreground">{op.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {step === "phone" && (
+  if (step === "done") {
+    return (
+      <div className="max-w-lg">
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{selectedOp?.name} — Número</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Número do celular (DDD + número)</Label>
-              <Input value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} placeholder="11999999999" maxLength={11} />
-            </div>
-            {phoneStatus && phoneStatus !== "OK" && (
-              <p className="text-sm text-destructive">{phoneStatus}</p>
-            )}
-            <Button onClick={handleCheckPhone} disabled={loading} className="w-full">
-              {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
-              Verificar e continuar
-            </Button>
+          <CardContent className="py-8 text-center space-y-4">
+            <CheckCircle className="mx-auto" size={48} style={{ color: "hsl(var(--success))" }} />
+            <h2 className="text-lg font-semibold text-foreground">Recarga solicitada!</h2>
+            <p className="text-sm text-muted-foreground">Acompanhe o status no Histórico.</p>
+            <Button onClick={reset} variant="outline">Nova recarga</Button>
           </CardContent>
         </Card>
-      )}
+      </div>
+    );
+  }
 
-      {step === "plano" && (
-        <div className="space-y-3">
-          <span className="section-label">Escolha o plano — {selectedOp?.name}</span>
-          <div className="grid gap-3 mt-2">
-            {planos.map((p) => (
-              <div
-                key={p.id}
-                className={`operator-card flex-row justify-between items-center ${selectedPlano?.id === p.id ? "border-primary ring-1 ring-primary" : ""}`}
-                onClick={() => setSelectedPlano(p)}
-              >
-                <span className="font-semibold text-foreground">R$ {p.amount.toFixed(2)}</span>
-              </div>
-            ))}
-          </div>
-          {selectedPlano && (
-            <Button onClick={() => setStep("confirm")} className="w-full mt-4">
-              Continuar
-            </Button>
-          )}
+  if (step === "confirm") {
+    return (
+      <div className="max-w-lg">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={() => setStep("form")} className="text-muted-foreground hover:text-foreground transition-colors">
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="text-lg font-semibold text-foreground">Confirmar Recarga</h1>
         </div>
-      )}
-
-      {step === "confirm" && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Confirmar recarga</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-muted-foreground">Operadora</span><span className="font-medium">{selectedOp?.name}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Número</span><span className="font-medium">{phone}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Valor</span><span className="font-medium">R$ {selectedPlano?.amount.toFixed(2)}</span></div>
+          <CardContent className="pt-6 space-y-5">
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between py-2 border-b border-border/30">
+                <span className="text-muted-foreground">Telefone</span>
+                <span className="font-medium font-mono text-foreground">{phone}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border/30">
+                <span className="text-muted-foreground">Operadora</span>
+                <span className="font-medium text-foreground">{selectedOp?.name}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border/30">
+                <span className="text-muted-foreground">Receba</span>
+                <span className="font-bold text-foreground">R$ {selectedPlano?.amount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-muted-foreground">Pague</span>
+                <span className="font-bold" style={{ color: "hsl(var(--success))" }}>R$ {selectedPlano?.cost.toFixed(2)}</span>
+              </div>
             </div>
-            <Button onClick={handleConfirm} disabled={loading} className="w-full">
+            <Button onClick={handleConfirm} disabled={loading} className="w-full" size="lg">
               {loading ? <Loader2 className="animate-spin mr-2" size={16} /> : null}
               Confirmar recarga
             </Button>
           </CardContent>
         </Card>
-      )}
+      </div>
+    );
+  }
 
-      {step === "done" && (
+  return (
+    <div className="max-w-2xl">
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-lg font-semibold text-foreground">Recarga de Celular</h1>
+      </div>
+
+      <div className="space-y-4">
+        {/* Step 1: Phone */}
         <Card>
-          <CardContent className="py-8 text-center space-y-4">
-            <CheckCircle className="mx-auto text-success" size={48} />
-            <h2 className="text-lg font-semibold">Recarga solicitada!</h2>
-            <p className="text-sm text-muted-foreground">Acompanhe o status no Histórico.</p>
-            <Button onClick={reset} variant="outline">Nova recarga</Button>
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>1</span>
+              <span className="font-semibold text-foreground">Informe o Número</span>
+            </div>
+            <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2 block">
+              Telefone com DDD
+            </label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
+              <Input
+                value={phone}
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                placeholder="(00) 00000-0000"
+                className="pl-10 pr-10 h-12 text-lg font-mono"
+              />
+              {phoneValid && (
+                <Check className="absolute right-3 top-1/2 -translate-y-1/2" size={18} style={{ color: "hsl(var(--success))" }} />
+              )}
+            </div>
+            {phoneStatus && (
+              <p className="text-sm text-destructive mt-2">{phoneStatus}</p>
+            )}
           </CardContent>
         </Card>
-      )}
+
+        {/* Step 2: Operadora */}
+        {phoneValid && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>2</span>
+                <span className="font-semibold text-foreground">Selecione a Operadora</span>
+              </div>
+
+              {detecting && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <Loader2 className="animate-spin" size={14} />
+                  Detectando operadora...
+                </div>
+              )}
+
+              {detectedOp && !detecting && (
+                <div className="rounded-lg px-3 py-2 mb-3 text-sm" style={{ background: "hsl(var(--primary) / 0.1)", color: "hsl(var(--primary))" }}>
+                  Detectamos sua operadora como <strong>{detectedOp.toUpperCase()}</strong>.
+                </div>
+              )}
+
+              <div className="grid grid-cols-3 gap-3">
+                {operadoras.map((op) => (
+                  <div
+                    key={op.id}
+                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                      selectedOp?.id === op.id
+                        ? "border-primary"
+                        : "border-border/50 hover:border-border"
+                    }`}
+                    style={selectedOp?.id === op.id ? { boxShadow: "0 0 0 1px hsl(var(--primary))" } : {}}
+                    onClick={() => selectOperadora(op)}
+                  >
+                    <span className="font-bold text-lg text-foreground">{op.name}</span>
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground mt-1">{op.name}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 3: Planos */}
+        {selectedOp && planos.length > 0 && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold" style={{ background: "hsl(var(--primary) / 0.2)", color: "hsl(var(--primary))" }}>3</span>
+                <span className="font-semibold text-foreground">Escolha o Valor</span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {planos.map((p) => (
+                  <div
+                    key={p.id}
+                    className={`flex flex-col items-center p-4 rounded-xl border-2 cursor-pointer transition-all hover:border-primary ${
+                      selectedPlano?.id === p.id ? "border-primary" : "border-border/50"
+                    }`}
+                    onClick={() => handleSelectPlano(p)}
+                  >
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Receba</span>
+                    <span className="text-xl font-bold text-foreground">R$ {p.amount.toFixed(0)}</span>
+                    <span
+                      className="mt-2 px-3 py-0.5 rounded-full text-xs font-bold"
+                      style={{ background: "hsl(var(--success))", color: "hsl(var(--success-foreground))" }}
+                    >
+                      Pague R$ {p.cost.toFixed(0)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {loading && (
+                <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+                  <Loader2 className="animate-spin" size={14} />
+                  Verificando número...
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedOp && loadingPlanos && (
+          <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+            <Loader2 className="animate-spin" size={14} />
+            Carregando planos...
+          </div>
+        )}
+      </div>
     </div>
   );
 }
