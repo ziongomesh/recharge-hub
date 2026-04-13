@@ -141,7 +141,7 @@ export interface Pagamento {
   user_id: number;
   transaction_id: string;
   amount: number;
-  status: "pending" | "confirmed" | "failed";
+  status: "pending" | "paid" | "failed";
   used: boolean;
   created_at: string;
 }

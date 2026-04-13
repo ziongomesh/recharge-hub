@@ -39,7 +39,7 @@ export default function PagamentosPage() {
       pollRef.current = setInterval(async () => {
         try {
           const status = await pagamentosApi.checkStatus(res.pagamento.transaction_id);
-          if (status.status === "confirmed") {
+          if (status.status === "paid") {
             clearInterval(pollRef.current!);
             setConfirmed(true);
             await refreshUser();
@@ -142,7 +142,7 @@ export default function PagamentosPage() {
                 <TableRow key={p.id}>
                   <TableCell className="text-sm">{new Date(p.created_at).toLocaleDateString("pt-BR")}</TableCell>
                   <TableCell className="text-sm">R$ {p.amount.toFixed(2)}</TableCell>
-                  <TableCell><span className={`status-badge status-${p.status}`}>{p.status === "confirmed" ? "Confirmado" : p.status === "pending" ? "Pendente" : "Falhou"}</span></TableCell>
+                  <TableCell><span className={`status-badge status-${p.status}`}>{p.status === "paid" ? "Pago" : p.status === "pending" ? "Pendente" : "Falhou"}</span></TableCell>
                 </TableRow>
               ))}
             </TableBody>
