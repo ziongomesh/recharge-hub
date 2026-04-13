@@ -3,6 +3,7 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
+const logger = require('../logger');
 
 const router = express.Router();
 
@@ -49,6 +50,8 @@ router.post('/deposit', authMiddleware, async (req, res) => {
     await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
       [req.userId, 'deposit_created', `PIX R$ ${amount} - TX: ${txId}`]);
 
+    logger.pagamento.pixGenerated(req.userId, user.username, amount, txId);
+
     res.json({
       pagamento: pagamentos[0],
       qrCode: data.pix?.image || '',
@@ -65,6 +68,7 @@ router.get('/status/:txId', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [req.params.txId]);
     if (rows.length === 0) return res.status(404).json({ message: 'Pagamento não encontrado' });
+    logger.pagamento.statusCheck(req.params.txId, rows[0].status);
     res.json({ status: rows[0].status, pagamento: rows[0] });
   } catch (err) {
     console.error('Status error:', err);

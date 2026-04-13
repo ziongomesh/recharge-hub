@@ -3,6 +3,7 @@ const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
+const logger = require('../logger');
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ function poekiHeaders() {
 router.post('/detect', authMiddleware, async (req, res) => {
   try {
     const { phone } = req.body;
+    logger.recarga.detect(phone, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, { headers: poekiHeaders() });
     res.json(data);
   } catch (err) {
@@ -26,6 +28,7 @@ router.post('/detect', authMiddleware, async (req, res) => {
 router.post('/check-phone', authMiddleware, async (req, res) => {
   try {
     const { phoneNumber, carrierName } = req.body;
+    logger.recarga.checkPhone(phoneNumber, carrierName, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/utils/check-phone`, { phoneNumber, carrierName }, { headers: poekiHeaders() });
     res.json({
       status: data.status,
@@ -50,6 +53,7 @@ router.post('/', authMiddleware, async (req, res) => {
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
     const user = users[0];
     if (parseFloat(user.balance) < parseFloat(plano.cost)) {
+      logger.recarga.insufficientBalance(req.userId, user.balance, plano.cost);
       return res.status(400).json({ message: 'Saldo insuficiente' });
     }
 
@@ -78,6 +82,8 @@ router.post('/', authMiddleware, async (req, res) => {
 
     await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
       [req.userId, 'recarga_created', `Recarga ${phone} R$ ${plano.amount}`]);
+
+    logger.recarga.created(req.userId, user.username, phone, ops[0].name, plano.amount);
 
     res.json({ recarga: recargas[0] });
   } catch (err) {
