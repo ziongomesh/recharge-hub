@@ -6,8 +6,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 import AppLayout from "@/components/AppLayout";
-import LoginPage from "@/pages/LoginPage";
-import RegisterPage from "@/pages/RegisterPage";
 import HomePage from "@/pages/HomePage";
 import RecargasPage from "@/pages/RecargasPage";
 import HistoricoPage from "@/pages/HistoricoPage";
@@ -36,9 +34,12 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            {/* Home with modal login/register */}
             <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<HomePage />} />
+            <Route path="/register" element={<HomePage />} />
+
+            {/* Authenticated routes */}
             <Route element={<AppLayout />}>
               <Route path="/recargas" element={<RecargasPage />} />
               <Route path="/historico" element={<HistoricoPage />} />
