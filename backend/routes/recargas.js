@@ -77,7 +77,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
     const [result] = await db.query(
       'INSERT INTO recargas (user_id, operadora_id, phone, amount, cost, status, poeki_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [req.userId, operadora_id, phone, plano.amount, plano.cost, 'pendente', data.id]
+      [req.userId, operadora_id, phone, plano.amount, plano.cost, 'pendente', poekiData.id]
     );
 
     const [recargas] = await db.query('SELECT * FROM recargas WHERE id = ?', [result.insertId]);
