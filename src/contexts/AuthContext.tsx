@@ -49,14 +49,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { token, user } = await authApi.login({ email, password });
     setToken(token);
     setUser(normalizeUser(user));
-    navigate("/recargas");
+    navigate("/");
   };
 
   const register = async (data: { username: string; email: string; password: string; phone: string; cpf: string }) => {
     const { token, user } = await authApi.register(data);
     setToken(token);
     setUser(normalizeUser(user));
-    navigate("/recargas");
+    navigate("/");
   };
 
   const logout = () => {
