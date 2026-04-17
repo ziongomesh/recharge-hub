@@ -8,11 +8,6 @@ const routeMeta: Record<string, { num: string; label: string }> = {
   "/historico":     { num: "02", label: "Histórico" },
   "/pagamentos":    { num: "03", label: "Pagamentos" },
   "/configuracoes": { num: "04", label: "Conta" },
-  "/admin/operadoras": { num: "A1", label: "Operadoras" },
-  "/admin/noticias":   { num: "A2", label: "Notícias" },
-  "/admin/usuarios":   { num: "A3", label: "Usuários" },
-  "/admin/recargas":   { num: "A4", label: "Recargas (Admin)" },
-  "/admin/logs":       { num: "A5", label: "Logs" },
 };
 
 export default function AppLayout() {
