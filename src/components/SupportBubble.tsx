@@ -6,7 +6,7 @@ import { generateKeyPair, exportPublicKey, deriveSharedKey, encrypt, decrypt } f
 import { MessageCircle, X, Send, Shield, Loader2, Headphones, Star } from "lucide-react";
 import { toast } from "sonner";
 
-interface ChatMsg { id: number | string; role: "user" | "agent"; text: string; time: string; }
+interface ChatMsg { id: number | string; role: "user" | "agent" | "system"; text: string; time: string; }
 
 export default function SupportBubble() {
   const { user } = useAuth();
