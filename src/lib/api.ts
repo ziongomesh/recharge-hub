@@ -106,6 +106,8 @@ export const planosApi = {
       planos: response.planos.map(normalizePlano),
     })),
   sync: () => api<{ message: string; synced: number }>("/planos/sync", { method: "POST" }),
+  markup: (data: { operadora_id?: number; percent: number }) =>
+    api<{ message: string; affected: number }>("/planos/markup", { method: "POST", body: data }),
   poekiBalance: () => api<{ data?: { balance?: number }; balance?: number } & Record<string, unknown>>("/planos/poeki-balance"),
   create: (data: Omit<Plano, "id">) =>
     api<Plano>("/planos", { method: "POST", body: data }).then((plano) => normalizePlano(plano)),
