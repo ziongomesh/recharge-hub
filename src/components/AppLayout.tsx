@@ -1,6 +1,5 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
-import AdminTopBar from "./AdminTopBar";
 import { useAuth } from "@/contexts/AuthContext";
 
 const routeMeta: Record<string, { num: string; label: string }> = {
@@ -46,8 +45,6 @@ export default function AppLayout() {
             </div>
           </div>
         </header>
-
-        <AdminTopBar />
 
         <div className="px-10 py-10 max-w-6xl">
           <Outlet />

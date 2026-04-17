@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import AdminTopBar from "./AdminTopBar";
 import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight } from "lucide-react";
 
 const links = [
@@ -86,6 +87,7 @@ export default function AdminLayout() {
       </aside>
 
       <main className="flex-1 ml-64">
+        <AdminTopBar />
         <div className="px-10 py-8 max-w-7xl">
           <Outlet />
         </div>
