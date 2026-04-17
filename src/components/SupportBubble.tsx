@@ -60,12 +60,33 @@ export default function SupportBubble() {
     });
     sock.on("session_state", (st: any) => {
       if (st.status === "active" && st.agent) {
+        const role = (st.agent.role || "admin").toLowerCase();
+        const rankLabel = role === "mod" ? "Moderador" : "Admin";
         setAgentName(st.agent.username);
-        toast.success(`${st.agent.username} entrou no atendimento`);
+        setAgentRole(role);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `sys-join-${Date.now()}`,
+            role: "system",
+            text: `${rankLabel} ${st.agent.username} entrou no chat`,
+            time: new Date().toISOString(),
+          },
+        ]);
       }
       if (st.status === "closed") {
         setClosed(true);
-        toast.info("Atendimento encerrado");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `sys-close-${Date.now()}`,
+            role: "system",
+            text: agentName
+              ? `${agentName} encerrou o chat`
+              : "Atendimento encerrado",
+            time: new Date().toISOString(),
+          },
+        ]);
       }
     });
     sock.on("new_message", async (m: any) => {
