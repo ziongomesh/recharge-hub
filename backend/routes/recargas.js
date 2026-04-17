@@ -90,7 +90,10 @@ router.post('/', authMiddleware, async (req, res) => {
     res.json({ recarga: recargas[0] });
   } catch (err) {
     console.error('Recarga error:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Erro ao criar recarga' });
+    const poekiMsg = err.response?.data?.message;
+    res.status(err.response?.status || 500).json({
+      message: poekiMsg || 'Erro ao criar recarga',
+    });
   }
 });
 
