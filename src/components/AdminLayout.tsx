@@ -34,9 +34,9 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-background flex">
       <aside className="w-64 shrink-0 bg-paper border-r border-border flex flex-col fixed left-0 top-0 h-screen">
         <div className="px-6 pt-6 pb-4">
-          <div className="label-eyebrow text-foreground">Admin</div>
+          <div className="label-eyebrow text-foreground">{user.role === "admin" ? "Admin" : "Moderador"}</div>
           <Link to="/admin" className="font-display text-lg block">CometaSMS</Link>
-          <div className="text-xs text-muted-foreground mt-0.5">Painel de controle</div>
+          <div className="text-xs text-muted-foreground mt-0.5">{user.role === "admin" ? "Painel de controle" : "Atendimento"}</div>
         </div>
         <div className="rule mx-6" />
         <div className="px-6 py-3">
@@ -47,7 +47,7 @@ export default function AdminLayout() {
 
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
           <ul className="space-y-0.5">
-            {links.map((l) => {
+            {links.filter((l) => !l.adminOnly || user.role === "admin").map((l) => {
               const Icon = l.icon;
               return (
                 <li key={l.to}>
