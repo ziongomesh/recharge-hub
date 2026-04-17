@@ -8,20 +8,37 @@ const router = express.Router();
 router.get('/users', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const search = (req.query.search || '').trim();
-    let where = '';
+    const role = (req.query.role || '').trim();
+    const conds = [];
     const params = [];
     if (search) {
-      where = 'WHERE username LIKE ? OR email LIKE ? OR phone LIKE ? OR cpf LIKE ?';
+      conds.push('(username LIKE ? OR email LIKE ? OR phone LIKE ? OR cpf LIKE ?)');
       const like = `%${search}%`;
       params.push(like, like, like, like);
     }
+    if (role) { conds.push('role = ?'); params.push(role); }
+    const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
     const [users] = await db.query(
-      `SELECT id, username, email, phone, cpf, role, balance, created_at FROM users ${where} ORDER BY created_at DESC`,
+      `SELECT id, username, email, phone, cpf, role, balance, created_at, last_login_at FROM users ${where} ORDER BY created_at DESC`,
       params
     );
     res.json({ users });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: 'Erro interno' });
+  }
+});
+
+// Staff (admin + mod) com last_login_at — separado pra aba dedicada
+router.get('/staff', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [users] = await db.query(
+      `SELECT id, username, email, role, last_login_at, created_at FROM users
+       WHERE role IN ('admin','mod')
+       ORDER BY (role='admin') DESC, last_login_at DESC`
+    );
+    res.json({ users });
+  } catch (err) {
     res.status(500).json({ message: 'Erro interno' });
   }
 });
@@ -48,7 +65,7 @@ router.get('/users/:id/full', authMiddleware, adminMiddleware, async (req, res) 
   try {
     const id = Number(req.params.id);
     const [[user]] = await db.query(
-      'SELECT id, username, email, phone, cpf, role, balance, created_at FROM users WHERE id = ?',
+      'SELECT id, username, email, phone, cpf, role, balance, created_at, last_login_at FROM users WHERE id = ?',
       [id]
     );
     if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
