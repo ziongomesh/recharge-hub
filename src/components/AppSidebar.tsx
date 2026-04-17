@@ -1,84 +1,92 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, RefreshCw, Clock, CreditCard, Settings, Shield, Users, Newspaper, List, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import cometaImg from "@/assets/cometa.png";
 
 const userLinks = [
-  { to: "/", label: "Início", icon: Home },
-  { to: "/recargas", label: "Recargas", icon: RefreshCw },
-  { to: "/historico", label: "Histórico", icon: Clock },
-  { to: "/pagamentos", label: "Pagamentos", icon: CreditCard },
-  { to: "/configuracoes", label: "Configurações", icon: Settings },
+  { to: "/recargas",       label: "Recargas",       num: "01" },
+  { to: "/historico",      label: "Histórico",      num: "02" },
+  { to: "/pagamentos",     label: "Pagamentos",     num: "03" },
+  { to: "/configuracoes",  label: "Conta",          num: "04" },
 ];
 
 const adminLinks = [
-  { to: "/admin/operadoras", label: "Operadoras", icon: Shield },
-  { to: "/admin/noticias", label: "Notícias", icon: Newspaper },
-  { to: "/admin/usuarios", label: "Usuários", icon: Users },
-  { to: "/admin/recargas", label: "Recargas", icon: RefreshCw },
-  { to: "/admin/logs", label: "Logs", icon: List },
+  { to: "/admin/operadoras", label: "Operadoras", num: "A1" },
+  { to: "/admin/noticias",   label: "Notícias",   num: "A2" },
+  { to: "/admin/usuarios",   label: "Usuários",   num: "A3" },
+  { to: "/admin/recargas",   label: "Recargas",   num: "A4" },
+  { to: "/admin/logs",       label: "Logs",       num: "A5" },
 ];
 
 export default function AppSidebar() {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "admin";
 
   return (
     <aside
-      className="fixed left-0 top-0 h-screen flex flex-col border-r border-border/30 bg-sidebar"
+      className="fixed left-0 top-0 h-screen flex flex-col bg-paper border-r border-border"
       style={{ width: "var(--sidebar-width)" }}
     >
-      {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border flex items-center gap-2">
-        <img src={cometaImg} alt="CometaSMS" className="w-7 h-7" />
-        <h1 className="text-lg font-bold text-sidebar-foreground">CometaSMS</h1>
+      {/* Brand */}
+      <Link to="/" className="px-6 pt-7 pb-6 block">
+        <div className="font-display text-3xl leading-none">Cometa<span className="italic text-foreground/70">sms</span></div>
+        <div className="label-eyebrow mt-2">Est. 2026 — Recargas</div>
+      </Link>
+
+      <div className="rule mx-6" />
+
+      {/* User block */}
+      <div className="px-6 py-4">
+        <div className="label-eyebrow">Conectado</div>
+        <div className="font-display text-xl leading-tight mt-1 truncate">{user?.username || "—"}</div>
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="label-eyebrow">Saldo</span>
+          <span className="font-mono-x tabular text-sm">R$ {(user?.balance ?? 0).toFixed(2)}</span>
+        </div>
       </div>
 
-      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
-        {userLinks.map((link) => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={`sidebar-link ${location.pathname === link.to ? "active" : ""}`}
-          >
-            <link.icon size={18} />
-            {link.label}
-          </Link>
-        ))}
+      <div className="rule mx-6" />
+
+      {/* Nav */}
+      <nav className="flex-1 px-6 py-5 overflow-y-auto">
+        <div className="label-eyebrow mb-3">Índice</div>
+        <ul className="border-l border-border">
+          {userLinks.map((l) => (
+            <li key={l.to}>
+              <Link to={l.to} className={`nav-link ${pathname === l.to ? "active" : ""}`}>
+                <span>{l.label}</span>
+                <span className="num">{l.num}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
 
         {isAdmin && (
           <>
-            <div className="pt-4 pb-2 px-4">
-              <span className="section-label">Admin</span>
+            <div className="label-eyebrow mt-7 mb-3 flex items-center gap-2">
+              <span>Administração</span>
+              <span className="flex-1 border-t border-border" />
             </div>
-            {adminLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className={`sidebar-link ${location.pathname === link.to ? "active" : ""}`}
-              >
-                <link.icon size={18} />
-                {link.label}
-              </Link>
-            ))}
+            <ul className="border-l border-border">
+              {adminLinks.map((l) => (
+                <li key={l.to}>
+                  <Link to={l.to} className={`nav-link ${pathname === l.to ? "active" : ""}`}>
+                    <span>{l.label}</span>
+                    <span className="num">{l.num}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </>
         )}
       </nav>
 
-      <div className="border-t border-sidebar-border p-4">
-        <div className="text-sm font-medium text-sidebar-foreground">{user?.username}</div>
-        <div className="text-sm text-sidebar-foreground/60">
-          R$ <span className="font-bold text-sidebar-foreground">{(user?.balance ?? 0).toFixed(2)}</span>
-        </div>
-        <button
-          onClick={logout}
-          className="mt-2 text-xs text-sidebar-foreground/50 hover:text-sidebar-foreground flex items-center gap-1 transition-colors"
-        >
-          <LogOut size={12} />
-          Sair
-        </button>
-      </div>
+      <div className="rule mx-6" />
+      <button
+        onClick={logout}
+        className="px-6 py-4 text-left text-[12px] font-mono-x uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+      >
+        ↳ Encerrar sessão
+      </button>
     </aside>
   );
 }

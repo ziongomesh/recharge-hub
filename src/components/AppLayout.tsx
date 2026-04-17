@@ -1,38 +1,72 @@
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useLocation } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
 import AdminTopBar from "./AdminTopBar";
 import { useAuth } from "@/contexts/AuthContext";
 
+const routeMeta: Record<string, { num: string; label: string }> = {
+  "/recargas":      { num: "01", label: "Recargas" },
+  "/historico":     { num: "02", label: "Histórico" },
+  "/pagamentos":    { num: "03", label: "Pagamentos" },
+  "/configuracoes": { num: "04", label: "Conta" },
+  "/admin/operadoras": { num: "A1", label: "Operadoras" },
+  "/admin/noticias":   { num: "A2", label: "Notícias" },
+  "/admin/usuarios":   { num: "A3", label: "Usuários" },
+  "/admin/recargas":   { num: "A4", label: "Recargas (Admin)" },
+  "/admin/logs":       { num: "A5", label: "Logs" },
+};
+
 export default function AppLayout() {
   const { user, loading } = useAuth();
+  const { pathname } = useLocation();
 
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+        <div className="font-display text-2xl animate-pulse">carregando…</div>
       </div>
     );
   }
-
   if (!user) return <Navigate to="/login" replace />;
 
+  const meta = routeMeta[pathname] ?? { num: "—", label: "" };
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background noise">
       <AppSidebar />
       <main className="transition-all" style={{ marginLeft: "var(--sidebar-width)" }}>
+        {/* Page header — editorial */}
+        <header className="px-10 pt-8 pb-5 border-b border-border flex items-end justify-between gap-6">
+          <div>
+            <div className="label-eyebrow flex items-center gap-3">
+              <span>{meta.num}</span>
+              <span className="w-8 border-t border-foreground/40" />
+              <span>Seção</span>
+            </div>
+            <h1 className="font-display text-5xl leading-none mt-2">{meta.label}</h1>
+          </div>
+          <div className="text-right">
+            <div className="label-eyebrow">{new Date().toLocaleDateString("pt-BR", { weekday: "long" })}</div>
+            <div className="font-mono-x tabular text-xs mt-1">
+              {new Date().toLocaleDateString("pt-BR")} · São Paulo
+            </div>
+          </div>
+        </header>
+
         <AdminTopBar />
-        <div className="p-8">
+
+        <div className="px-10 py-10 max-w-6xl">
           <Outlet />
         </div>
-        <footer className="border-t border-border/50 text-xs text-muted-foreground flex items-center justify-between px-8 py-3">
-          <div className="flex gap-3">
-            <span>Status</span>
-            <span>/</span>
-            <span>Termos de uso</span>
-            <span>/</span>
-            <span>Suporte</span>
+
+        <footer className="border-t border-border px-10 py-5 flex items-center justify-between text-[11px] font-mono-x uppercase tracking-widest text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <span>● online</span>
+            <span>·</span>
+            <span>v1.0</span>
+            <span>·</span>
+            <span>suporte</span>
           </div>
-          <span>CometaSMS © 2026</span>
+          <span>Cometa SMS — MMXXVI</span>
         </footer>
       </main>
     </div>
