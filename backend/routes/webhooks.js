@@ -52,12 +52,22 @@ router.post('/poeki', async (req, res) => {
     if (recargas.length === 0) return res.status(404).json({ message: 'Recarga não encontrada' });
 
     const recarga = recargas[0];
+    const previousStatus = recarga.status;
+
+    // Idempotência: se já está num estado final, não reprocessa
+    const finalStates = ['feita', 'cancelada', 'expirada', 'reembolsado'];
+    if (finalStates.includes(previousStatus)) {
+      return res.json({ received: true, alreadyProcessed: true });
+    }
+
     await db.query('UPDATE recargas SET status = ? WHERE id = ?', [status, recarga.id]);
 
-    if (status === 'cancelada' || status === 'expirada') {
+    // Estorno: cancelada / expirada / reembolsado → devolve cost ao saldo do cliente
+    // (A Poeki estorna o saldo da nossa conta deles automaticamente do lado dela.)
+    if (status === 'cancelada' || status === 'expirada' || status === 'reembolsado') {
       await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [recarga.cost, recarga.user_id]);
       await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
-        [recarga.user_id, 'recarga_refund', `Estorno R$ ${recarga.cost} - Recarga ${status}`]);
+        [recarga.user_id, 'recarga_refund', `Estorno R$ ${recarga.cost} - Recarga ${status} (tel ${recarga.phone})`]);
       logger.webhook.recargaRefunded(recarga.user_id, recarga.cost, status);
     }
 
