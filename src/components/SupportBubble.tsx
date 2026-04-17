@@ -143,34 +143,44 @@ export default function SupportBubble() {
       </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm bg-paper">
-        {!agentName ? (
+        {!agentName && !closed && (
           <div className="text-center text-muted-foreground py-10">
             <Loader2 className="mx-auto mb-3 animate-spin" size={20} />
             <div className="font-display text-base mb-1">Aguardando atendente</div>
             <div className="text-xs">Você está na fila. Em breve alguém entra no chat.</div>
           </div>
-        ) : (
-          <div className="text-center text-[11px] text-muted-foreground border-b border-border pb-2">
-            <Shield size={10} className="inline mr-1" />
-            <strong>{agentName}</strong> está atendendo • mensagens cifradas
-          </div>
         )}
 
-        {messages.map((m) => (
-          <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] px-3 py-2 rounded-lg ${
-              m.role === "user" ? "bg-foreground text-background" : "bg-background border border-border"
-            }`}>
-              <div className="whitespace-pre-wrap break-words">{m.text}</div>
-              <div className={`text-[9px] mt-0.5 ${m.role === "user" ? "text-background/60" : "text-muted-foreground"}`}>
-                {new Date(m.time).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+        {messages.map((m) => {
+          if (m.role === "system") {
+            return (
+              <div key={m.id} className="flex justify-center">
+                <div className="text-[11px] text-muted-foreground bg-background border border-border rounded-full px-3 py-1">
+                  {m.text}
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                m.role === "user" ? "bg-foreground text-background" : "bg-background border border-border"
+              }`}>
+                <div className="whitespace-pre-wrap break-words">{m.text}</div>
+                <div className={`text-[9px] mt-0.5 ${m.role === "user" ? "text-background/60" : "text-muted-foreground"}`}>
+                  {new Date(m.time).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        {agentTyping && !closed && (
-          <div className="text-xs text-muted-foreground italic">{agentName} está digitando…</div>
+        {agentTyping && !closed && agentName && (
+          <div className="flex justify-start">
+            <div className="text-[11px] text-muted-foreground italic bg-background border border-border rounded-full px-3 py-1">
+              {agentName} está digitando…
+            </div>
+          </div>
         )}
 
         {closed && (
