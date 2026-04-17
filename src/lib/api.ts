@@ -225,10 +225,17 @@ export const noticiasApi = {
 // Admin
 export const adminApi = {
   users: {
-    list: (search?: string) =>
-      api<{ users: User[] }>(`/admin/users${search ? `?search=${encodeURIComponent(search)}` : ""}`).then((r) => ({
+    list: (search?: string, role?: string) => {
+      const qs = new URLSearchParams();
+      if (search) qs.set("search", search);
+      if (role) qs.set("role", role);
+      const q = qs.toString();
+      return api<{ users: User[] }>(`/admin/users${q ? `?${q}` : ""}`).then((r) => ({
         users: r.users.map(normalizeUser),
-      })),
+      }));
+    },
+    staff: () =>
+      api<{ users: User[] }>(`/admin/staff`).then((r) => ({ users: r.users.map(normalizeUser) })),
     update: (id: number, data: Partial<User>) =>
       api<User>(`/admin/users/${id}`, { method: "PUT", body: data }).then((user) => normalizeUser(user)),
     delete: (id: number) => api(`/admin/users/${id}`, { method: "DELETE" }),
@@ -270,9 +277,10 @@ export interface User {
   email: string;
   phone: string;
   cpf: string;
-  role: "user" | "admin";
+  role: "user" | "mod" | "admin";
   balance: number;
   created_at: string;
+  last_login_at?: string | null;
 }
 
 export interface Operadora {
