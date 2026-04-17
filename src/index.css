@@ -179,3 +179,11 @@
   /* Big number ticker */
   .ticker { @apply font-mono-x tabular text-foreground; }
 }
+
+@layer utilities {
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+}

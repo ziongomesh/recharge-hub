@@ -1,6 +1,5 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
-import AdminTopBar from "./AdminTopBar";
 import { useAuth } from "@/contexts/AuthContext";
 
 const routeMeta: Record<string, { num: string; label: string }> = {
@@ -8,11 +7,6 @@ const routeMeta: Record<string, { num: string; label: string }> = {
   "/historico":     { num: "02", label: "Histórico" },
   "/pagamentos":    { num: "03", label: "Pagamentos" },
   "/configuracoes": { num: "04", label: "Conta" },
-  "/admin/operadoras": { num: "A1", label: "Operadoras" },
-  "/admin/noticias":   { num: "A2", label: "Notícias" },
-  "/admin/usuarios":   { num: "A3", label: "Usuários" },
-  "/admin/recargas":   { num: "A4", label: "Recargas (Admin)" },
-  "/admin/logs":       { num: "A5", label: "Logs" },
 };
 
 export default function AppLayout() {
@@ -51,8 +45,6 @@ export default function AppLayout() {
             </div>
           </div>
         </header>
-
-        <AdminTopBar />
 
         <div className="px-10 py-10 max-w-6xl">
           <Outlet />

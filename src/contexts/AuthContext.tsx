@@ -5,8 +5,10 @@ import { authApi, setToken, removeToken, type User } from "@/lib/api";
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  adminVerified: boolean;
+  login: (email: string, password: string) => Promise<User>;
   register: (data: { username: string; email: string; password: string; phone: string; cpf: string }) => Promise<void>;
+  verifyPin: (pin: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -15,23 +17,23 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 function normalizeUser(u: any): User | null {
   if (!u) return null;
-  return {
-    ...u,
-    balance: Number(u.balance) || 0,
-  };
+  return { ...u, balance: Number(u.balance) || 0 };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [adminVerified, setAdminVerified] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const refreshUser = async () => {
     try {
-      const { user } = await authApi.me();
+      const { user, adminVerified } = await authApi.me();
       setUser(normalizeUser(user));
+      setAdminVerified(!!adminVerified);
     } catch {
       setUser(null);
+      setAdminVerified(false);
       removeToken();
     }
   };
@@ -45,29 +47,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const { token, user } = await authApi.login({ email, password });
     setToken(token);
-    setUser(normalizeUser(user));
-    navigate("/");
+    const normalized = normalizeUser(user) as User;
+    setUser(normalized);
+    setAdminVerified(false); // sempre força PIN ao logar
+    if (normalized.role === "admin") {
+      navigate("/admin/pin");
+    } else {
+      navigate("/recargas");
+    }
+    return normalized;
   };
 
   const register = async (data: { username: string; email: string; password: string; phone: string; cpf: string }) => {
     const { token, user } = await authApi.register(data);
     setToken(token);
     setUser(normalizeUser(user));
-    navigate("/");
+    setAdminVerified(false);
+    navigate("/recargas");
+  };
+
+  const verifyPin = async (pin: string) => {
+    const { token, user } = await authApi.verifyPin(pin);
+    setToken(token);
+    setUser(normalizeUser(user));
+    setAdminVerified(true);
+    navigate("/admin");
   };
 
   const logout = () => {
     removeToken();
     setUser(null);
+    setAdminVerified(false);
     navigate("/login");
   };
 
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, adminVerified, login, register, verifyPin, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
