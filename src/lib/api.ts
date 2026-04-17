@@ -105,6 +105,10 @@ export const planosApi = {
     api<{ planos: Plano[] }>(`/planos?operadora_id=${operadoraId}`).then((response) => ({
       planos: response.planos.map(normalizePlano),
     })),
+  listAll: () =>
+    api<{ planos: Plano[] }>(`/planos`).then((response) => ({
+      planos: response.planos.map(normalizePlano),
+    })),
   sync: () => api<{ message: string; synced: number }>("/planos/sync", { method: "POST" }),
   markup: (data: { operadora_id?: number; percent: number }) =>
     api<{ message: string; affected: number }>("/planos/markup", { method: "POST", body: data }),
