@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Plus, Trash2, RefreshCw } from "lucide-react";
+import { Plus, Trash2, RefreshCw, Wallet } from "lucide-react";
 
 export default function AdminOperadorasPage() {
   const [operadoras, setOperadoras] = useState<Operadora[]>([]);
@@ -17,10 +17,26 @@ export default function AdminOperadorasPage() {
   const [newPlano, setNewPlano] = useState({ amount: "", cost: "" });
   const [dialogOpen, setDialogOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [poekiBalance, setPoekiBalance] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
 
   useEffect(() => {
     loadOperadoras();
+    loadPoekiBalance();
   }, []);
+
+  const loadPoekiBalance = async () => {
+    setLoadingBalance(true);
+    try {
+      const r: any = await planosApi.poekiBalance();
+      const bal = r?.data?.balance ?? r?.balance ?? r?.data?.amount ?? null;
+      setPoekiBalance(typeof bal === "number" ? bal : Number(bal) || 0);
+    } catch {
+      setPoekiBalance(null);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
 
   const loadOperadoras = () => {
     operadorasApi.list().then((r) => setOperadoras(r.operadoras)).catch(() => {
@@ -84,10 +100,22 @@ export default function AdminOperadorasPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold">Operadoras</h1>
-        <Button variant="outline" size="sm" onClick={syncCatalog} disabled={syncing}>
-          <RefreshCw size={14} className={`mr-1 ${syncing ? "animate-spin" : ""}`} />
-          {syncing ? "Sincronizando..." : "Sincronizar Poeki"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-muted/40 text-sm">
+            <Wallet size={14} className="text-primary" />
+            <span className="text-muted-foreground">Saldo Poeki:</span>
+            <span className="font-semibold">
+              {loadingBalance ? "..." : poekiBalance !== null ? `R$ ${poekiBalance.toFixed(2)}` : "—"}
+            </span>
+            <button onClick={loadPoekiBalance} className="text-muted-foreground hover:text-primary" title="Atualizar">
+              <RefreshCw size={12} className={loadingBalance ? "animate-spin" : ""} />
+            </button>
+          </div>
+          <Button variant="outline" size="sm" onClick={syncCatalog} disabled={syncing}>
+            <RefreshCw size={14} className={`mr-1 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Sincronizando..." : "Sincronizar Poeki"}
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-3 gap-4 mb-8">
         {operadoras.map((op) => (
