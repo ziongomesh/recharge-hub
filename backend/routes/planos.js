@@ -27,11 +27,16 @@ router.get('/', authMiddleware, async (req, res) => {
 // Get Poeki API balance
 router.get('/poeki-balance', authMiddleware, adminMiddleware, async (req, res) => {
   try {
+    if (!process.env.POEKI_API_KEY) {
+      return res.status(500).json({ message: 'POEKI_API_KEY ausente no .env do backend' });
+    }
     const { data } = await axios.get(`${POEKI_URL}/me/balance`, { headers: poekiHeaders() });
     res.json(data);
   } catch (err) {
-    console.error('Poeki balance error:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Erro ao consultar saldo Poeki' });
+    const status = err.response?.status;
+    const poekiMsg = err.response?.data?.message || err.response?.data?.error || JSON.stringify(err.response?.data || {});
+    console.error('Poeki balance error:', status, poekiMsg, err.message);
+    res.status(500).json({ message: `Poeki ${status || ''}: ${poekiMsg || err.message}` });
   }
 });
 
