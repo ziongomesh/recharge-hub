@@ -62,7 +62,10 @@ export default function SupportBubble() {
         setAgentName(st.agent.username);
         toast.success(`${st.agent.username} entrou no atendimento`);
       }
-      if (st.status === "closed") toast.info("Atendimento encerrado");
+      if (st.status === "closed") {
+        setClosed(true);
+        toast.info("Atendimento encerrado");
+      }
     });
     sock.on("new_message", async (m: any) => {
       if (!sharedRef.current) return;
