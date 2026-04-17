@@ -51,6 +51,12 @@ router.post('/', authMiddleware, async (req, res) => {
     if (planos.length === 0) return res.status(404).json({ message: 'Plano não encontrado' });
     const plano = planos[0];
 
+    // Garante que o plano pertence à operadora selecionada (evita enviar valor de Claro pra Vivo)
+    if (Number(plano.operadora_id) !== Number(operadora_id)) {
+      console.warn('[RECARGA] Plano/operadora mismatch:', { plano_id, plano_op: plano.operadora_id, operadora_id });
+      return res.status(400).json({ message: 'Plano não pertence à operadora selecionada' });
+    }
+
     const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
     const user = users[0];
     if (parseFloat(user.balance) < parseFloat(plano.cost)) {
