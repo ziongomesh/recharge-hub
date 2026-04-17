@@ -26,21 +26,21 @@ export default function AppSidebar() {
       className="fixed left-0 top-0 h-screen flex flex-col bg-paper border-r border-border"
       style={{ width: "var(--sidebar-width)" }}
     >
-      {/* Brand */}
-      <Link to="/" className="px-6 pt-7 pb-6 block">
-        <div className="font-display text-3xl leading-none">Cometa<span className="italic text-foreground/70">sms</span></div>
-        <div className="label-eyebrow mt-2">Est. 2026 — Recargas</div>
-      </Link>
+      {/* Brand — minimal */}
+      <div className="px-6 pt-7 pb-5">
+        <Link to="/" className="font-display text-base tracking-tight">CometaSMS</Link>
+        <div className="text-xs text-muted-foreground mt-0.5">Recargas via PIX</div>
+      </div>
 
       <div className="rule mx-6" />
 
       {/* User block */}
       <div className="px-6 py-4">
-        <div className="label-eyebrow">Conectado</div>
-        <div className="font-display text-xl leading-tight mt-1 truncate">{user?.username || "—"}</div>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="label-eyebrow">Saldo</span>
-          <span className="font-mono-x tabular text-sm">R$ {(user?.balance ?? 0).toFixed(2)}</span>
+        <div className="text-xs text-muted-foreground">Conta</div>
+        <div className="font-medium text-sm mt-1 truncate">{user?.username || "—"}</div>
+        <div className="mt-2 flex items-baseline justify-between">
+          <span className="text-xs text-muted-foreground">Saldo</span>
+          <span className="font-mono-x tabular text-sm font-medium">R$ {(user?.balance ?? 0).toFixed(2)}</span>
         </div>
       </div>
 
@@ -48,13 +48,19 @@ export default function AppSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-6 py-5 overflow-y-auto">
-        <div className="label-eyebrow mb-3">Índice</div>
-        <ul className="border-l border-border">
+        <div className="text-xs text-muted-foreground mb-2">Menu</div>
+        <ul className="space-y-0.5">
           {userLinks.map((l) => (
             <li key={l.to}>
-              <Link to={l.to} className={`nav-link ${pathname === l.to ? "active" : ""}`}>
-                <span>{l.label}</span>
-                <span className="num">{l.num}</span>
+              <Link
+                to={l.to}
+                className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
+                  pathname === l.to
+                    ? "bg-foreground text-background font-medium"
+                    : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                }`}
+              >
+                {l.label}
               </Link>
             </li>
           ))}
@@ -62,16 +68,19 @@ export default function AppSidebar() {
 
         {isAdmin && (
           <>
-            <div className="label-eyebrow mt-7 mb-3 flex items-center gap-2">
-              <span>Administração</span>
-              <span className="flex-1 border-t border-border" />
-            </div>
-            <ul className="border-l border-border">
+            <div className="text-xs text-muted-foreground mt-6 mb-2">Administração</div>
+            <ul className="space-y-0.5">
               {adminLinks.map((l) => (
                 <li key={l.to}>
-                  <Link to={l.to} className={`nav-link ${pathname === l.to ? "active" : ""}`}>
-                    <span>{l.label}</span>
-                    <span className="num">{l.num}</span>
+                  <Link
+                    to={l.to}
+                    className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
+                      pathname === l.to
+                        ? "bg-foreground text-background font-medium"
+                        : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                    }`}
+                  >
+                    {l.label}
                   </Link>
                 </li>
               ))}
@@ -83,9 +92,9 @@ export default function AppSidebar() {
       <div className="rule mx-6" />
       <button
         onClick={logout}
-        className="px-6 py-4 text-left text-[12px] font-mono-x uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+        className="px-6 py-4 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
-        ↳ Encerrar sessão
+        Sair
       </button>
     </aside>
   );
