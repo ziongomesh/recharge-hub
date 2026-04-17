@@ -70,7 +70,25 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
   });
 
   const responseText = await res.text();
-  const responseData = responseText ? JSON.parse(responseText) : null;
+  const contentType = res.headers.get("content-type") || "";
+  const looksLikeJson = contentType.includes("application/json");
+  let responseData: unknown = null;
+
+  if (responseText) {
+    try {
+      responseData = JSON.parse(responseText);
+    } catch {
+      if (looksLikeJson) {
+        throw new Error("Resposta inválida da API");
+      }
+
+      if (responseText.trim().startsWith("<!DOCTYPE") || responseText.trim().startsWith("<html")) {
+        throw new Error("API respondeu HTML em vez de JSON. Verifique o backend e o VITE_API_BASE_URL.");
+      }
+
+      throw new Error(responseText.slice(0, 120));
+    }
+  }
 
   if (!res.ok) {
     const errorMessage =
