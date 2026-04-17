@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { recargasApi, type Recarga } from "@/lib/api";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Loader2 } from "lucide-react";
 
 export default function HistoricoPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
@@ -10,42 +10,44 @@ export default function HistoricoPage() {
     recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const statusLabel = (s: string) => {
-    const map: Record<string, string> = { pendente: "Pendente", andamento: "Em andamento", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" };
-    return map[s] || s;
-  };
+  const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" } as Record<string, string>)[s] || s;
 
   return (
-    <div>
-      <h1 className="text-lg font-semibold mb-6">Histórico de Recargas</h1>
+    <div className="max-w-5xl">
+      <div className="flex items-baseline justify-between mb-8">
+        <div>
+          <div className="label-eyebrow">Arquivo</div>
+          <h2 className="font-display text-5xl mt-1">Suas recargas.</h2>
+        </div>
+        <div className="label-eyebrow tabular">Total: {String(recargas.length).padStart(3, "0")}</div>
+      </div>
+
       {loading ? (
-        <p className="text-sm text-muted-foreground">Carregando...</p>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="animate-spin" size={14} /> Carregando…</div>
       ) : recargas.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nenhuma recarga encontrada.</p>
+        <div className="border border-dashed border-border p-10 text-center text-muted-foreground text-sm">Nenhuma recarga ainda.</div>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Data</TableHead>
-                <TableHead>Operadora</TableHead>
-                <TableHead>Número</TableHead>
-                <TableHead>Valor</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recargas.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell className="text-sm">{new Date(r.created_at).toLocaleDateString("pt-BR")}</TableCell>
-                  <TableCell className="text-sm">{r.operadora_name || `#${r.operadora_id}`}</TableCell>
-                  <TableCell className="text-sm font-mono">{r.phone}</TableCell>
-                  <TableCell className="text-sm">R$ {r.amount.toFixed(2)}</TableCell>
-                  <TableCell><span className={`status-badge status-${r.status}`}>{statusLabel(r.status)}</span></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <div className="border-t-2 border-foreground">
+          <div className="grid grid-cols-12 gap-4 py-3 label-eyebrow border-b border-border">
+            <div className="col-span-1">№</div>
+            <div className="col-span-2">Data</div>
+            <div className="col-span-2">Operadora</div>
+            <div className="col-span-3">Número</div>
+            <div className="col-span-2">Valor</div>
+            <div className="col-span-2 text-right">Status</div>
+          </div>
+          {recargas.map((r, i) => (
+            <div key={r.id} className="grid grid-cols-12 gap-4 py-4 border-b border-border items-center text-sm hover:bg-paper-2/60 transition-colors">
+              <div className="col-span-1 font-mono tabular text-muted-foreground">{String(i + 1).padStart(3, "0")}</div>
+              <div className="col-span-2 font-mono tabular">{new Date(r.created_at).toLocaleDateString("pt-BR")}</div>
+              <div className="col-span-2 font-display text-lg">{r.operadora_name || `#${r.operadora_id}`}</div>
+              <div className="col-span-3 font-mono tabular">{r.phone}</div>
+              <div className="col-span-2 font-mono tabular">R$ {r.amount.toFixed(2)}</div>
+              <div className="col-span-2 text-right">
+                <span className={`pill status-${r.status}`}>{label(r.status)}</span>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

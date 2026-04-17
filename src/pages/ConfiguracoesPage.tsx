@@ -1,54 +1,58 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-function formatCPF(cpf: string) {
-  const digits = cpf.replace(/\D/g, "");
-  if (digits.length !== 11) return cpf;
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-}
-
-function formatPhone(phone: string) {
-  const digits = phone.replace(/\D/g, "");
-  if (digits.length === 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
-  if (digits.length === 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
-  return phone;
-}
+const fmtCPF = (c: string) => {
+  const d = c.replace(/\D/g, ""); if (d.length !== 11) return c;
+  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
+};
+const fmtPhone = (p: string) => {
+  const d = p.replace(/\D/g, "");
+  if (d.length === 11) return `(${d.slice(0,2)}) ${d.slice(2,7)}-${d.slice(7)}`;
+  if (d.length === 10) return `(${d.slice(0,2)}) ${d.slice(2,6)}-${d.slice(6)}`;
+  return p;
+};
 
 export default function ConfiguracoesPage() {
   const { user } = useAuth();
 
+  const rows: [string, string][] = [
+    ["Usuário",      user?.username ?? "—"],
+    ["E-mail",       user?.email ?? "—"],
+    ["Telefone",     user?.phone ? fmtPhone(user.phone) : "—"],
+    ["CPF",          user?.cpf ? fmtCPF(user.cpf) : "—"],
+    ["Função",       user?.role === "admin" ? "Administrador" : "Cliente"],
+    ["Membro desde", user?.created_at ? new Date(user.created_at).toLocaleDateString("pt-BR") : "—"],
+  ];
+
   return (
-    <div className="max-w-lg">
-      <h1 className="text-lg font-semibold mb-6">Configurações</h1>
-      <Card>
-        <CardHeader><CardTitle className="text-base">Meu perfil</CardTitle></CardHeader>
-        <CardContent className="space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Usuário</span>
-            <span className="font-medium">{user?.username}</span>
+    <div className="max-w-3xl grid md:grid-cols-3 gap-10">
+      {/* Identidade */}
+      <aside className="md:col-span-1">
+        <div className="label-eyebrow">Identidade</div>
+        <div className="font-display text-6xl leading-none mt-2 break-words">{user?.username?.[0]?.toUpperCase() ?? "?"}</div>
+        <div className="font-display text-2xl mt-3 break-words">{user?.username}</div>
+        <div className="text-xs font-mono text-muted-foreground mt-1 break-all">{user?.email}</div>
+      </aside>
+
+      {/* Dados */}
+      <section className="md:col-span-2">
+        <div className="label-eyebrow mb-3">Perfil</div>
+        <dl className="border-y border-foreground divide-y divide-border">
+          {rows.map(([k, v]) => (
+            <div key={k} className="flex items-baseline justify-between py-4">
+              <dt className="label-eyebrow">{k}</dt>
+              <dd className="font-mono tabular text-sm text-foreground text-right">{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-10 border border-foreground p-6 flex items-center justify-between gap-6">
+          <div>
+            <div className="label-eyebrow">Saldo atual</div>
+            <div className="font-display text-5xl mt-1 tabular">R$ {(user?.balance ?? 0).toFixed(2)}</div>
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Email</span>
-            <span className="font-medium">{user?.email}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Telefone</span>
-            <span className="font-medium">{user?.phone ? formatPhone(user.phone) : "-"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">CPF</span>
-            <span className="font-medium">{user?.cpf ? formatCPF(user.cpf) : "-"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Saldo</span>
-            <span className="font-bold">R$ {(user?.balance ?? 0).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Membro desde</span>
-            <span className="font-medium">{user?.created_at ? new Date(user.created_at).toLocaleDateString("pt-BR") : "-"}</span>
-          </div>
-        </CardContent>
-      </Card>
+          <a href="/pagamentos" className="text-sm underline underline-offset-4 hover:text-foreground/70">Depositar →</a>
+        </div>
+      </section>
     </div>
   );
 }
