@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supportApi, type SupportSession } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import { generateKeyPair, exportPublicKey, deriveSharedKey, encrypt, decrypt } from "@/lib/e2e";
-import { MessageCircle, X, Send, Shield, Loader2, Headphones } from "lucide-react";
+import { MessageCircle, X, Send, Shield, Loader2, Headphones, Star } from "lucide-react";
 import { toast } from "sonner";
 
 interface ChatMsg { id: number | string; role: "user" | "agent"; text: string; time: string; }
@@ -17,6 +17,9 @@ export default function SupportBubble() {
   const [agentName, setAgentName] = useState<string | null>(null);
   const [agentTyping, setAgentTyping] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [closed, setClosed] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const keyPairRef = useRef<CryptoKeyPair | null>(null);
   const sharedRef = useRef<CryptoKey | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -59,7 +62,10 @@ export default function SupportBubble() {
         setAgentName(st.agent.username);
         toast.success(`${st.agent.username} entrou no atendimento`);
       }
-      if (st.status === "closed") toast.info("Atendimento encerrado");
+      if (st.status === "closed") {
+        setClosed(true);
+        toast.info("Atendimento encerrado");
+      }
     });
     sock.on("new_message", async (m: any) => {
       if (!sharedRef.current) return;
@@ -141,8 +147,42 @@ export default function SupportBubble() {
           </div>
         ))}
 
-        {agentTyping && (
+        {agentTyping && !closed && (
           <div className="text-xs text-muted-foreground italic">{agentName} está digitando…</div>
+        )}
+
+        {closed && (
+          <div className="mt-4 border border-border rounded-lg p-4 bg-background text-center space-y-3 animate-in fade-in">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Chat encerrado</div>
+            <div className="text-sm">
+              {agentName ? <><strong>{agentName}</strong> atendeu você.</> : "Atendimento finalizado."}
+            </div>
+            <div className="pt-2">
+              <div className="text-xs text-muted-foreground mb-2">Avalie o atendimento</div>
+              <div className="flex justify-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onMouseEnter={() => setHoverRating(n)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => { setRating(n); toast.success("Obrigado pela avaliação!"); }}
+                    className="transition-transform hover:scale-110"
+                    aria-label={`${n} estrelas`}
+                  >
+                    <Star
+                      size={26}
+                      className={
+                        (hoverRating || rating) >= n
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-muted-foreground"
+                      }
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -153,13 +193,13 @@ export default function SupportBubble() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={agentName ? "Digite sua mensagem…" : "Aguarde atendente…"}
-          disabled={!agentName}
+          placeholder={closed ? "Atendimento encerrado" : agentName ? "Digite sua mensagem…" : "Aguarde atendente…"}
+          disabled={!agentName || closed}
           className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded focus:outline-none focus:border-foreground disabled:opacity-50"
         />
         <button
           type="submit"
-          disabled={!agentName || !input.trim()}
+          disabled={!agentName || !input.trim() || closed}
           className="px-3 py-2 bg-foreground text-background rounded disabled:opacity-30 hover:opacity-90"
         >
           <Send size={14} />
