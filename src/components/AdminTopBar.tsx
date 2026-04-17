@@ -41,7 +41,7 @@ export default function AdminTopBar() {
 
   return (
     <div className="border-b border-border px-10 py-2 flex items-center justify-end gap-4 text-[11px] font-mono-x uppercase tracking-widest">
-      <span className="text-muted-foreground">Saldo Poeki API</span>
+      <span className="text-muted-foreground">Saldo API</span>
       <span className={`tabular ${errorMsg ? "text-destructive" : "text-foreground"}`}>
         {loading ? "···" : balance !== null ? `R$ ${balance.toFixed(2)}` : errorMsg ?? "—"}
       </span>
