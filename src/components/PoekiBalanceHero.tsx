@@ -59,7 +59,7 @@ export default function PoekiBalanceHero() {
             <span className={`w-2 h-2 rounded-full ${
               errorMsg ? "bg-destructive" : loading ? "bg-amber-500 animate-pulse" : "bg-success animate-pulse"
             }`} />
-            Saldo Poeki API
+            Saldo API
             {low && !errorMsg && (
               <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 normal-case tracking-normal text-[11px] ml-2">
                 <AlertTriangle size={11} /> saldo baixo
