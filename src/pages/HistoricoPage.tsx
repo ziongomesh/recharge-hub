@@ -14,6 +14,8 @@ export default function HistoricoPage() {
   const [trackingId, setTrackingId] = useState<number | null>(navState.newRecargaId ?? null);
   const [highlightId, setHighlightId] = useState<number | null>(navState.newRecargaId ?? null);
 
+  const [liveCount, setLiveCount] = useState(0);
+
   const load = () => {
     recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
   };
@@ -34,6 +36,30 @@ export default function HistoricoPage() {
     const t = setTimeout(() => setHighlightId(null), 6000);
     return () => clearTimeout(t);
   }, [highlightId]);
+
+  // Live sync: a cada 5s, consulta Poeki para cada recarga não-final
+  const FINAL = new Set(["feita", "cancelada", "expirada", "reembolsado"]);
+  useEffect(() => {
+    if (loading) return;
+    const pendentes = recargas.filter((r) => !FINAL.has(r.status));
+    setLiveCount(pendentes.length);
+    if (pendentes.length === 0) return;
+
+    let cancelled = false;
+    const tick = async () => {
+      const updated = await Promise.all(
+        pendentes.map((r) =>
+          recargasApi.sync(r.id).then((s) => s.recarga).catch(() => r)
+        )
+      );
+      if (cancelled) return;
+      setRecargas((prev) => prev.map((r) => updated.find((u) => u.id === r.id) || r));
+    };
+    const t = setInterval(tick, 5000);
+    tick();
+    return () => { cancelled = true; clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, recargas.length]);
 
   const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" } as Record<string, string>)[s] || s;
 
