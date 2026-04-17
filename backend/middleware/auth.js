@@ -9,6 +9,7 @@ function authMiddleware(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = decoded.id;
     req.userRole = decoded.role;
+    req.adminVerified = !!decoded.adminVerified;
     next();
   } catch {
     return res.status(401).json({ message: 'Token inválido' });
@@ -17,6 +18,7 @@ function authMiddleware(req, res, next) {
 
 function adminMiddleware(req, res, next) {
   if (req.userRole !== 'admin') return res.status(403).json({ message: 'Acesso negado' });
+  if (!req.adminVerified) return res.status(403).json({ message: 'PIN admin não verificado' });
   next();
 }
 

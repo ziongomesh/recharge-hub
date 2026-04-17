@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
   cpf VARCHAR(14) NOT NULL,
   role ENUM('user','admin') DEFAULT 'user',
   balance DECIMAL(10,2) DEFAULT 0.00,
+  pin_hash VARCHAR(255) DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
