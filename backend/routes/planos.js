@@ -24,6 +24,17 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Get Poeki API balance
+router.get('/poeki-balance', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { data } = await axios.get(`${POEKI_URL}/me/balance`, { headers: poekiHeaders() });
+    res.json(data);
+  } catch (err) {
+    console.error('Poeki balance error:', err.response?.data || err.message);
+    res.status(500).json({ message: 'Erro ao consultar saldo Poeki' });
+  }
+});
+
 // Sync plans from Poeki catalog
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
