@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supportApi, type SupportSession } from "@/lib/api";
 import { getSocket } from "@/lib/socket";
 import { generateKeyPair, exportPublicKey, deriveSharedKey, encrypt, decrypt } from "@/lib/e2e";
-import { MessageCircle, X, Send, Shield, Loader2, Headphones } from "lucide-react";
+import { MessageCircle, X, Send, Shield, Loader2, Headphones, Star } from "lucide-react";
 import { toast } from "sonner";
 
 interface ChatMsg { id: number | string; role: "user" | "agent"; text: string; time: string; }
