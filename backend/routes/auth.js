@@ -7,12 +7,16 @@ const logger = require('../logger');
 
 const router = express.Router();
 
-function generateToken(user) {
-  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+function generateToken(user, adminVerified = false) {
+  return jwt.sign(
+    { id: user.id, role: user.role, adminVerified },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
 }
 
 function sanitizeUser(user) {
-  const { password, ...safe } = user;
+  const { password, pin_hash, ...safe } = user;
   if (safe.balance !== undefined) safe.balance = Number(safe.balance);
   return safe;
 }
@@ -86,9 +90,59 @@ router.get('/me', authMiddleware, async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
     const user = sanitizeUser(rows[0]);
     logger.auth.me(user.id, user.username);
-    res.json({ user });
+    res.json({ user, adminVerified: !!req.adminVerified });
   } catch (err) {
     console.error('Me error:', err);
+    res.status(500).json({ message: 'Erro interno' });
+  }
+});
+
+// Verifica PIN do admin → emite NOVO token com adminVerified=true
+router.post('/verify-pin', authMiddleware, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') return res.status(403).json({ message: 'Apenas admins' });
+    const { pin } = req.body || {};
+    if (!pin || !/^\d{4}$/.test(String(pin))) {
+      return res.status(400).json({ message: 'PIN deve ter 4 dígitos' });
+    }
+    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
+    const user = rows[0];
+    if (!user.pin_hash) return res.status(400).json({ message: 'PIN não configurado. Rode a migration 001_admin_pin.sql' });
+
+    const ok = await bcrypt.compare(String(pin), user.pin_hash);
+    if (!ok) {
+      await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+        [user.id, 'admin_pin_failed', 'Tentativa de PIN incorreta']);
+      return res.status(401).json({ message: 'PIN incorreto' });
+    }
+
+    const token = generateToken(user, true);
+    await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+      [user.id, 'admin_pin_ok', 'Admin desbloqueou painel via PIN']);
+    res.json({ token, user: sanitizeUser(user) });
+  } catch (err) {
+    console.error('Verify PIN error:', err);
+    res.status(500).json({ message: 'Erro interno' });
+  }
+});
+
+// Trocar PIN (precisa estar admin verificado)
+router.post('/change-pin', authMiddleware, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') return res.status(403).json({ message: 'Apenas admins' });
+    if (!req.adminVerified) return res.status(403).json({ message: 'Verifique o PIN atual primeiro' });
+    const { newPin } = req.body || {};
+    if (!newPin || !/^\d{4}$/.test(String(newPin))) {
+      return res.status(400).json({ message: 'Novo PIN deve ter 4 dígitos' });
+    }
+    const hash = await bcrypt.hash(String(newPin), 10);
+    await db.query('UPDATE users SET pin_hash = ? WHERE id = ?', [hash, req.userId]);
+    await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+      [req.userId, 'admin_pin_changed', 'Admin alterou seu PIN']);
+    res.json({ message: 'PIN atualizado' });
+  } catch (err) {
+    console.error('Change PIN error:', err);
     res.status(500).json({ message: 'Erro interno' });
   }
 });
