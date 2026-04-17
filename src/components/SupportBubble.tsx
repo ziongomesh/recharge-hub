@@ -193,13 +193,13 @@ export default function SupportBubble() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={agentName ? "Digite sua mensagem…" : "Aguarde atendente…"}
-          disabled={!agentName}
+          placeholder={closed ? "Atendimento encerrado" : agentName ? "Digite sua mensagem…" : "Aguarde atendente…"}
+          disabled={!agentName || closed}
           className="flex-1 px-3 py-2 text-sm bg-background border border-border rounded focus:outline-none focus:border-foreground disabled:opacity-50"
         />
         <button
           type="submit"
-          disabled={!agentName || !input.trim()}
+          disabled={!agentName || !input.trim() || closed}
           className="px-3 py-2 bg-foreground text-background rounded disabled:opacity-30 hover:opacity-90"
         >
           <Send size={14} />
