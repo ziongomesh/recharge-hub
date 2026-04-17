@@ -147,8 +147,42 @@ export default function SupportBubble() {
           </div>
         ))}
 
-        {agentTyping && (
+        {agentTyping && !closed && (
           <div className="text-xs text-muted-foreground italic">{agentName} está digitando…</div>
+        )}
+
+        {closed && (
+          <div className="mt-4 border border-border rounded-lg p-4 bg-background text-center space-y-3 animate-in fade-in">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Chat encerrado</div>
+            <div className="text-sm">
+              {agentName ? <><strong>{agentName}</strong> atendeu você.</> : "Atendimento finalizado."}
+            </div>
+            <div className="pt-2">
+              <div className="text-xs text-muted-foreground mb-2">Avalie o atendimento</div>
+              <div className="flex justify-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onMouseEnter={() => setHoverRating(n)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => { setRating(n); toast.success("Obrigado pela avaliação!"); }}
+                    className="transition-transform hover:scale-110"
+                    aria-label={`${n} estrelas`}
+                  >
+                    <Star
+                      size={26}
+                      className={
+                        (hoverRating || rating) >= n
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-muted-foreground"
+                      }
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
