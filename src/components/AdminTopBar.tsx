@@ -25,7 +25,12 @@ export default function AdminTopBar() {
       else setBalance(n);
     } catch (e: any) {
       const raw = e?.message || "Falha";
-      setErrorMsg(raw.includes("Failed to fetch") ? "backend offline" : raw);
+      const friendly = raw.includes("Failed to fetch")
+        ? "backend offline"
+        : raw.includes("API respondeu HTML em vez de JSON")
+          ? "backend/url da API inválido"
+          : raw;
+      setErrorMsg(friendly);
       setBalance(null);
     } finally { setLoading(false); }
   };
