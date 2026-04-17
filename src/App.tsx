@@ -9,6 +9,7 @@ import AppLayout from "@/components/AppLayout";
 import AdminLayout from "@/components/AdminLayout";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import TermosPage from "@/pages/TermosPage";
 import HomePage from "@/pages/HomePage";
 import RecargasPage from "@/pages/RecargasPage";
 import HistoricoPage from "@/pages/HistoricoPage";
@@ -45,6 +46,7 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/termos" element={<TermosPage />} />
             <Route path="/admin/pin" element={<AdminPinPage />} />
 
             <Route path="/" element={<HomeRedirect />} />
