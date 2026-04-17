@@ -156,6 +156,10 @@ export const recargasApi = {
     api<{ recarga: Recarga }>("/recargas", { method: "POST", body: data }).then((response) => ({
       recarga: normalizeRecarga(response.recarga),
     })),
+  get: (id: number) =>
+    api<{ recarga: Recarga }>(`/recargas/${id}`).then((response) => ({
+      recarga: normalizeRecarga(response.recarga),
+    })),
   list: (params?: string) =>
     api<{ recargas: Recarga[]; total: number }>(`/recargas${params ? `?${params}` : ""}`).then((response) => ({
       ...response,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { recargasApi, planosApi, operadorasApi, type Operadora, type Plano } from "@/lib/api";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowUpRight, Check, Loader2 } from "lucide-react";
@@ -21,7 +22,8 @@ export default function RecargasPage() {
   const [loadingPlanos, setLoadingPlanos] = useState(false);
   const [selectedPlano, setSelectedPlano] = useState<Plano | null>(null);
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState<"form" | "confirm" | "done">("form");
+  const [step, setStep] = useState<"form" | "confirm">("form");
+  const navigate = useNavigate();
 
   useEffect(() => {
     operadorasApi.list().then((r) => setOperadoras(r.operadoras.filter((o) => o.enabled)))
@@ -78,29 +80,19 @@ export default function RecargasPage() {
     if (!selectedOp || !selectedPlano) return;
     setLoading(true);
     try {
-      await recargasApi.create({ operadora_id: selectedOp.id, phone: raw(phone), plano_id: selectedPlano.id });
-      setStep("done"); toast.success("Recarga solicitada!");
-    } catch (e: any) { toast.error(e.message || "Erro"); }
-    finally { setLoading(false); }
+      const { recarga } = await recargasApi.create({
+        operadora_id: selectedOp.id,
+        phone: raw(phone),
+        plano_id: selectedPlano.id,
+      });
+      toast.success("Recarga solicitada!");
+      navigate("/historico", { state: { newRecargaId: recarga.id, newRecarga: recarga } });
+    } catch (e: any) {
+      toast.error(e.message || "Erro");
+    } finally {
+      setLoading(false);
+    }
   };
-
-  const reset = () => {
-    setPhone(""); setDetectedOp(null); setSelectedOp(null);
-    setPlanos([]); setSelectedPlano(null); setStep("form");
-  };
-
-  if (step === "done") {
-    return (
-      <div className="max-w-xl border border-foreground p-10">
-        <div className="label-eyebrow">Confirmação</div>
-        <h2 className="font-display text-5xl mt-2">Pedido <em className="italic">enviado</em>.</h2>
-        <p className="text-ink-soft mt-4 text-sm">Acompanhe o andamento na seção <strong>Histórico</strong>. A confirmação chega em segundos.</p>
-        <button onClick={reset} className="mt-8 inline-flex items-center gap-2 bg-foreground text-background px-5 py-2.5 text-sm">
-          Nova recarga <ArrowUpRight size={14} />
-        </button>
-      </div>
-    );
-  }
 
   if (step === "confirm") {
     return (
