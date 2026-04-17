@@ -24,7 +24,11 @@ export default function AdminPinPage() {
       await verifyPin(value);
       toast.success("Acesso liberado");
     } catch (e: any) {
-      toast.error(e.message || "PIN incorreto");
+      const msg = e?.message || "PIN incorreto";
+      const friendly = msg.includes("Failed to fetch") || msg.includes("HTML em vez de JSON")
+        ? "Backend offline. Inicie o servidor Node (backend/) na porta 4000."
+        : msg;
+      toast.error(friendly);
       setShake(true); setTimeout(() => setShake(false), 400);
       setPin("");
     } finally { setLoading(false); }
