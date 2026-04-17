@@ -35,7 +35,7 @@ router.get('/poeki-balance', authMiddleware, adminMiddleware, async (req, res) =
   }
 });
 
-// Sync plans from Poeki catalog
+// Sync plans from Poeki catalog (preserves admin-defined price `amount`)
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { data: response } = await axios.get(`${POEKI_URL}/catalog`, { headers: poekiHeaders() });
@@ -45,31 +45,74 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(500).json({ message: 'Resposta inesperada do catálogo Poeki' });
     }
 
-    let synced = 0;
+    let updated = 0, created = 0;
 
     for (const entry of catalog) {
       const operatorName = entry.operator;
-      // Find local operadora by name (case-insensitive)
       const [ops] = await db.query('SELECT id FROM operadoras WHERE LOWER(name) = LOWER(?)', [operatorName]);
       if (ops.length === 0) continue;
       const operadora_id = ops[0].id;
 
-      // Remove old plans for this operadora
-      await db.query('DELETE FROM planos WHERE operadora_id = ?', [operadora_id]);
-
-      // Insert new plans from catalog
       const values = entry.values || [];
+      const poekiAmounts = values.map((v) => Number(v.amount));
+
       for (const v of values) {
-        await db.query('INSERT INTO planos (operadora_id, amount, cost) VALUES (?, ?, ?)',
-          [operadora_id, v.amount, v.cost]);
-        synced++;
+        const amount = Number(v.amount);
+        const cost = Number(v.cost);
+        // UPSERT by (operadora_id, amount): keep admin price, only update cost
+        const [existing] = await db.query(
+          'SELECT id FROM planos WHERE operadora_id = ? AND amount = ?',
+          [operadora_id, amount]
+        );
+        if (existing.length > 0) {
+          await db.query('UPDATE planos SET cost = ? WHERE id = ?', [cost, existing[0].id]);
+          updated++;
+        } else {
+          // New plan: default amount = cost (admin can edit later)
+          await db.query('INSERT INTO planos (operadora_id, amount, cost) VALUES (?, ?, ?)',
+            [operadora_id, amount, cost]);
+          created++;
+        }
+      }
+
+      // Remove planos that no longer exist in Poeki catalog for this operadora
+      if (poekiAmounts.length > 0) {
+        const placeholders = poekiAmounts.map(() => '?').join(',');
+        await db.query(
+          `DELETE FROM planos WHERE operadora_id = ? AND amount NOT IN (${placeholders})`,
+          [operadora_id, ...poekiAmounts]
+        );
       }
     }
 
-    res.json({ message: `Sincronizado: ${synced} planos atualizados`, synced });
+    res.json({ message: `Sincronizado: ${created} novos, ${updated} atualizados`, synced: created + updated });
   } catch (err) {
     console.error('Sync catalog error:', err.response?.data || err.message);
     res.status(500).json({ message: 'Erro ao sincronizar catálogo da Poeki' });
+  }
+});
+
+// Apply markup % over cost for an operadora (or all): amount = cost * (1 + percent/100)
+router.post('/markup', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { operadora_id, percent } = req.body;
+    const pct = Number(percent);
+    if (!Number.isFinite(pct)) return res.status(400).json({ message: 'percent inválido' });
+
+    const multiplier = 1 + pct / 100;
+    let result;
+    if (operadora_id) {
+      [result] = await db.query(
+        'UPDATE planos SET amount = ROUND(cost * ?, 2) WHERE operadora_id = ?',
+        [multiplier, operadora_id]
+      );
+    } else {
+      [result] = await db.query('UPDATE planos SET amount = ROUND(cost * ?, 2)', [multiplier]);
+    }
+    res.json({ message: `Markup ${pct}% aplicado em ${result.affectedRows} planos`, affected: result.affectedRows });
+  } catch (err) {
+    console.error('Markup error:', err.message);
+    res.status(500).json({ message: 'Erro ao aplicar markup' });
   }
 });
 
