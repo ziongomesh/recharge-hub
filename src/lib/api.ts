@@ -113,7 +113,18 @@ export const authApi = {
       ...response,
       user: normalizeUser(response.user),
     })),
-  me: () => api<{ user: User }>("/auth/me").then((response) => ({ user: normalizeUser(response.user) })),
+  me: () =>
+    api<{ user: User; adminVerified?: boolean }>("/auth/me").then((response) => ({
+      user: normalizeUser(response.user),
+      adminVerified: !!response.adminVerified,
+    })),
+  verifyPin: (pin: string) =>
+    api<{ token: string; user: User }>("/auth/verify-pin", { method: "POST", body: { pin } }).then((r) => ({
+      ...r,
+      user: normalizeUser(r.user),
+    })),
+  changePin: (newPin: string) =>
+    api<{ message: string }>("/auth/change-pin", { method: "POST", body: { newPin } }),
 };
 
 // Operadoras
@@ -209,12 +220,42 @@ export const noticiasApi = {
 // Admin
 export const adminApi = {
   users: {
-    list: () => api<{ users: User[] }>("/admin/users").then((response) => ({ users: response.users.map(normalizeUser) })),
+    list: (search?: string) =>
+      api<{ users: User[] }>(`/admin/users${search ? `?search=${encodeURIComponent(search)}` : ""}`).then((r) => ({
+        users: r.users.map(normalizeUser),
+      })),
     update: (id: number, data: Partial<User>) =>
       api<User>(`/admin/users/${id}`, { method: "PUT", body: data }).then((user) => normalizeUser(user)),
     delete: (id: number) => api(`/admin/users/${id}`, { method: "DELETE" }),
+    full: (id: number) =>
+      api<{
+        user: User;
+        stats: { total_recargas: number; total_recarregado: number; total_gasto: number; total_depositos: number; total_depositado: number };
+        recargas: Recarga[];
+        pagamentos: Pagamento[];
+        logs: ActivityLog[];
+      }>(`/admin/users/${id}/full`).then((r) => ({
+        ...r,
+        user: normalizeUser(r.user),
+        recargas: r.recargas.map(normalizeRecarga),
+        pagamentos: r.pagamentos.map(normalizePagamento),
+      })),
   },
+  pagamentos: (params?: string) =>
+    api<{ pagamentos: (Pagamento & { username?: string })[]; total: number }>(
+      `/admin/pagamentos${params ? `?${params}` : ""}`
+    ).then((r) => ({ ...r, pagamentos: r.pagamentos.map((p) => ({ ...p, amount: toNumber(p.amount) })) })),
   logs: (params?: string) => api<{ logs: ActivityLog[]; total: number }>(`/admin/logs${params ? `?${params}` : ""}`),
+  stats: () =>
+    api<{
+      totals: Record<string, number>;
+      statusBreakdown: { status: string; count: number }[];
+      topRecarregadores: { id: number; username: string; qtd: number; total: number }[];
+      topPedidos: { id: number; username: string; qtd: number }[];
+      latestUsers: { id: number; username: string; email: string; created_at: string }[];
+      dailyVolume: { dia: string; qtd: number; volume: number }[];
+      byOperadora: { name: string; qtd: number; volume: number }[];
+    }>("/admin/stats"),
 };
 
 // Types
