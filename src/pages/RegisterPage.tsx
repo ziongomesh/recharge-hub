@@ -89,7 +89,15 @@ export default function RegisterPage() {
             <input className="field" type="password" required value={form.password} onChange={upd("password")} placeholder="••••••••" />
           </div>
 
-          <div className="col-span-2 mt-2">
+          <div className="col-span-2 mt-2 text-xs text-ink-soft">
+            Ao criar a conta, você concorda com nossos{" "}
+            <Link to="/termos" target="_blank" className="underline underline-offset-2 hover:text-foreground">
+              Termos de Uso
+            </Link>
+            .
+          </div>
+
+          <div className="col-span-2 mt-1">
             <button type="submit" disabled={loading}
               className="group inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 text-sm disabled:opacity-50">
               {loading ? "Criando…" : "Criar conta"}
