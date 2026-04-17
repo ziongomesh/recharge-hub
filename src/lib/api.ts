@@ -306,7 +306,7 @@ export interface Recarga {
   phone: string;
   amount: number;
   cost: number;
-  status: "pendente" | "andamento" | "feita" | "cancelada" | "expirada";
+  status: "pendente" | "andamento" | "feita" | "cancelada" | "expirada" | "reembolsado";
   poeki_id: string | null;
   created_at: string;
   operadora_name?: string;
