@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 import AppLayout from "@/components/AppLayout";
+import AdminLayout from "@/components/AdminLayout";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import HomePage from "@/pages/HomePage";
@@ -13,19 +14,25 @@ import RecargasPage from "@/pages/RecargasPage";
 import HistoricoPage from "@/pages/HistoricoPage";
 import PagamentosPage from "@/pages/PagamentosPage";
 import ConfiguracoesPage from "@/pages/ConfiguracoesPage";
+import AdminPinPage from "@/pages/admin/AdminPinPage";
+import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminOperadorasPage from "@/pages/admin/AdminOperadorasPage";
 import AdminNoticiasPage from "@/pages/admin/AdminNoticiasPage";
 import AdminUsuariosPage from "@/pages/admin/AdminUsuariosPage";
+import AdminUserDetailPage from "@/pages/admin/AdminUserDetailPage";
 import AdminRecargasPage from "@/pages/admin/AdminRecargasPage";
+import AdminDepositosPage from "@/pages/admin/AdminDepositosPage";
 import AdminLogsPage from "@/pages/admin/AdminLogsPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  if (user?.role !== "admin") return <Navigate to="/" replace />;
-  return <>{children}</>;
+function HomeRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === "admin") return <Navigate to="/admin" replace />;
+  return <HomePage />;
 }
 
 const App = () => (
@@ -38,18 +45,30 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/" element={<HomePage />} />
+            <Route path="/admin/pin" element={<AdminPinPage />} />
+
+            <Route path="/" element={<HomeRedirect />} />
+
+            {/* Área cliente */}
             <Route element={<AppLayout />}>
               <Route path="/recargas" element={<RecargasPage />} />
               <Route path="/historico" element={<HistoricoPage />} />
               <Route path="/pagamentos" element={<PagamentosPage />} />
               <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-              <Route path="/admin/operadoras" element={<AdminRoute><AdminOperadorasPage /></AdminRoute>} />
-              <Route path="/admin/noticias" element={<AdminRoute><AdminNoticiasPage /></AdminRoute>} />
-              <Route path="/admin/usuarios" element={<AdminRoute><AdminUsuariosPage /></AdminRoute>} />
-              <Route path="/admin/recargas" element={<AdminRoute><AdminRecargasPage /></AdminRoute>} />
-              <Route path="/admin/logs" element={<AdminRoute><AdminLogsPage /></AdminRoute>} />
             </Route>
+
+            {/* Área admin (layout + sidebar separados) */}
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
+              <Route path="/admin/usuarios/:id" element={<AdminUserDetailPage />} />
+              <Route path="/admin/depositos" element={<AdminDepositosPage />} />
+              <Route path="/admin/recargas" element={<AdminRecargasPage />} />
+              <Route path="/admin/operadoras" element={<AdminOperadorasPage />} />
+              <Route path="/admin/noticias" element={<AdminNoticiasPage />} />
+              <Route path="/admin/logs" element={<AdminLogsPage />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
