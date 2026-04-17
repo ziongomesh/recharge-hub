@@ -9,7 +9,7 @@ export default function PagamentosPage() {
   const [tab, setTab] = useState<"depositar" | "historico">("depositar");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pix, setPix] = useState<{ qrCodeBase64: string; pixCopiaECola: string; txId: string } | null>(null);
+  const [pix, setPix] = useState<{ qrCode: string; qrCodeBase64: string; pixCopiaECola: string; txId: string } | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval>>();
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
@@ -23,7 +23,7 @@ export default function PagamentosPage() {
     setLoading(true);
     try {
       const r = await pagamentosApi.deposit(v);
-      setPix({ qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id });
+      setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id });
       pollRef.current = setInterval(async () => {
         try {
           const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
@@ -70,11 +70,25 @@ export default function PagamentosPage() {
         </div>
       )}
 
-      {tab === "depositar" && pix && !confirmed && (
+      {tab === "depositar" && pix && !confirmed && (() => {
+        const qrSrc = pix.qrCodeBase64
+          ? (pix.qrCodeBase64.startsWith("data:") ? pix.qrCodeBase64 : `data:image/png;base64,${pix.qrCodeBase64}`)
+          : pix.qrCode
+          ? pix.qrCode
+          : pix.pixCopiaECola
+          ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(pix.pixCopiaECola)}`
+          : "";
+        return (
         <div className="grid md:grid-cols-2 gap-10 max-w-3xl">
-          <div className="border border-foreground p-6">
-            <div className="label-eyebrow mb-3">QR Code</div>
-            {pix.qrCodeBase64 && <img src={pix.qrCodeBase64} alt="QR" className="w-full max-w-xs mx-auto" />}
+          <div className="border border-foreground p-6 flex items-center justify-center bg-card">
+            <div className="w-full">
+              <div className="label-eyebrow mb-3">QR Code</div>
+              {qrSrc ? (
+                <img src={qrSrc} alt="QR Code PIX" className="w-full max-w-xs mx-auto block" />
+              ) : (
+                <div className="text-sm text-muted-foreground py-10 text-center">QR indisponível — use o código abaixo.</div>
+              )}
+            </div>
           </div>
           <div>
             <div className="label-eyebrow">Aguardando</div>
@@ -89,7 +103,8 @@ export default function PagamentosPage() {
             </div>
           </div>
         </div>
-      )}
+        );
+      })()}
 
       {tab === "depositar" && confirmed && (
         <div className="max-w-xl border border-foreground p-10">

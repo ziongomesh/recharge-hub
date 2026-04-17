@@ -179,6 +179,9 @@ export const pagamentosApi = {
       "/pagamentos/deposit", { method: "POST", body: { amount } }
     ).then((response) => ({
       ...response,
+      qrCode: response.qrCode || "",
+      qrCodeBase64: response.qrCodeBase64 || "",
+      pixCopiaECola: response.pixCopiaECola || "",
       pagamento: normalizePagamento(response.pagamento),
     })),
   checkStatus: (txId: string) =>
