@@ -80,6 +80,9 @@ export default function RegisterPage() {
           <div className="col-span-2 sm:col-span-1">
             <label className="label-eyebrow block mb-2">CPF</label>
             <input className="field font-mono" required value={form.cpf} onChange={upd("cpf")} placeholder="000.000.000-00" />
+            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">
+              Pedimos o CPF por conta das recargas — algumas operadoras exigem o documento do titular pra processar.
+            </p>
           </div>
           <div className="col-span-2">
             <label className="label-eyebrow block mb-2">Senha</label>
