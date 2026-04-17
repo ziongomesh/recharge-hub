@@ -1,5 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
+import AdminTopBar from "./AdminTopBar";
 import { useAuth } from "@/contexts/AuthContext";
 
 export default function AppLayout() {
@@ -19,6 +20,7 @@ export default function AppLayout() {
     <div className="min-h-screen">
       <AppSidebar />
       <main className="transition-all" style={{ marginLeft: "var(--sidebar-width)" }}>
+        <AdminTopBar />
         <div className="p-8">
           <Outlet />
         </div>
