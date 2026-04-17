@@ -21,9 +21,12 @@ export default function SupportBubble() {
   const sharedRef = useRef<CryptoKey | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Don't show bubble for staff (they have admin panel)
-  if (!user || user.role !== "user") return null;
+  useEffect(() => () => {}, []);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [messages, agentTyping]);
 
+  if (!user || user.role !== "user") return null;
   const start = async () => {
     if (session) { setOpen(true); return; }
     setConnecting(true);
@@ -67,14 +70,6 @@ export default function SupportBubble() {
     });
     sock.on("typing", ({ isTyping, role }) => { if (role === "agent") setAgentTyping(isTyping); });
   };
-
-  useEffect(() => () => {
-    // cleanup listeners ao fechar componente — mantemos socket vivo
-  }, []);
-
-  useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages, agentTyping]);
 
   const send = async () => {
     if (!input.trim() || !session || !sharedRef.current) {
