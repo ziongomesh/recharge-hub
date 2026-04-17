@@ -69,12 +69,18 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 
+  const responseText = await res.text();
+  const responseData = responseText ? JSON.parse(responseText) : null;
+
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: "Erro desconhecido" }));
-    throw new Error(error.message || `Erro ${res.status}`);
+    const errorMessage =
+      (responseData && typeof responseData === "object" && "message" in responseData && typeof responseData.message === "string" && responseData.message) ||
+      responseText ||
+      `Erro ${res.status}`;
+    throw new Error(errorMessage);
   }
 
-  return res.json();
+  return responseData as T;
 }
 
 // Auth
