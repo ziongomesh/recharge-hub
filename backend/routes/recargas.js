@@ -107,6 +107,60 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Sincroniza status com a Poeki ao vivo (consulta + atualiza DB se mudou)
+router.get('/:id(\\d+)/sync', authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT r.*, o.name as operadora_name FROM recargas r
+       JOIN operadoras o ON r.operadora_id = o.id
+       WHERE r.id = ? AND r.user_id = ?`,
+      [req.params.id, req.userId]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'Recarga não encontrada' });
+    const recarga = rows[0];
+
+    if (!recarga.poeki_id) {
+      return res.json({ recarga, source: 'local', poekiStatus: null });
+    }
+
+    const finalStates = ['feita', 'cancelada', 'expirada', 'reembolsado'];
+    // Se já é final, não precisa consultar
+    if (finalStates.includes(recarga.status)) {
+      return res.json({ recarga, source: 'local-final', poekiStatus: recarga.status });
+    }
+
+    let poekiStatus = null;
+    let poekiRaw = null;
+    try {
+      const { data } = await axios.get(`${POEKI_URL}/me/orders/${recarga.poeki_id}`, { headers: poekiHeaders(), timeout: 8000 });
+      poekiRaw = data.data || data;
+      poekiStatus = poekiRaw.status;
+    } catch (err) {
+      console.warn('[POEKI sync] falha consulta:', err.response?.data || err.message);
+      return res.json({ recarga, source: 'local', poekiStatus: null, error: 'poeki_unreachable' });
+    }
+
+    // Se status mudou, atualiza local + estorno se necessário
+    if (poekiStatus && poekiStatus !== recarga.status) {
+      await db.query('UPDATE recargas SET status = ? WHERE id = ?', [poekiStatus, recarga.id]);
+      if (['cancelada', 'expirada', 'reembolsado'].includes(poekiStatus)) {
+        await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [recarga.cost, recarga.user_id]);
+        await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+          [recarga.user_id, 'recarga_refund', `Estorno R$ ${recarga.cost} - Recarga ${poekiStatus} via sync (tel ${recarga.phone})`]);
+      } else if (poekiStatus === 'feita') {
+        await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+          [recarga.user_id, 'recarga_completed', `Recarga concluída via sync: ${recarga.phone} R$ ${recarga.amount}`]);
+      }
+      recarga.status = poekiStatus;
+    }
+
+    res.json({ recarga, source: 'poeki', poekiStatus, poekiRaw });
+  } catch (err) {
+    console.error('Sync recarga error:', err);
+    res.status(500).json({ message: 'Erro ao sincronizar com Poeki' });
+  }
+});
+
 router.get('/:id(\\d+)', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query(
