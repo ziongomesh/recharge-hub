@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { adminApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, Users, ArrowDownToLine, Zap, Activity, Wallet } from "lucide-react";
+import PoekiBalanceHero from "@/components/PoekiBalanceHero";
 
 const fmtBRL = (n: number) => `R$ ${Number(n || 0).toFixed(2)}`;
 const fmtDate = (d: string) => new Date(d).toLocaleDateString("pt-BR");
@@ -27,6 +28,9 @@ export default function AdminDashboardPage() {
         <div className="label-eyebrow">Dashboard</div>
         <h1 className="font-display text-4xl mt-1">Visão geral.</h1>
       </div>
+
+      {/* Saldo Poeki em destaque */}
+      <PoekiBalanceHero />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
