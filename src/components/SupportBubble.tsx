@@ -15,6 +15,7 @@ export default function SupportBubble() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [agentName, setAgentName] = useState<string | null>(null);
+  const [agentRole, setAgentRole] = useState<string>("admin");
   const [agentTyping, setAgentTyping] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [closed, setClosed] = useState(false);
