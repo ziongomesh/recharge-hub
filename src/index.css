@@ -96,8 +96,12 @@
 }
 
 @layer components {
-  /* Typography */
-  .font-display { font-family: "Instrument Serif", "Times New Roman", serif; font-weight: 400; letter-spacing: -0.01em; }
+  /* Typography — minimal, Inter only */
+  .font-display {
+    font-family: "Inter", system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
   .font-mono-x { font-family: "JetBrains Mono", ui-monospace, monospace; }
 
   .label-eyebrow {
@@ -105,10 +109,10 @@
   }
 
   .display-h1 {
-    @apply font-display text-[clamp(3rem,7vw,6rem)] leading-[0.95] tracking-tight;
+    @apply font-display text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-tight;
   }
   .display-h2 {
-    @apply font-display text-[clamp(2rem,4vw,3.25rem)] leading-[1] tracking-tight;
+    @apply font-display text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] tracking-tight;
   }
 
   /* Hairline rule with section number */
@@ -147,9 +151,9 @@
   .status-canceled, .status-cancelada, .status-failed { @apply text-destructive border-destructive/40; }
   .status-expired, .status-expirada { @apply text-muted-foreground border-border; }
 
-  /* Decorative asterisk separator */
+  /* Decorative dot separator */
   .asterisk {
-    @apply font-display text-foreground/60 text-2xl leading-none select-none;
+    @apply text-foreground/40 text-lg leading-none select-none;
   }
 
   /* Marquee */
