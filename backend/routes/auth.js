@@ -73,6 +73,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = generateToken(user);
+    await db.query('UPDATE users SET last_login_at = NOW() WHERE id = ?', [user.id]);
     await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)', [user.id, 'login', 'Login realizado']);
 
     logger.auth.login(loginField, user.id);
@@ -100,7 +101,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 // Verifica PIN do admin → emite NOVO token com adminVerified=true
 router.post('/verify-pin', authMiddleware, async (req, res) => {
   try {
-    if (req.userRole !== 'admin') return res.status(403).json({ message: 'Apenas admins' });
+    if (req.userRole !== 'admin' && req.userRole !== 'mod') return res.status(403).json({ message: 'Apenas admin/moderador' });
     const { pin } = req.body || {};
     if (!pin || !/^\d{4}$/.test(String(pin))) {
       return res.status(400).json({ message: 'PIN deve ter 4 dígitos' });
