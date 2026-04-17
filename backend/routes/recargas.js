@@ -101,6 +101,22 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:id(\\d+)', authMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query(
+      `SELECT r.*, o.name as operadora_name FROM recargas r
+       JOIN operadoras o ON r.operadora_id = o.id
+       WHERE r.id = ? AND r.user_id = ?`,
+      [req.params.id, req.userId]
+    );
+    if (rows.length === 0) return res.status(404).json({ message: 'Recarga não encontrada' });
+    res.json({ recarga: rows[0] });
+  } catch (err) {
+    console.error('Get recarga error:', err);
+    res.status(500).json({ message: 'Erro interno' });
+  }
+});
+
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
