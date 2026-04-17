@@ -171,6 +171,11 @@ export const recargasApi = {
     api<{ recarga: Recarga }>(`/recargas/${id}`).then((response) => ({
       recarga: normalizeRecarga(response.recarga),
     })),
+  sync: (id: number) =>
+    api<{ recarga: Recarga; source: string; poekiStatus: string | null; error?: string }>(`/recargas/${id}/sync`).then((response) => ({
+      ...response,
+      recarga: normalizeRecarga(response.recarga),
+    })),
   list: (params?: string) =>
     api<{ recargas: Recarga[]; total: number }>(`/recargas${params ? `?${params}` : ""}`).then((response) => ({
       ...response,
@@ -301,7 +306,7 @@ export interface Recarga {
   phone: string;
   amount: number;
   cost: number;
-  status: "pendente" | "andamento" | "feita" | "cancelada" | "expirada";
+  status: "pendente" | "andamento" | "feita" | "cancelada" | "expirada" | "reembolsado";
   poeki_id: string | null;
   created_at: string;
   operadora_name?: string;

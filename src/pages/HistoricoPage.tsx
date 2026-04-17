@@ -14,6 +14,8 @@ export default function HistoricoPage() {
   const [trackingId, setTrackingId] = useState<number | null>(navState.newRecargaId ?? null);
   const [highlightId, setHighlightId] = useState<number | null>(navState.newRecargaId ?? null);
 
+  const [liveCount, setLiveCount] = useState(0);
+
   const load = () => {
     recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
   };
@@ -35,7 +37,31 @@ export default function HistoricoPage() {
     return () => clearTimeout(t);
   }, [highlightId]);
 
-  const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" } as Record<string, string>)[s] || s;
+  // Live sync: a cada 5s, consulta Poeki para cada recarga não-final
+  const FINAL = new Set(["feita", "cancelada", "expirada", "reembolsado"]);
+  useEffect(() => {
+    if (loading) return;
+    const pendentes = recargas.filter((r) => !FINAL.has(r.status));
+    setLiveCount(pendentes.length);
+    if (pendentes.length === 0) return;
+
+    let cancelled = false;
+    const tick = async () => {
+      const updated = await Promise.all(
+        pendentes.map((r) =>
+          recargasApi.sync(r.id).then((s) => s.recarga).catch(() => r)
+        )
+      );
+      if (cancelled) return;
+      setRecargas((prev) => prev.map((r) => updated.find((u) => u.id === r.id) || r));
+    };
+    const t = setInterval(tick, 5000);
+    tick();
+    return () => { cancelled = true; clearInterval(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, recargas.length]);
+
+  const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada", reembolsado: "Reembolsado" } as Record<string, string>)[s] || s;
 
   // If tracked recarga isn't in the list yet, prepend the optimistic one
   const list = (() => {
@@ -52,7 +78,15 @@ export default function HistoricoPage() {
           <div className="label-eyebrow">Arquivo</div>
           <h2 className="font-display text-5xl mt-1">Suas recargas.</h2>
         </div>
-        <div className="label-eyebrow tabular">Total: {String(list.length).padStart(3, "0")}</div>
+        <div className="flex items-center gap-3">
+          {liveCount > 0 && (
+            <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono text-success">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              Ao vivo • {liveCount} pendente{liveCount > 1 ? "s" : ""}
+            </span>
+          )}
+          <div className="label-eyebrow tabular">Total: {String(list.length).padStart(3, "0")}</div>
+        </div>
       </div>
 
       {loading ? (

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { recargasApi, type Recarga } from "@/lib/api";
-import { Loader2, CheckCircle2, XCircle, Clock, X } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Clock, X, Radio } from "lucide-react";
 
 interface Props {
   recargaId: number;
@@ -8,26 +8,34 @@ interface Props {
   onClose: () => void;
 }
 
-const FINAL = new Set(["feita", "cancelada", "expirada"]);
+const FINAL = new Set(["feita", "cancelada", "expirada", "reembolsado"]);
 
 export default function RecargaStatusModal({ recargaId, initial, onClose }: Props) {
   const [recarga, setRecarga] = useState<Recarga | undefined>(initial);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<string>("…");
+  const [lastCheck, setLastCheck] = useState<Date | null>(null);
+  const [live, setLive] = useState(false);
   const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
     const tick = async () => {
       try {
-        const { recarga: r } = await recargasApi.get(recargaId);
+        const { recarga: r, source: src, error: syncErr } = await recargasApi.sync(recargaId);
         if (!mounted) return;
         setRecarga(r);
-        if (FINAL.has(r.status)) return; // stop polling
-        timerRef.current = window.setTimeout(tick, 2000);
+        setSource(src);
+        setLive(src === "poeki");
+        setLastCheck(new Date());
+        setError(syncErr === "poeki_unreachable" ? "Poeki indisponível — exibindo último status local" : null);
+        if (FINAL.has(r.status)) return;
+        timerRef.current = window.setTimeout(tick, 3000);
       } catch (e: any) {
         if (!mounted) return;
         setError(e.message || "Erro ao consultar status");
-        timerRef.current = window.setTimeout(tick, 4000);
+        setLive(false);
+        timerRef.current = window.setTimeout(tick, 5000);
       }
     };
     tick();
@@ -40,12 +48,12 @@ export default function RecargaStatusModal({ recargaId, initial, onClose }: Prop
   const status = recarga?.status || "pendente";
   const isFinal = FINAL.has(status);
   const isSuccess = status === "feita";
-  const isFailed = status === "cancelada" || status === "expirada";
+  const isFailed = status === "cancelada" || status === "expirada" || status === "reembolsado";
 
   const meta = isSuccess
     ? { label: "Recarga concluída", desc: "O crédito foi enviado com sucesso para o número.", Icon: CheckCircle2, tone: "text-success" }
     : isFailed
-    ? { label: status === "expirada" ? "Recarga expirada" : "Recarga cancelada", desc: "Não foi possível concluir. Seu saldo foi devolvido se aplicável.", Icon: XCircle, tone: "text-destructive" }
+    ? { label: status === "expirada" ? "Recarga expirada" : status === "reembolsado" ? "Recarga reembolsada" : "Recarga cancelada", desc: "Não foi possível concluir. Seu saldo foi devolvido.", Icon: XCircle, tone: "text-destructive" }
     : status === "andamento"
     ? { label: "Em andamento", desc: "A operadora está processando o crédito. Aguarde alguns segundos.", Icon: Loader2, tone: "text-foreground", spin: true }
     : { label: "Pedido enviado", desc: "Aguardando confirmação da operadora…", Icon: Clock, tone: "text-foreground", spin: true };
@@ -60,8 +68,19 @@ export default function RecargaStatusModal({ recargaId, initial, onClose }: Prop
           <X size={18} />
         </button>
 
-        <div className="label-eyebrow">Acompanhamento</div>
-        <h3 className="font-display text-3xl mt-2 mb-6">Sua recarga.</h3>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="label-eyebrow">Acompanhamento</div>
+          <div className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono ${live ? "text-success" : "text-muted-foreground"}`}>
+            <Radio size={10} className={live && !isFinal ? "animate-pulse" : ""} />
+            {isFinal ? "FINAL" : live ? "AO VIVO • POEKI" : source === "local" ? "LOCAL" : "VERIFICANDO…"}
+          </div>
+        </div>
+        <h3 className="font-display text-3xl mb-1">Sua recarga.</h3>
+        {lastCheck && (
+          <div className="text-[10px] font-mono text-muted-foreground mb-5">
+            Última checagem: {lastCheck.toLocaleTimeString("pt-BR")}
+          </div>
+        )}
 
         <div className="flex items-start gap-4 border-y border-border py-6">
           <meta.Icon className={`${meta.tone} ${meta.spin ? "animate-spin" : ""} shrink-0`} size={32} />
