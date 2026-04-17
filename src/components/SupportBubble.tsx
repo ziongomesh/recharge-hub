@@ -6,7 +6,7 @@ import { generateKeyPair, exportPublicKey, deriveSharedKey, encrypt, decrypt } f
 import { MessageCircle, X, Send, Shield, Loader2, Headphones, Star } from "lucide-react";
 import { toast } from "sonner";
 
-interface ChatMsg { id: number | string; role: "user" | "agent"; text: string; time: string; }
+interface ChatMsg { id: number | string; role: "user" | "agent" | "system"; text: string; time: string; }
 
 export default function SupportBubble() {
   const { user } = useAuth();
@@ -15,6 +15,7 @@ export default function SupportBubble() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
   const [agentName, setAgentName] = useState<string | null>(null);
+  const [agentRole, setAgentRole] = useState<string>("admin");
   const [agentTyping, setAgentTyping] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [closed, setClosed] = useState(false);
@@ -59,12 +60,33 @@ export default function SupportBubble() {
     });
     sock.on("session_state", (st: any) => {
       if (st.status === "active" && st.agent) {
+        const role = (st.agent.role || "admin").toLowerCase();
+        const rankLabel = role === "mod" ? "Moderador" : "Admin";
         setAgentName(st.agent.username);
-        toast.success(`${st.agent.username} entrou no atendimento`);
+        setAgentRole(role);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `sys-join-${Date.now()}`,
+            role: "system",
+            text: `${rankLabel} ${st.agent.username} entrou no chat`,
+            time: new Date().toISOString(),
+          },
+        ]);
       }
       if (st.status === "closed") {
         setClosed(true);
-        toast.info("Atendimento encerrado");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `sys-close-${Date.now()}`,
+            role: "system",
+            text: agentName
+              ? `${agentName} encerrou o chat`
+              : "Atendimento encerrado",
+            time: new Date().toISOString(),
+          },
+        ]);
       }
     });
     sock.on("new_message", async (m: any) => {
@@ -121,41 +143,55 @@ export default function SupportBubble() {
       </header>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3 text-sm bg-paper">
-        {!agentName ? (
+        {!agentName && !closed && (
           <div className="text-center text-muted-foreground py-10">
             <Loader2 className="mx-auto mb-3 animate-spin" size={20} />
             <div className="font-display text-base mb-1">Aguardando atendente</div>
             <div className="text-xs">Você está na fila. Em breve alguém entra no chat.</div>
           </div>
-        ) : (
-          <div className="text-center text-[11px] text-muted-foreground border-b border-border pb-2">
-            <Shield size={10} className="inline mr-1" />
-            <strong>{agentName}</strong> está atendendo • mensagens cifradas
-          </div>
         )}
 
-        {messages.map((m) => (
-          <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[80%] px-3 py-2 rounded-lg ${
-              m.role === "user" ? "bg-foreground text-background" : "bg-background border border-border"
-            }`}>
-              <div className="whitespace-pre-wrap break-words">{m.text}</div>
-              <div className={`text-[9px] mt-0.5 ${m.role === "user" ? "text-background/60" : "text-muted-foreground"}`}>
-                {new Date(m.time).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+        {messages.map((m) => {
+          if (m.role === "system") {
+            return (
+              <div key={m.id} className="flex justify-center">
+                <div className="text-[11px] text-muted-foreground bg-background border border-border rounded-full px-3 py-1">
+                  {m.text}
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                m.role === "user" ? "bg-foreground text-background" : "bg-background border border-border"
+              }`}>
+                <div className="whitespace-pre-wrap break-words">{m.text}</div>
+                <div className={`text-[9px] mt-0.5 ${m.role === "user" ? "text-background/60" : "text-muted-foreground"}`}>
+                  {new Date(m.time).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        {agentTyping && !closed && (
-          <div className="text-xs text-muted-foreground italic">{agentName} está digitando…</div>
+        {agentTyping && !closed && agentName && (
+          <div className="flex justify-start">
+            <div className="text-[11px] text-muted-foreground italic bg-background border border-border rounded-full px-3 py-1">
+              {agentName} está digitando…
+            </div>
+          </div>
         )}
 
         {closed && (
           <div className="mt-4 border border-border rounded-lg p-4 bg-background text-center space-y-3 animate-in fade-in">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Chat encerrado</div>
             <div className="text-sm">
-              {agentName ? <><strong>{agentName}</strong> atendeu você.</> : "Atendimento finalizado."}
+              {agentName ? (
+                <>
+                  <strong>{agentRole === "mod" ? "Moderador" : "Admin"} {agentName}</strong> atendeu você.
+                </>
+              ) : "Atendimento finalizado."}
             </div>
             <div className="pt-2">
               <div className="text-xs text-muted-foreground mb-2">Avalie o atendimento</div>
