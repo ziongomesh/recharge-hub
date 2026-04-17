@@ -64,13 +64,17 @@ router.post('/', authMiddleware, async (req, res) => {
     const idempotencyKey = `req_${uuidv4()}`;
     const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/poeki`;
 
-    const { data: poekiRes } = await axios.post(`${POEKI_URL}/recharges`, {
-      operator: ops[0].name.toLowerCase(),
+    const operatorName = ops[0].name.toLowerCase().trim();
+    const payload = {
+      operator: operatorName,
       phone,
       amount: parseFloat(plano.amount),
       webhookUrl,
       idempotencyKey,
-    }, { headers: poekiHeaders() });
+    };
+    console.log('[POEKI] POST /recharges payload:', JSON.stringify(payload));
+
+    const { data: poekiRes } = await axios.post(`${POEKI_URL}/recharges`, payload, { headers: poekiHeaders() });
     const poekiData = poekiRes.data || poekiRes;
 
     await db.query('UPDATE users SET balance = balance - ? WHERE id = ?', [plano.cost, req.userId]);
