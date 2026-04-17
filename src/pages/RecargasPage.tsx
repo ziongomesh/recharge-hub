@@ -195,7 +195,7 @@ export default function RecargasPage() {
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">Pague</span>
-                <span className="font-bold" style={{ color: "hsl(var(--success))" }}>R$ {selectedPlano?.cost.toFixed(2)}</span>
+                <span className="font-bold" style={{ color: "hsl(var(--success))" }}>R$ {selectedPlano?.amount.toFixed(2)}</span>
               </div>
             </div>
             <Button onClick={handleConfirm} disabled={loading} className="w-full" size="lg">
@@ -278,7 +278,7 @@ export default function RecargasPage() {
                       className="mt-2 px-3 py-0.5 rounded-full text-xs font-bold"
                       style={{ background: "hsl(var(--success))", color: "hsl(var(--success-foreground))" }}
                     >
-                      Pague R$ {p.cost.toFixed(0)}
+                      Pague R$ {p.amount.toFixed(2)}
                     </span>
                   </div>
                 ))}
