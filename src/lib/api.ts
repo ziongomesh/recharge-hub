@@ -171,6 +171,11 @@ export const recargasApi = {
     api<{ recarga: Recarga }>(`/recargas/${id}`).then((response) => ({
       recarga: normalizeRecarga(response.recarga),
     })),
+  sync: (id: number) =>
+    api<{ recarga: Recarga; source: string; poekiStatus: string | null; error?: string }>(`/recargas/${id}/sync`).then((response) => ({
+      ...response,
+      recarga: normalizeRecarga(response.recarga),
+    })),
   list: (params?: string) =>
     api<{ recargas: Recarga[]; total: number }>(`/recargas${params ? `?${params}` : ""}`).then((response) => ({
       ...response,
