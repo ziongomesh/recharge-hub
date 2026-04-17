@@ -61,7 +61,7 @@ export default function HistoricoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, recargas.length]);
 
-  const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" } as Record<string, string>)[s] || s;
+  const label = (s: string) => ({ pendente: "Pendente", andamento: "Em curso", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada", reembolsado: "Reembolsado" } as Record<string, string>)[s] || s;
 
   // If tracked recarga isn't in the list yet, prepend the optimistic one
   const list = (() => {
@@ -78,7 +78,15 @@ export default function HistoricoPage() {
           <div className="label-eyebrow">Arquivo</div>
           <h2 className="font-display text-5xl mt-1">Suas recargas.</h2>
         </div>
-        <div className="label-eyebrow tabular">Total: {String(list.length).padStart(3, "0")}</div>
+        <div className="flex items-center gap-3">
+          {liveCount > 0 && (
+            <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono text-success">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              Ao vivo • {liveCount} pendente{liveCount > 1 ? "s" : ""}
+            </span>
+          )}
+          <div className="label-eyebrow tabular">Total: {String(list.length).padStart(3, "0")}</div>
+        </div>
       </div>
 
       {loading ? (
