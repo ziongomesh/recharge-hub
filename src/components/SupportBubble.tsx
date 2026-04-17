@@ -187,7 +187,11 @@ export default function SupportBubble() {
           <div className="mt-4 border border-border rounded-lg p-4 bg-background text-center space-y-3 animate-in fade-in">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Chat encerrado</div>
             <div className="text-sm">
-              {agentName ? <><strong>{agentName}</strong> atendeu você.</> : "Atendimento finalizado."}
+              {agentName ? (
+                <>
+                  <strong>{agentRole === "mod" ? "Moderador" : "Admin"} {agentName}</strong> atendeu você.
+                </>
+              ) : "Atendimento finalizado."}
             </div>
             <div className="pt-2">
               <div className="text-xs text-muted-foreground mb-2">Avalie o atendimento</div>
