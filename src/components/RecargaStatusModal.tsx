@@ -68,8 +68,19 @@ export default function RecargaStatusModal({ recargaId, initial, onClose }: Prop
           <X size={18} />
         </button>
 
-        <div className="label-eyebrow">Acompanhamento</div>
-        <h3 className="font-display text-3xl mt-2 mb-6">Sua recarga.</h3>
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="label-eyebrow">Acompanhamento</div>
+          <div className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono ${live ? "text-success" : "text-muted-foreground"}`}>
+            <Radio size={10} className={live && !isFinal ? "animate-pulse" : ""} />
+            {isFinal ? "FINAL" : live ? "AO VIVO • POEKI" : source === "local" ? "LOCAL" : "VERIFICANDO…"}
+          </div>
+        </div>
+        <h3 className="font-display text-3xl mb-1">Sua recarga.</h3>
+        {lastCheck && (
+          <div className="text-[10px] font-mono text-muted-foreground mb-5">
+            Última checagem: {lastCheck.toLocaleTimeString("pt-BR")}
+          </div>
+        )}
 
         <div className="flex items-start gap-4 border-y border-border py-6">
           <meta.Icon className={`${meta.tone} ${meta.spin ? "animate-spin" : ""} shrink-0`} size={32} />
