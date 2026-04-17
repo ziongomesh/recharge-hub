@@ -17,6 +17,9 @@ export default function SupportBubble() {
   const [agentName, setAgentName] = useState<string | null>(null);
   const [agentTyping, setAgentTyping] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [closed, setClosed] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const keyPairRef = useRef<CryptoKeyPair | null>(null);
   const sharedRef = useRef<CryptoKey | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
