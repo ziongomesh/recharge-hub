@@ -270,7 +270,32 @@ export const adminApi = {
     }>("/admin/stats"),
 };
 
-// Types
+// Support
+export interface SupportSession {
+  id: number;
+  user_id: number;
+  agent_id: number | null;
+  status: "waiting" | "active" | "closed";
+  user_pubkey: string | null;
+  agent_pubkey: string | null;
+  created_at: string;
+  user_username?: string;
+  agent_username?: string;
+}
+export interface SupportMessageEnc {
+  id: number;
+  sender_role: "user" | "agent";
+  ciphertext: string;
+  iv: string;
+  created_at: string;
+}
+export const supportApi = {
+  openSession: (pubkey: string) =>
+    api<{ session: SupportSession }>(`/support/sessions`, { method: "POST", body: { pubkey } }),
+  messages: (sessionId: number) =>
+    api<{ session: SupportSession; messages: SupportMessageEnc[] }>(`/support/sessions/${sessionId}/messages`),
+  queue: () => api<{ sessions: SupportSession[] }>(`/support/queue`),
+};
 export interface User {
   id: number;
   username: string;

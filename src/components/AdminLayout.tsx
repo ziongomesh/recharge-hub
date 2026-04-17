@@ -1,16 +1,18 @@
 import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminTopBar from "./AdminTopBar";
-import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight } from "lucide-react";
+import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck } from "lucide-react";
 
 const links = [
   { to: "/admin",            label: "Visão geral",  icon: LayoutDashboard, end: true },
+  { to: "/admin/suporte",    label: "Atendimento",  icon: Headphones },
   { to: "/admin/usuarios",   label: "Usuários",     icon: Users },
-  { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine },
-  { to: "/admin/recargas",   label: "Recargas",     icon: Zap },
-  { to: "/admin/operadoras", label: "Operadoras",   icon: Building2 },
-  { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper },
-  { to: "/admin/logs",       label: "Logs",         icon: ScrollText },
+  { to: "/admin/staff",      label: "Equipe",       icon: ShieldCheck, adminOnly: true },
+  { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine, adminOnly: true },
+  { to: "/admin/recargas",   label: "Recargas",     icon: Zap, adminOnly: true },
+  { to: "/admin/operadoras", label: "Operadoras",   icon: Building2, adminOnly: true },
+  { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper, adminOnly: true },
+  { to: "/admin/logs",       label: "Logs",         icon: ScrollText, adminOnly: true },
 ];
 
 export default function AdminLayout() {
@@ -25,7 +27,7 @@ export default function AdminLayout() {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== "admin") return <Navigate to="/recargas" replace />;
+  if (user.role !== "admin" && user.role !== "mod") return <Navigate to="/recargas" replace />;
   if (!adminVerified) return <Navigate to="/admin/pin" replace state={{ from: location.pathname }} />;
 
   return (

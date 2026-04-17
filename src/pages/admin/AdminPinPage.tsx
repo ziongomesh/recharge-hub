@@ -14,7 +14,7 @@ export default function AdminPinPage() {
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
-    if (user.role !== "admin") { navigate("/recargas"); return; }
+    if (user.role !== "admin" && user.role !== "mod") { navigate("/recargas"); return; }
     if (adminVerified) { navigate("/admin"); return; }
   }, [user, adminVerified, navigate]);
 
