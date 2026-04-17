@@ -1,16 +1,18 @@
 import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminTopBar from "./AdminTopBar";
-import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight } from "lucide-react";
+import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck } from "lucide-react";
 
 const links = [
   { to: "/admin",            label: "Visão geral",  icon: LayoutDashboard, end: true },
+  { to: "/admin/suporte",    label: "Atendimento",  icon: Headphones },
   { to: "/admin/usuarios",   label: "Usuários",     icon: Users },
-  { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine },
-  { to: "/admin/recargas",   label: "Recargas",     icon: Zap },
-  { to: "/admin/operadoras", label: "Operadoras",   icon: Building2 },
-  { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper },
-  { to: "/admin/logs",       label: "Logs",         icon: ScrollText },
+  { to: "/admin/staff",      label: "Equipe",       icon: ShieldCheck, adminOnly: true },
+  { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine, adminOnly: true },
+  { to: "/admin/recargas",   label: "Recargas",     icon: Zap, adminOnly: true },
+  { to: "/admin/operadoras", label: "Operadoras",   icon: Building2, adminOnly: true },
+  { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper, adminOnly: true },
+  { to: "/admin/logs",       label: "Logs",         icon: ScrollText, adminOnly: true },
 ];
 
 export default function AdminLayout() {
@@ -25,16 +27,16 @@ export default function AdminLayout() {
     );
   }
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== "admin") return <Navigate to="/recargas" replace />;
+  if (user.role !== "admin" && user.role !== "mod") return <Navigate to="/recargas" replace />;
   if (!adminVerified) return <Navigate to="/admin/pin" replace state={{ from: location.pathname }} />;
 
   return (
     <div className="min-h-screen bg-background flex">
       <aside className="w-64 shrink-0 bg-paper border-r border-border flex flex-col fixed left-0 top-0 h-screen">
         <div className="px-6 pt-6 pb-4">
-          <div className="label-eyebrow text-foreground">Admin</div>
+          <div className="label-eyebrow text-foreground">{user.role === "admin" ? "Admin" : "Moderador"}</div>
           <Link to="/admin" className="font-display text-lg block">CometaSMS</Link>
-          <div className="text-xs text-muted-foreground mt-0.5">Painel de controle</div>
+          <div className="text-xs text-muted-foreground mt-0.5">{user.role === "admin" ? "Painel de controle" : "Atendimento"}</div>
         </div>
         <div className="rule mx-6" />
         <div className="px-6 py-3">
@@ -45,7 +47,7 @@ export default function AdminLayout() {
 
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
           <ul className="space-y-0.5">
-            {links.map((l) => {
+            {links.filter((l) => !l.adminOnly || user.role === "admin").map((l) => {
               const Icon = l.icon;
               return (
                 <li key={l.to}>

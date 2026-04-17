@@ -1,6 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+const { attachSupportSocket } = require('./socket');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -16,11 +19,16 @@ app.use('/api/recargas', require('./routes/recargas'));
 app.use('/api/pagamentos', require('./routes/pagamentos'));
 app.use('/api/noticias', require('./routes/noticias'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/support', require('./routes/support'));
 app.use('/api/webhooks', require('./routes/webhooks'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-app.listen(PORT, () => {
-  console.log(`🚀 CometaSMS Backend rodando na porta ${PORT}`);
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
+attachSupportSocket(io);
+
+server.listen(PORT, () => {
+  console.log(`🚀 CometaSMS Backend (HTTP+WebSocket) rodando na porta ${PORT}`);
 });

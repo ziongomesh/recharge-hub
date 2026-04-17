@@ -1,5 +1,6 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import AppSidebar from "./AppSidebar";
+import SupportBubble from "./SupportBubble";
 import { useAuth } from "@/contexts/AuthContext";
 
 const routeMeta: Record<string, { num: string; label: string }> = {
@@ -61,6 +62,7 @@ export default function AppLayout() {
           <span>Cometa SMS — MMXXVI</span>
         </footer>
       </main>
+      <SupportBubble />
     </div>
   );
 }

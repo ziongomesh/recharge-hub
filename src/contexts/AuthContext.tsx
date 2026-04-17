@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const normalized = normalizeUser(user) as User;
     setUser(normalized);
     setAdminVerified(false); // sempre força PIN ao logar
-    if (normalized.role === "admin") {
+    if (normalized.role === "admin" || normalized.role === "mod") {
       navigate("/admin/pin");
     } else {
       navigate("/recargas");
