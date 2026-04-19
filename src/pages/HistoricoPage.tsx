@@ -94,6 +94,14 @@ export default function HistoricoPage() {
           <h2 className="font-display text-5xl mt-1">Suas recargas.</h2>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncAll}
+            disabled={syncing || loading}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
+          >
+            <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
+            {syncing ? "Sincronizando…" : "Sincronizar com Poeki"}
+          </button>
           {liveCount > 0 && (
             <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono text-success">
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
