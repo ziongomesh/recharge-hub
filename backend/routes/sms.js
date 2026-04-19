@@ -58,7 +58,8 @@ router.get('/services', authMiddleware, async (req, res) => {
     const rate = await rubToBrl();
     const [rows] = await db.query(
       `SELECT s.code, s.name, s.icon_url, s.default_markup_percent,
-              p.cost AS cost_rub, p.count, p.markup_percent AS price_markup, p.enabled AS price_enabled
+              p.cost AS cost_rub, p.count, p.markup_percent AS price_markup,
+              p.sale_price_brl, p.enabled AS price_enabled
        FROM sms_services s
        LEFT JOIN sms_prices p ON p.service_code = s.code AND p.country_id = ?
        WHERE s.enabled = TRUE
@@ -70,12 +71,15 @@ router.get('/services', authMiddleware, async (req, res) => {
       .map((r) => {
         const costBrl = parseFloat(r.cost_rub) * rate;
         const markup = r.price_markup != null ? r.price_markup : r.default_markup_percent;
+        const price = r.sale_price_brl != null
+          ? parseFloat(r.sale_price_brl)
+          : applyMarkup(costBrl, markup);
         return {
           code: r.code,
           name: r.name,
           icon_url: r.icon_url,
           stock: r.count || 0,
-          price: applyMarkup(costBrl, markup),
+          price,
         };
       });
     res.json({ services: out });
@@ -96,7 +100,7 @@ router.post('/buy', authMiddleware, async (req, res) => {
 
     // Calcula preço atual
     const [[price]] = await conn.query(
-      `SELECT p.cost, p.markup_percent, s.default_markup_percent, s.name AS sname
+      `SELECT p.cost, p.markup_percent, p.sale_price_brl, s.default_markup_percent, s.name AS sname
        FROM sms_prices p JOIN sms_services s ON s.code = p.service_code
        WHERE p.service_code = ? AND p.country_id = ? AND p.enabled = TRUE AND s.enabled = TRUE`,
       [service, country]
@@ -106,7 +110,9 @@ router.post('/buy', authMiddleware, async (req, res) => {
     const rate = await rubToBrl();
     const costBrl = parseFloat(price.cost) * rate;
     const markup = price.markup_percent != null ? price.markup_percent : price.default_markup_percent;
-    const salePrice = applyMarkup(costBrl, markup);
+    const salePrice = price.sale_price_brl != null
+      ? parseFloat(price.sale_price_brl)
+      : applyMarkup(costBrl, markup);
 
     const [users] = await conn.query('SELECT * FROM users WHERE id = ? FOR UPDATE', [req.userId]);
     if (parseFloat(users[0].balance) < salePrice) {
