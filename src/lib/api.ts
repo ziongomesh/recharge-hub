@@ -213,10 +213,9 @@ export const pagamentosApi = {
     api<{ pagamentos: Pagamento[]; total: number }>(`/pagamentos${params ? `?${params}` : ""}`).then((response) => ({
       ...response,
       pagamentos: response.pagamentos.map(normalizePagamento),
-    })),
+  adminBalance: () =>
+    api<{ balance: number; blocked?: number; raw?: unknown }>("/pagamentos/admin/balance"),
 };
-
-// Noticias
 export const noticiasApi = {
   list: () => api<{ noticias: Noticia[] }>("/noticias"),
   create: (data: { title: string; content: string; pinned?: boolean }) =>
