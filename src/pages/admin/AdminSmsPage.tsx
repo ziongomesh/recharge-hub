@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation } from "@/lib/api";
+import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Search } from "lucide-react";
 
-type Tab = "services" | "countries" | "activations" | "config";
+type Tab = "services" | "countries" | "brprices" | "activations" | "config";
 
 export default function AdminSmsPage() {
   const [tab, setTab] = useState<Tab>("services");
