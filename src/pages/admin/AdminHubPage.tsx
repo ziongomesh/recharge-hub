@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText } from "lucide-react";
+import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { statusApi } from "@/lib/api";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 const modules = [
   {
@@ -37,9 +41,45 @@ const common = [
   { to: "/admin/noticias", title: "Notícias", icon: MessageSquare, adminOnly: true },
 ];
 
+const moduleKeys = ["recargas", "sms", "esim"] as const;
+type ModuleKey = (typeof moduleKeys)[number];
+
 export default function AdminHubPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
+
+  const [maint, setMaint] = useState<Record<ModuleKey, boolean>>({
+    recargas: false,
+    sms: false,
+    esim: false,
+  });
+  const [busy, setBusy] = useState<ModuleKey | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    statusApi.adminList()
+      .then((r) => {
+        const next = { recargas: false, sms: false, esim: false };
+        r.modules.forEach((m) => {
+          if (moduleKeys.includes(m.module as ModuleKey)) next[m.module as ModuleKey] = m.maintenance;
+        });
+        setMaint(next);
+      })
+      .catch(() => {});
+  }, [isAdmin]);
+
+  const toggle = async (mod: ModuleKey, value: boolean) => {
+    setBusy(mod);
+    try {
+      await statusApi.adminToggle(mod, value);
+      setMaint((p) => ({ ...p, [mod]: value }));
+      toast.success(`${mod} ${value ? "em manutenção" : "ativado"}`);
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao atualizar");
+    } finally {
+      setBusy(null);
+    }
+  };
 
   return (
     <div className="space-y-10">
@@ -50,6 +90,40 @@ export default function AdminHubPage() {
           Cada módulo gerencia seu próprio fluxo, configurações e métricas. Escolha por onde começar.
         </p>
       </div>
+
+      {isAdmin && (
+        <div className="border-2 border-foreground bg-paper-2 p-6">
+          <div className="flex items-center gap-2 label-eyebrow mb-4">
+            <AlertTriangle size={12} />
+            Manutenção dos módulos
+          </div>
+          <p className="text-xs text-muted-foreground mb-5">
+            Quando ligado, o módulo aparece OFFLINE pros usuários e bloqueia novas operações.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {moduleKeys.map((mod) => (
+              <div
+                key={mod}
+                className={`border p-4 flex items-center justify-between ${
+                  maint[mod] ? "border-destructive bg-destructive/5" : "border-border bg-paper"
+                }`}
+              >
+                <div>
+                  <div className="font-display text-lg capitalize">{mod}</div>
+                  <div className={`text-xs mt-0.5 ${maint[mod] ? "text-destructive" : "text-muted-foreground"}`}>
+                    {maint[mod] ? "EM MANUTENÇÃO" : "ativo"}
+                  </div>
+                </div>
+                <Switch
+                  checked={maint[mod]}
+                  disabled={busy === mod}
+                  onCheckedChange={(v) => toggle(mod, v)}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {modules.filter((m) => !m.adminOnly || isAdmin).map((m) => {
