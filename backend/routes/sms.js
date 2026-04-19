@@ -334,11 +334,11 @@ router.post('/admin/sync-all', authMiddleware, adminMiddleware, async (req, res)
       for (const s of list) {
         const code = s.code || s.id || s.service;
         const name = s.name || s.title || code;
-        const icon = s.icon || s.icon_url || s.image || null;
+        const icon = s.icon || s.icon_url || s.image || `https://sms-activate.guru/assets/ico/${code}0.webp`;
         if (!code) continue;
         await db.query(
           `INSERT INTO sms_services (code, name, icon_url) VALUES (?, ?, ?)
-           ON DUPLICATE KEY UPDATE name=VALUES(name), icon_url=COALESCE(VALUES(icon_url), icon_url)`,
+           ON DUPLICATE KEY UPDATE name=VALUES(name), icon_url=VALUES(icon_url)`,
           [code, name, icon]
         );
         services++;
