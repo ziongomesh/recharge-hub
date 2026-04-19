@@ -294,6 +294,72 @@ export const esimApi = {
     api(`/esim/admin/estoque/${estoqueId}`, { method: "DELETE" }),
 };
 
+// SMS (hero-sms)
+export interface SmsService {
+  code: string;
+  name: string;
+  icon_url: string | null;
+  stock: number;
+  price: number;
+}
+export interface SmsCountry {
+  id: number;
+  name: string;
+  iso?: string | null;
+  enabled?: boolean;
+}
+export interface SmsActivation {
+  id: number;
+  hero_id: string;
+  service_code: string;
+  service_name: string;
+  country_id: number;
+  country_name: string | null;
+  phone: string;
+  cost: number;
+  sale_price: number;
+  status: "waiting" | "received" | "canceled" | "finished" | "expired" | "refunded";
+  sms_code: string | null;
+  sms_text: string | null;
+  created_at: string;
+  expires_at?: string | null;
+  username?: string;
+}
+export interface SmsAdminService {
+  code: string;
+  name: string;
+  icon_url: string | null;
+  enabled: boolean;
+  default_markup_percent: number;
+}
+export const smsApi = {
+  countries: () => api<{ countries: SmsCountry[] }>("/sms/countries"),
+  services: (countryId: number) =>
+    api<{ services: SmsService[] }>(`/sms/services?country=${countryId}`).then((r) => ({
+      services: r.services.map((s) => ({ ...s, price: toNumber(s.price), stock: toNumber(s.stock) })),
+    })),
+  buy: (service: string, country: number) =>
+    api<{ activation: SmsActivation }>("/sms/buy", { method: "POST", body: { service, country } }),
+  status: (id: number) => api<{ activation: SmsActivation }>(`/sms/activations/${id}`),
+  cancel: (id: number) => api(`/sms/activations/${id}/cancel`, { method: "POST" }),
+  finish: (id: number) => api(`/sms/activations/${id}/finish`, { method: "POST" }),
+  active: () => api<{ activations: SmsActivation[] }>("/sms/active"),
+  history: () => api<{ activations: SmsActivation[] }>("/sms/history"),
+  adminBalance: () => api<{ raw: string; balance: number | null }>("/sms/admin/balance"),
+  adminSyncAll: () =>
+    api<{ ok: true; services: number; countries: number; prices: number }>("/sms/admin/sync-all", { method: "POST" }),
+  adminServices: () => api<{ services: SmsAdminService[] }>("/sms/admin/services"),
+  adminUpdateService: (code: string, data: Partial<SmsAdminService>) =>
+    api(`/sms/admin/services/${code}`, { method: "PUT", body: data }),
+  adminCountries: () => api<{ countries: SmsCountry[] }>("/sms/admin/countries"),
+  adminUpdateCountry: (id: number, data: { enabled: boolean }) =>
+    api(`/sms/admin/countries/${id}`, { method: "PUT", body: data }),
+  adminConfig: () => api<{ config: Record<string, string> }>("/sms/admin/config"),
+  adminUpdateConfig: (data: Record<string, string>) =>
+    api("/sms/admin/config", { method: "PUT", body: data }),
+  adminActivations: () => api<{ activations: SmsActivation[] }>("/sms/admin/activations"),
+};
+
 // Admin
 export const adminApi = {
   users: {
