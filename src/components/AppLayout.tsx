@@ -39,12 +39,6 @@ export default function AppLayout() {
             </div>
             <h1 className="font-display text-5xl leading-none mt-2">{meta.label}</h1>
           </div>
-          <div className="text-right">
-            <div className="label-eyebrow">{new Date().toLocaleDateString("pt-BR", { weekday: "long" })}</div>
-            <div className="font-mono-x tabular text-xs mt-1">
-              {new Date().toLocaleDateString("pt-BR")} · São Paulo
-            </div>
-          </div>
         </header>
 
         <div className="px-10 py-10 max-w-6xl">

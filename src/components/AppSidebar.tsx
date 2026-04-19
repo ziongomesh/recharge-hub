@@ -1,10 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-const userLinks = [
-  { to: "/recargas",       label: "Recargas" },
-  { to: "/sms",            label: "SMS" },
-  { to: "/esim",           label: "eSIM" },
+const menuLinks = [
+  { to: "/recargas",   label: "Recargas" },
+  { to: "/sms",        label: "SMS" },
+  { to: "/esim",       label: "eSIM" },
+];
+
+const perfilLinks = [
   { to: "/historico",      label: "Histórico" },
   { to: "/pagamentos",     label: "Pagamentos" },
   { to: "/configuracoes",  label: "Conta" },
@@ -41,7 +44,25 @@ export default function AppSidebar() {
       <nav className="flex-1 px-6 py-5 overflow-y-auto">
         <div className="text-xs text-muted-foreground mb-2">Menu</div>
         <ul className="space-y-0.5">
-          {userLinks.map((l) => (
+          {menuLinks.map((l) => (
+            <li key={l.to}>
+              <Link
+                to={l.to}
+                className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
+                  pathname === l.to
+                    ? "bg-foreground text-background font-medium"
+                    : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                }`}
+              >
+                {l.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="text-xs text-muted-foreground mt-6 mb-2">Perfil</div>
+        <ul className="space-y-0.5">
+          {perfilLinks.map((l) => (
             <li key={l.to}>
               <Link
                 to={l.to}
