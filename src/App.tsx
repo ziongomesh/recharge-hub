@@ -27,7 +27,9 @@ import AdminLogsPage from "@/pages/admin/AdminLogsPage";
 import AdminSuportePage from "@/pages/admin/AdminSuportePage";
 import AdminStaffPage from "@/pages/admin/AdminStaffPage";
 import AdminEsimPage from "@/pages/admin/AdminEsimPage";
+import AdminSmsPage from "@/pages/admin/AdminSmsPage";
 import EsimPage from "@/pages/EsimPage";
+import SmsPage from "@/pages/SmsPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +61,7 @@ const App = () => (
             <Route element={<AppLayout />}>
               <Route path="/recargas" element={<RecargasPage />} />
               <Route path="/esim" element={<EsimPage />} />
+              <Route path="/sms" element={<SmsPage />} />
               <Route path="/historico" element={<HistoricoPage />} />
               <Route path="/pagamentos" element={<PagamentosPage />} />
               <Route path="/configuracoes" element={<ConfiguracoesPage />} />
@@ -77,6 +80,7 @@ const App = () => (
               <Route path="/admin/suporte" element={<AdminSuportePage />} />
               <Route path="/admin/staff" element={<AdminStaffPage />} />
               <Route path="/admin/esim" element={<AdminEsimPage />} />
+              <Route path="/admin/sms" element={<AdminSmsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
