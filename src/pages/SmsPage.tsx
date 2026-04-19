@@ -20,6 +20,56 @@ function flagUrl(iso?: string | null) {
   return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
 }
 
+// Deriva favicon oficial a partir do nome do serviço (1ª palavra → .com)
+function deriveIconUrl(name: string): string | null {
+  if (!name) return null;
+  const clean = String(name)
+    .trim()
+    .replace(/[\u00A0]/g, " ")
+    .split(/[\s,/+|·•\-—–]/)[0]
+    .replace(/[^\w]/g, "")
+    .toLowerCase();
+  if (!clean || clean.length < 2) return null;
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(clean + ".com")}&sz=128`;
+}
+
+function ServiceIcon({ src, name }: { src?: string | null; name: string }) {
+  const initial = src || deriveIconUrl(name);
+  const [url, setUrl] = useState<string | null>(initial);
+  const [stage, setStage] = useState<0 | 1>(0);
+  useEffect(() => {
+    setUrl(initial);
+    setStage(0);
+  }, [initial]);
+
+  if (!url) {
+    return (
+      <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-xs font-medium">
+        {name[0]?.toUpperCase()}
+      </div>
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt=""
+      className="w-7 h-7 rounded object-cover bg-muted"
+      onError={() => {
+        if (stage === 0) {
+          // tenta fallback derivado do nome
+          const fb = deriveIconUrl(name);
+          if (fb && fb !== url) {
+            setUrl(fb);
+            setStage(1);
+            return;
+          }
+        }
+        setUrl(null);
+      }}
+    />
+  );
+}
+
 export default function SmsPage() {
   const [countries, setCountries] = useState<SmsCountry[]>([]);
   const [country, setCountry] = useState<number | null>(null);
@@ -189,13 +239,7 @@ export default function SmsPage() {
           disabled={!!buying || s.stock === 0}
           className="flex-1 px-3 py-2 flex items-center gap-3 disabled:opacity-50 text-left"
         >
-          {s.icon_url ? (
-            <img src={s.icon_url} alt="" className="w-7 h-7 rounded object-cover bg-muted" />
-          ) : (
-            <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-xs font-medium">
-              {s.name[0]?.toUpperCase()}
-            </div>
-          )}
+          <ServiceIcon src={s.icon_url} name={s.name} />
           <div className="flex-1 min-w-0">
             <div className="text-sm truncate">{s.name}</div>
             <div className="text-[10px] text-muted-foreground">estoque {s.stock}</div>
