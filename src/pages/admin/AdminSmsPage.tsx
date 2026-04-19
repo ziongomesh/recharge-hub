@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Search } from "lucide-react";
+import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 type Tab = "services" | "countries" | "brprices" | "activations" | "config";
 
@@ -140,21 +141,28 @@ export default function AdminSmsPage() {
           <div className="label-eyebrow">Módulo</div>
           <h1 className="font-display text-4xl mt-1">SMS.</h1>
         </div>
-        <div className="flex items-center gap-3">
-          {balance && (
-            <span className="text-xs text-muted-foreground">
-              Saldo hero-sms: <span className="font-mono-x">{balance.balance ?? balance.raw}</span>
-            </span>
-          )}
-          <button
-            onClick={sync}
-            disabled={syncing}
-            className="px-3 py-2 text-sm bg-foreground text-background rounded flex items-center gap-2 disabled:opacity-50"
-          >
-            {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-            Sincronizar API
-          </button>
-        </div>
+        <button
+          onClick={sync}
+          disabled={syncing}
+          className="px-3 py-2 text-sm bg-foreground text-background rounded flex items-center gap-2 disabled:opacity-50"
+        >
+          {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+          Sincronizar API
+        </button>
+      </div>
+
+      {/* Saldo grande da API hero-sms */}
+      <div className="mb-6">
+        <AdminBalanceHero
+          label="Hero-SMS"
+          fetcher={async () => {
+            const r = await smsApi.adminBalance();
+            return {
+              balance: r.balance,
+              extra: r.balance_rub != null ? `≈ ₽ ${r.balance_rub.toFixed(2)} · taxa 1₽=R$${r.rate.toFixed(4)}` : null,
+            };
+          }}
+        />
       </div>
 
       <div className="flex gap-1 border-b border-border mb-5 flex-wrap">
@@ -205,7 +213,6 @@ export default function AdminSmsPage() {
                   <th className="text-left p-3"></th>
                   <th className="text-left p-3">Código</th>
                   <th className="text-left p-3">Nome</th>
-                  <th className="text-right p-3">Markup %</th>
                   <th className="text-center p-3">Ativo</th>
                 </tr>
               </thead>
@@ -217,19 +224,6 @@ export default function AdminSmsPage() {
                     </td>
                     <td className="p-3 font-mono-x text-xs">{s.code}</td>
                     <td className="p-3">{s.name}</td>
-                    <td className="p-3 text-right">
-                      <input
-                        type="number"
-                        step="0.01"
-                        defaultValue={s.default_markup_percent}
-                        onBlur={(e) => {
-                          const v = parseFloat(e.target.value);
-                          if (!isNaN(v) && v !== Number(s.default_markup_percent))
-                            updateService(s.code, { default_markup_percent: v });
-                        }}
-                        className="w-20 text-right px-2 py-1 bg-background border border-border rounded text-sm"
-                      />
-                    </td>
                     <td className="p-3 text-center">
                       <input
                         type="checkbox"
