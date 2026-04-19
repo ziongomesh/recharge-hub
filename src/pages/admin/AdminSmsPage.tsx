@@ -37,7 +37,7 @@ export default function AdminSmsPage() {
   const [countries, setCountries] = useState<SmsCountry[]>([]);
   const [activations, setActivations] = useState<SmsActivation[]>([]);
   const [config, setConfig] = useState<Record<string, string>>({});
-  const [balance, setBalance] = useState<{ raw: string; balance: number | null } | null>(null);
+  const [, setBalance] = useState<{ raw: string; balance: number | null } | null>(null);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
