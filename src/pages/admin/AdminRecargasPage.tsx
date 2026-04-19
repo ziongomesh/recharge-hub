@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { recargasApi, planosApi, type Recarga } from "@/lib/api";
+import { recargasApi, planosApi, pagamentosApi, type Recarga } from "@/lib/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -37,13 +37,26 @@ export default function AdminRecargasPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <AdminBalanceHero
           label="Poeki"
           fetcher={async () => {
             const r: any = await planosApi.poekiBalance();
             const bal = r?.data?.balance ?? r?.balance ?? r?.data?.amount ?? null;
             return { balance: typeof bal === "number" ? bal : Number(bal) };
+          }}
+        />
+        <AdminBalanceHero
+          label="VizzionPay · Recargas"
+          fetcher={async () => {
+            const r = await pagamentosApi.adminBalance("recargas");
+            return {
+              balance: r.balance,
+              extra: [
+                r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
+                r.usingFallback ? "usando chave global" : null,
+              ].filter(Boolean).join(" · ") || null,
+            };
           }}
         />
       </div>
