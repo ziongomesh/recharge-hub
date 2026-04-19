@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { smsApi, type SmsService, type SmsCountry, type SmsActivation } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, Search, Phone, Copy, X, Check, RefreshCw, Pin, PinOff, ChevronDown } from "lucide-react";
+import { Loader2, Search, Phone, Copy, X, Check, RefreshCw, Pin, PinOff, ChevronDown, Boxes } from "lucide-react";
 
 const PIN_KEY = "sms:pinned"; // { [countryId]: string[] }
 const MAX_PINS = 5;
@@ -20,9 +20,15 @@ function flagUrl(iso?: string | null) {
   return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
 }
 
+// Detecta serviços "genéricos" (Any other, Outros, Other, etc.)
+function isGenericService(name: string): boolean {
+  const n = (name || "").toLowerCase().trim();
+  return /^(any\s*other|other|others|outro|outros|any|gen[ée]rico|generic)$/.test(n);
+}
+
 // Deriva favicon oficial a partir do nome do serviço (1ª palavra → .com)
 function deriveIconUrl(name: string): string | null {
-  if (!name) return null;
+  if (!name || isGenericService(name)) return null;
   const clean = String(name)
     .trim()
     .replace(/[\u00A0]/g, " ")
@@ -34,13 +40,22 @@ function deriveIconUrl(name: string): string | null {
 }
 
 function ServiceIcon({ src, name }: { src?: string | null; name: string }) {
-  const initial = src || deriveIconUrl(name);
+  const generic = isGenericService(name);
+  const initial = generic ? null : (src || deriveIconUrl(name));
   const [url, setUrl] = useState<string | null>(initial);
   const [stage, setStage] = useState<0 | 1>(0);
   useEffect(() => {
     setUrl(initial);
     setStage(0);
   }, [initial]);
+
+  if (generic) {
+    return (
+      <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-muted-foreground">
+        <Boxes size={14} />
+      </div>
+    );
+  }
 
   if (!url) {
     return (
