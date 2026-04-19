@@ -16,9 +16,23 @@ export default function HistoricoPage() {
   const [highlightId, setHighlightId] = useState<number | null>(navState.newRecargaId ?? null);
 
   const [liveCount, setLiveCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   const load = () => {
     recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
+  };
+
+  const handleSyncAll = async () => {
+    setSyncing(true);
+    try {
+      const r = await recargasApi.syncAll("mine");
+      toast.success(`Sincronizado: ${r.total} pedidos verificados, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao sincronizar com Poeki");
+    } finally {
+      setSyncing(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
