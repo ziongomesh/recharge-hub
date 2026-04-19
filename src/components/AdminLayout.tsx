@@ -1,20 +1,46 @@
 import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminTopBar from "./AdminTopBar";
-import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck, Smartphone, MessageSquare } from "lucide-react";
+import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck, Smartphone, MessageSquare, Boxes } from "lucide-react";
 
-const links = [
-  { to: "/admin",            label: "Visão geral",  icon: LayoutDashboard, end: true },
-  { to: "/admin/suporte",    label: "Atendimento",  icon: Headphones },
-  { to: "/admin/usuarios",   label: "Usuários",     icon: Users },
-  { to: "/admin/staff",      label: "Equipe",       icon: ShieldCheck, adminOnly: true },
-  { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine, adminOnly: true },
-  { to: "/admin/recargas",   label: "Recargas",     icon: Zap, adminOnly: true },
-  { to: "/admin/esim",       label: "eSIM",         icon: Smartphone, adminOnly: true },
-  { to: "/admin/sms",        label: "SMS",          icon: MessageSquare, adminOnly: true },
-  { to: "/admin/operadoras", label: "Operadoras",   icon: Building2, adminOnly: true },
-  { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper, adminOnly: true },
-  { to: "/admin/logs",       label: "Logs",         icon: ScrollText, adminOnly: true },
+type LinkDef = { to: string; label: string; icon: any; end?: boolean; adminOnly?: boolean };
+
+const sections: { title: string; adminOnly?: boolean; links: LinkDef[] }[] = [
+  {
+    title: "Geral",
+    links: [
+      { to: "/admin",         label: "Módulos",     icon: Boxes, end: true },
+      { to: "/admin/suporte", label: "Atendimento", icon: Headphones },
+      { to: "/admin/usuarios", label: "Usuários",   icon: Users },
+      { to: "/admin/staff",   label: "Equipe",      icon: ShieldCheck, adminOnly: true },
+      { to: "/admin/logs",    label: "Logs",        icon: ScrollText, adminOnly: true },
+      { to: "/admin/noticias", label: "Notícias",   icon: Newspaper, adminOnly: true },
+    ],
+  },
+  {
+    title: "Recargas Poeki",
+    adminOnly: true,
+    links: [
+      { to: "/admin/recargas",   label: "Dashboard",  icon: LayoutDashboard, end: true },
+      { to: "/admin/depositos",  label: "Depósitos",  icon: ArrowDownToLine },
+      { to: "/admin/recargas/lista", label: "Recargas", icon: Zap },
+      { to: "/admin/operadoras", label: "Operadoras", icon: Building2 },
+    ],
+  },
+  {
+    title: "eSIM",
+    adminOnly: true,
+    links: [
+      { to: "/admin/esim", label: "Gerenciar eSIM", icon: Smartphone, end: true },
+    ],
+  },
+  {
+    title: "SMS",
+    adminOnly: true,
+    links: [
+      { to: "/admin/sms", label: "Gerenciar SMS", icon: MessageSquare, end: true },
+    ],
+  },
 ];
 
 export default function AdminLayout() {
@@ -47,28 +73,39 @@ export default function AdminLayout() {
         </div>
         <div className="rule mx-6" />
 
-        <nav className="flex-1 px-3 py-4 overflow-y-auto">
-          <ul className="space-y-0.5">
-            {links.filter((l) => !l.adminOnly || user.role === "admin").map((l) => {
-              const Icon = l.icon;
-              return (
-                <li key={l.to}>
-                  <NavLink
-                    to={l.to}
-                    end={l.end}
-                    className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2 text-sm rounded transition-colors ${
-                        isActive ? "bg-foreground text-background font-medium" : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
-                      }`
-                    }
-                  >
-                    <Icon size={15} />
-                    {l.label}
-                  </NavLink>
-                </li>
-              );
-            })}
-          </ul>
+        <nav className="flex-1 px-3 py-4 overflow-y-auto space-y-5">
+          {sections.filter((s) => !s.adminOnly || user.role === "admin").map((section) => {
+            const visible = section.links.filter((l) => !l.adminOnly || user.role === "admin");
+            if (visible.length === 0) return null;
+            return (
+              <div key={section.title}>
+                <div className="px-3 mb-1.5 text-[10px] font-mono-x uppercase tracking-wider text-muted-foreground">
+                  {section.title}
+                </div>
+                <ul className="space-y-0.5">
+                  {visible.map((l) => {
+                    const Icon = l.icon;
+                    return (
+                      <li key={l.to}>
+                        <NavLink
+                          to={l.to}
+                          end={l.end}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-3 py-2 text-sm rounded transition-colors ${
+                              isActive ? "bg-foreground text-background font-medium" : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                            }`
+                          }
+                        >
+                          <Icon size={15} />
+                          {l.label}
+                        </NavLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
 
           <div className="rule my-4" />
 
