@@ -107,6 +107,67 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Helper: consulta Poeki para 1 recarga e atualiza DB. Retorna { recarga, changed, error }
+async function syncOneRecarga(recarga) {
+  if (!recarga.poeki_id) return { recarga, changed: false, error: 'no_poeki_id' };
+  try {
+    const { data } = await axios.get(`${POEKI_URL}/me/orders/${recarga.poeki_id}`, { headers: poekiHeaders(), timeout: 10000 });
+    const poekiRaw = data.data || data;
+    const poekiStatus = poekiRaw.status;
+    if (!poekiStatus || poekiStatus === recarga.status) {
+      return { recarga, changed: false, poekiStatus };
+    }
+    const wasFinal = ['feita', 'cancelada', 'expirada', 'reembolsado'].includes(recarga.status);
+    await db.query('UPDATE recargas SET status = ? WHERE id = ?', [poekiStatus, recarga.id]);
+    // Estorno apenas se ainda não era final (evita estornar duas vezes)
+    if (!wasFinal && ['cancelada', 'expirada', 'reembolsado'].includes(poekiStatus)) {
+      await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [recarga.cost, recarga.user_id]);
+      await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+        [recarga.user_id, 'recarga_refund', `Estorno R$ ${recarga.cost} - Recarga ${poekiStatus} via sync (tel ${recarga.phone})`]);
+    } else if (!wasFinal && poekiStatus === 'feita') {
+      await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+        [recarga.user_id, 'recarga_completed', `Recarga concluída via sync: ${recarga.phone} R$ ${recarga.amount}`]);
+    }
+    recarga.status = poekiStatus;
+    return { recarga, changed: true, poekiStatus };
+  } catch (err) {
+    console.warn('[POEKI sync] falha consulta id=' + recarga.id, err.response?.data || err.message);
+    return { recarga, changed: false, error: 'poeki_unreachable' };
+  }
+}
+
+// Reconsulta na Poeki TODAS as recargas (com poeki_id) do usuário — ou todas do sistema se admin
+// Body opcional: { scope: 'mine' | 'all' }  (default: 'mine'). 'all' só para admin.
+router.post('/sync-all', authMiddleware, async (req, res) => {
+  try {
+    const scope = req.body?.scope === 'all' && req.userRole === 'admin' && req.adminVerified ? 'all' : 'mine';
+    const sql = scope === 'all'
+      ? `SELECT r.*, o.name as operadora_name FROM recargas r
+         JOIN operadoras o ON r.operadora_id = o.id
+         WHERE r.poeki_id IS NOT NULL AND r.poeki_id <> ''
+         ORDER BY r.created_at DESC`
+      : `SELECT r.*, o.name as operadora_name FROM recargas r
+         JOIN operadoras o ON r.operadora_id = o.id
+         WHERE r.user_id = ? AND r.poeki_id IS NOT NULL AND r.poeki_id <> ''
+         ORDER BY r.created_at DESC`;
+    const params = scope === 'all' ? [] : [req.userId];
+    const [rows] = await db.query(sql, params);
+
+    let changed = 0;
+    let errors = 0;
+    // Sequencial para não martelar a Poeki
+    for (const r of rows) {
+      const out = await syncOneRecarga(r);
+      if (out.changed) changed++;
+      if (out.error === 'poeki_unreachable') errors++;
+    }
+    res.json({ scope, total: rows.length, changed, errors });
+  } catch (err) {
+    console.error('Sync-all error:', err);
+    res.status(500).json({ message: 'Erro ao sincronizar todas as recargas' });
+  }
+});
+
 // Sincroniza status com a Poeki ao vivo (consulta + atualiza DB se mudou)
 router.get('/:id(\\d+)/sync', authMiddleware, async (req, res) => {
   try {
