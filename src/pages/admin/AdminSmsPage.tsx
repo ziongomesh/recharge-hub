@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation } from "@/lib/api";
+import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Search } from "lucide-react";
 
-type Tab = "services" | "countries" | "activations" | "config";
+type Tab = "services" | "countries" | "brprices" | "activations" | "config";
 
 export default function AdminSmsPage() {
   const [tab, setTab] = useState<Tab>("services");
@@ -15,6 +15,40 @@ export default function AdminSmsPage() {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
+  const [brPrices, setBrPrices] = useState<SmsCountryPriceItem[]>([]);
+  const [brRate, setBrRate] = useState<number>(0.06);
+  const [brLoading, setBrLoading] = useState(false);
+  const [brEdits, setBrEdits] = useState<Record<string, string>>({});
+  const [brSaving, setBrSaving] = useState<Record<string, boolean>>({});
+
+  const loadBrPrices = async () => {
+    setBrLoading(true);
+    try {
+      const r = await smsApi.adminCountryPrices(73);
+      setBrPrices(r.items);
+      setBrRate(r.rate);
+      setBrEdits({});
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBrLoading(false); }
+  };
+
+  const saveBrPrice = async (code: string) => {
+    const raw = brEdits[code];
+    const sale = raw === "" || raw == null ? null : parseFloat(raw.replace(",", "."));
+    if (sale != null && (isNaN(sale) || sale < 0)) { toast.error("Preço inválido"); return; }
+    setBrSaving((s) => ({ ...s, [code]: true }));
+    try {
+      await smsApi.adminUpdateCountryPrice(code, 73, { sale_price_brl: sale });
+      setBrPrices((arr) => arr.map((x) => x.code === code ? {
+        ...x,
+        sale_price_brl: sale,
+        effective_price_brl: sale != null ? sale : x.computed_price_brl,
+      } : x));
+      setBrEdits((e) => { const n = { ...e }; delete n[code]; return n; });
+      toast.success("Preço salvo");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBrSaving((s) => { const n = { ...s }; delete n[code]; return n; }); }
+  };
 
   const loadAll = async () => {
     setLoading(true);
@@ -98,16 +132,20 @@ export default function AdminSmsPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 border-b border-border mb-5">
+      <div className="flex gap-1 border-b border-border mb-5 flex-wrap">
         {([
           ["services", `Serviços (${services.length})`],
           ["countries", `Países (${countries.length})`],
+          ["brprices", "Preços Brasil"],
           ["activations", `Ativações (${activations.length})`],
           ["config", "Configurações"],
         ] as [Tab, string][]).map(([k, label]) => (
           <button
             key={k}
-            onClick={() => setTab(k)}
+            onClick={() => {
+              setTab(k);
+              if (k === "brprices" && brPrices.length === 0) loadBrPrices();
+            }}
             className={`px-4 py-2 text-sm border-b-2 -mb-px ${
               tab === k ? "border-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
@@ -115,7 +153,7 @@ export default function AdminSmsPage() {
         ))}
       </div>
 
-      {(tab === "services" || tab === "countries") && (
+      {(tab === "services" || tab === "countries" || tab === "brprices") && (
         <div className="relative mb-4 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -252,6 +290,95 @@ export default function AdminSmsPage() {
           </table>
         </div>
         </>
+      ) : tab === "brprices" ? (
+        brLoading ? (
+          <div className="text-sm text-muted-foreground"><Loader2 className="inline animate-spin" size={14} /> Carregando preços do Brasil…</div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+              <div>
+                Taxa atual: <span className="font-mono-x">1 ₽ ≈ R$ {brRate.toFixed(4)}</span> ·
+                {" "}{brPrices.filter(p => p.has_price).length} serviços com preço
+              </div>
+              <button onClick={loadBrPrices} className="px-2 py-1 border border-border rounded hover:bg-paper-2 flex items-center gap-1">
+                <RefreshCw size={12} /> Recarregar
+              </button>
+            </div>
+            <div className="border border-border bg-card overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-paper-2 text-xs text-muted-foreground">
+                  <tr>
+                    <th className="text-left p-3"></th>
+                    <th className="text-left p-3">Serviço</th>
+                    <th className="text-right p-3">Custo (₽)</th>
+                    <th className="text-right p-3">Custo (R$)</th>
+                    <th className="text-right p-3">Estoque</th>
+                    <th className="text-right p-3">Sugerido (R$)</th>
+                    <th className="text-right p-3">Preço de venda (R$)</th>
+                    <th className="text-right p-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {brPrices
+                    .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.code.toLowerCase().includes(search.toLowerCase()))
+                    .map((p) => {
+                      const editVal = brEdits[p.code];
+                      const currentDisplay = editVal != null
+                        ? editVal
+                        : (p.sale_price_brl != null ? p.sale_price_brl.toFixed(2) : "");
+                      const dirty = editVal != null;
+                      return (
+                        <tr key={p.code} className={`border-t border-border ${!p.has_price ? "opacity-50" : ""}`}>
+                          <td className="p-3 w-8">
+                            {p.icon_url ? <img src={p.icon_url} alt="" className="w-7 h-7 rounded" /> : <div className="w-7 h-7 bg-muted rounded" />}
+                          </td>
+                          <td className="p-3">
+                            <div>{p.name}</div>
+                            <div className="text-xs text-muted-foreground font-mono-x">{p.code}</div>
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.cost_rub != null ? p.cost_rub.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right tabular">
+                            {p.cost_brl != null ? p.cost_brl.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.stock}
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder={p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
+                              value={currentDisplay}
+                              onChange={(e) => setBrEdits((s) => ({ ...s, [p.code]: e.target.value }))}
+                              disabled={!p.has_price}
+                              className="w-24 text-right px-2 py-1 bg-background border border-border rounded text-sm font-mono-x"
+                            />
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => saveBrPrice(p.code)}
+                              disabled={!dirty || !p.has_price || brSaving[p.code]}
+                              className="px-2 py-1 text-xs bg-foreground text-background rounded disabled:opacity-30"
+                            >
+                              {brSaving[p.code] ? "…" : dirty ? "Salvar" : "—"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Deixe vazio para usar o preço sugerido (custo × markup). Preencha para travar um valor fixo de venda.
+            </p>
+          </>
+        )
       ) : tab === "activations" ? (
         <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full text-sm">

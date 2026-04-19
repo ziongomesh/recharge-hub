@@ -58,7 +58,8 @@ router.get('/services', authMiddleware, async (req, res) => {
     const rate = await rubToBrl();
     const [rows] = await db.query(
       `SELECT s.code, s.name, s.icon_url, s.default_markup_percent,
-              p.cost AS cost_rub, p.count, p.markup_percent AS price_markup, p.enabled AS price_enabled
+              p.cost AS cost_rub, p.count, p.markup_percent AS price_markup,
+              p.sale_price_brl, p.enabled AS price_enabled
        FROM sms_services s
        LEFT JOIN sms_prices p ON p.service_code = s.code AND p.country_id = ?
        WHERE s.enabled = TRUE
@@ -70,12 +71,15 @@ router.get('/services', authMiddleware, async (req, res) => {
       .map((r) => {
         const costBrl = parseFloat(r.cost_rub) * rate;
         const markup = r.price_markup != null ? r.price_markup : r.default_markup_percent;
+        const price = r.sale_price_brl != null
+          ? parseFloat(r.sale_price_brl)
+          : applyMarkup(costBrl, markup);
         return {
           code: r.code,
           name: r.name,
           icon_url: r.icon_url,
           stock: r.count || 0,
-          price: applyMarkup(costBrl, markup),
+          price,
         };
       });
     res.json({ services: out });
@@ -96,7 +100,7 @@ router.post('/buy', authMiddleware, async (req, res) => {
 
     // Calcula preço atual
     const [[price]] = await conn.query(
-      `SELECT p.cost, p.markup_percent, s.default_markup_percent, s.name AS sname
+      `SELECT p.cost, p.markup_percent, p.sale_price_brl, s.default_markup_percent, s.name AS sname
        FROM sms_prices p JOIN sms_services s ON s.code = p.service_code
        WHERE p.service_code = ? AND p.country_id = ? AND p.enabled = TRUE AND s.enabled = TRUE`,
       [service, country]
@@ -106,7 +110,9 @@ router.post('/buy', authMiddleware, async (req, res) => {
     const rate = await rubToBrl();
     const costBrl = parseFloat(price.cost) * rate;
     const markup = price.markup_percent != null ? price.markup_percent : price.default_markup_percent;
-    const salePrice = applyMarkup(costBrl, markup);
+    const salePrice = price.sale_price_brl != null
+      ? parseFloat(price.sale_price_brl)
+      : applyMarkup(costBrl, markup);
 
     const [users] = await conn.query('SELECT * FROM users WHERE id = ? FOR UPDATE', [req.userId]);
     if (parseFloat(users[0].balance) < salePrice) {
@@ -453,6 +459,81 @@ router.put('/admin/prices/:code/:countryId', authMiddleware, adminMiddleware, as
     [markup_percent ?? null, enabled, req.params.code, parseInt(req.params.countryId, 10)]
   );
   res.json({ ok: true });
+});
+
+// Lista preços por país (default Brasil = 73) com custo já em BRL e preço de venda atual.
+// GET /admin/country-prices?country=73
+router.get('/admin/country-prices', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const country = parseInt(req.query.country ?? '73', 10);
+    const rate = await rubToBrl();
+    const [rows] = await db.query(
+      `SELECT s.code, s.name, s.icon_url, s.enabled AS service_enabled, s.default_markup_percent,
+              p.cost AS cost_rub, p.count, p.markup_percent, p.sale_price_brl, p.enabled AS price_enabled
+       FROM sms_services s
+       LEFT JOIN sms_prices p ON p.service_code = s.code AND p.country_id = ?
+       ORDER BY s.name`,
+      [country]
+    );
+    const items = rows.map((r) => {
+      const costRub = r.cost_rub != null ? parseFloat(r.cost_rub) : null;
+      const costBrl = costRub != null ? Math.ceil(costRub * rate * 100) / 100 : null;
+      const markup = r.markup_percent != null ? r.markup_percent : r.default_markup_percent;
+      const computed = costBrl != null ? applyMarkup(costRub * rate, markup) : null;
+      const sale_price_brl = r.sale_price_brl != null ? parseFloat(r.sale_price_brl) : null;
+      return {
+        code: r.code,
+        name: r.name,
+        icon_url: r.icon_url,
+        service_enabled: !!r.service_enabled,
+        price_enabled: r.cost_rub == null ? false : r.price_enabled !== 0,
+        has_price: r.cost_rub != null,
+        cost_rub: costRub,
+        cost_brl: costBrl,
+        stock: r.count || 0,
+        sale_price_brl,
+        computed_price_brl: computed,
+        effective_price_brl: sale_price_brl != null ? sale_price_brl : computed,
+      };
+    });
+    res.json({ country, rate, items });
+  } catch (e) {
+    console.error('country-prices:', e);
+    res.status(500).json({ message: e.message });
+  }
+});
+
+// Atualiza preço de venda fixo (BRL) e/ou enabled de um (serviço, país).
+// Body: { sale_price_brl: number|null, enabled?: boolean }
+router.put('/admin/country-prices/:code/:countryId', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { sale_price_brl, enabled } = req.body || {};
+    const code = req.params.code;
+    const countryId = parseInt(req.params.countryId, 10);
+    // Garante linha existente em sms_prices (pode não existir se nunca sincronizado pra esse país)
+    const [exists] = await db.query(
+      'SELECT 1 FROM sms_prices WHERE service_code = ? AND country_id = ?',
+      [code, countryId]
+    );
+    if (exists.length === 0) {
+      await db.query(
+        'INSERT INTO sms_prices (service_code, country_id, cost, count, sale_price_brl, enabled) VALUES (?, ?, 0, 0, ?, ?)',
+        [code, countryId, sale_price_brl ?? null, enabled !== false]
+      );
+    } else {
+      await db.query(
+        `UPDATE sms_prices
+           SET sale_price_brl = ?,
+               enabled = COALESCE(?, enabled)
+         WHERE service_code = ? AND country_id = ?`,
+        [sale_price_brl ?? null, enabled, code, countryId]
+      );
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('country-prices put:', e);
+    res.status(500).json({ message: e.message });
+  }
 });
 
 // Configurações (taxa de câmbio etc)

@@ -360,7 +360,32 @@ export const smsApi = {
   adminUpdateConfig: (data: Record<string, string>) =>
     api("/sms/admin/config", { method: "PUT", body: data }),
   adminActivations: () => api<{ activations: SmsActivation[] }>("/sms/admin/activations"),
+  adminCountryPrices: (countryId = 73) =>
+    api<{ country: number; rate: number; items: SmsCountryPriceItem[] }>(
+      `/sms/admin/country-prices?country=${countryId}`
+    ),
+  adminUpdateCountryPrice: (
+    code: string,
+    countryId: number,
+    data: { sale_price_brl: number | null; enabled?: boolean }
+  ) =>
+    api(`/sms/admin/country-prices/${code}/${countryId}`, { method: "PUT", body: data }),
 };
+
+export interface SmsCountryPriceItem {
+  code: string;
+  name: string;
+  icon_url: string | null;
+  service_enabled: boolean;
+  price_enabled: boolean;
+  has_price: boolean;
+  cost_rub: number | null;
+  cost_brl: number | null;
+  stock: number;
+  sale_price_brl: number | null;
+  computed_price_brl: number | null;
+  effective_price_brl: number | null;
+}
 
 // Admin
 export const adminApi = {
