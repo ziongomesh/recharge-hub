@@ -418,6 +418,32 @@ router.put('/admin/countries/:id', authMiddleware, adminMiddleware, async (req, 
   res.json({ ok: true });
 });
 
+// Bulk enable/disable de países (scope: 'all' | 'brazil' | 'none')
+router.post('/admin/countries/bulk', authMiddleware, adminMiddleware, async (req, res) => {
+  const { scope } = req.body || {};
+  try {
+    let affected = 0;
+    if (scope === 'all') {
+      const [r] = await db.query('UPDATE sms_countries SET enabled = 1');
+      affected = r.affectedRows;
+    } else if (scope === 'none') {
+      const [r] = await db.query('UPDATE sms_countries SET enabled = 0');
+      affected = r.affectedRows;
+    } else if (scope === 'brazil') {
+      await db.query('UPDATE sms_countries SET enabled = 0');
+      const [r] = await db.query(
+        "UPDATE sms_countries SET enabled = 1 WHERE LOWER(iso) = 'br' OR LOWER(name) LIKE '%brasil%' OR LOWER(name) LIKE '%brazil%'"
+      );
+      affected = r.affectedRows;
+    } else {
+      return res.status(400).json({ message: 'scope inválido' });
+    }
+    res.json({ ok: true, affected });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+});
+
 // Override de markup por (serviço, país)
 router.put('/admin/prices/:code/:countryId', authMiddleware, adminMiddleware, async (req, res) => {
   const { markup_percent, enabled } = req.body;
