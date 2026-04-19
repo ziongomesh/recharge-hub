@@ -132,16 +132,20 @@ export default function AdminSmsPage() {
         </div>
       </div>
 
-      <div className="flex gap-1 border-b border-border mb-5">
+      <div className="flex gap-1 border-b border-border mb-5 flex-wrap">
         {([
           ["services", `Serviços (${services.length})`],
           ["countries", `Países (${countries.length})`],
+          ["brprices", "Preços Brasil"],
           ["activations", `Ativações (${activations.length})`],
           ["config", "Configurações"],
         ] as [Tab, string][]).map(([k, label]) => (
           <button
             key={k}
-            onClick={() => setTab(k)}
+            onClick={() => {
+              setTab(k);
+              if (k === "brprices" && brPrices.length === 0) loadBrPrices();
+            }}
             className={`px-4 py-2 text-sm border-b-2 -mb-px ${
               tab === k ? "border-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
@@ -149,7 +153,7 @@ export default function AdminSmsPage() {
         ))}
       </div>
 
-      {(tab === "services" || tab === "countries") && (
+      {(tab === "services" || tab === "countries" || tab === "brprices") && (
         <div className="relative mb-4 max-w-sm">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
