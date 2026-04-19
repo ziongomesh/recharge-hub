@@ -21,6 +21,7 @@ app.use('/api/noticias', require('./routes/noticias'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/support', require('./routes/support'));
 app.use('/api/esim', require('./routes/esim'));
+app.use('/api/sms', require('./routes/sms'));
 app.use('/api/webhooks', require('./routes/webhooks'));
 
 // Health check
