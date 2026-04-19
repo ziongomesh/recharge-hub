@@ -234,6 +234,7 @@ const NAME_DOMAIN: Record<string, string> = {
   "vk.com": "vk.com", "vonage": "vonage.com", "voov meeting": "voovmeeting.com",
   "voov": "voovmeeting.com", "ukrnet": "ukr.net", "ukr.net": "ukr.net",
   "viber": "viber.com",
+};
 
 // Deriva favicon oficial a partir do nome do serviço
 function deriveIconUrl(name: string): string | null {
