@@ -161,15 +161,16 @@ export default function SmsPage() {
     (async () => {
       try {
         const [c, a] = await Promise.all([smsApi.countries(), smsApi.active()]);
-        // Brasil sempre no topo
-        const sorted = [...c.countries].sort((a, b) => {
-          const aBR = a.iso === "BR" || /brasil/i.test(a.name) ? -1 : 0;
-          const bBR = b.iso === "BR" || /brasil/i.test(b.name) ? -1 : 0;
+        // Enriquece com iso resolvido + Brasil sempre no topo
+        const enriched = c.countries.map((x) => ({ ...x, iso: resolveIso(x) }));
+        const sorted = [...enriched].sort((a, b) => {
+          const aBR = a.iso === "br" ? -1 : 0;
+          const bBR = b.iso === "br" ? -1 : 0;
           if (aBR !== bBR) return aBR - bBR;
           return a.name.localeCompare(b.name);
         });
         setCountries(sorted);
-        const br = sorted.find((x) => x.iso === "BR" || /brasil/i.test(x.name));
+        const br = sorted.find((x) => x.iso === "br");
         setCountry(br?.id ?? sorted[0]?.id ?? null);
         if (a.activations[0]) setActive(a.activations[0]);
       } catch (e: any) {
@@ -356,8 +357,10 @@ export default function SmsPage() {
                 onClick={() => setOpenCountry((v) => !v)}
                 className="w-full px-3 py-2 text-sm bg-background border border-border rounded outline-none flex items-center gap-2 hover:border-foreground transition"
               >
-                {currentCountry?.iso && (
+                {currentCountry?.iso ? (
                   <img src={flagUrl(currentCountry.iso)!} alt="" className="w-5 h-auto" />
+                ) : (
+                  <div className="w-5 h-3.5 bg-muted rounded-sm" />
                 )}
                 <span className="flex-1 text-left truncate">{currentCountry?.name || "Selecionar país"}</span>
                 <ChevronDown size={14} className={`transition ${openCountry ? "rotate-180" : ""}`} />
@@ -386,15 +389,20 @@ export default function SmsPage() {
                         {c.iso ? (
                           <img src={flagUrl(c.iso)!} alt="" className="w-5 h-auto" loading="lazy" />
                         ) : (
-                          <div className="w-5 h-3.5 bg-muted" />
+                          <div className="w-5 h-3.5 bg-muted rounded-sm" />
                         )}
                         <span className="flex-1 truncate">{c.name}</span>
-                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground">{c.iso}</span>}
+                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground uppercase">{c.iso}</span>}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Dica fixar */}
+            <div className="text-[10px] text-muted-foreground flex items-center gap-1 px-1">
+              <Pin size={9} /> Passe o mouse num serviço e clique no pin para fixar (até {MAX_PINS} por país).
             </div>
           </div>
 
