@@ -213,7 +213,7 @@ export default function AdminSmsPage() {
                 {filteredServices.map((s) => (
                   <tr key={s.code} className="border-t border-border">
                     <td className="p-3 w-8">
-                      {s.icon_url ? <img src={s.icon_url} alt="" className="w-7 h-7 rounded" /> : <div className="w-7 h-7 bg-muted rounded" />}
+                      <ServiceIcon url={s.icon_url} name={s.name} />
                     </td>
                     <td className="p-3 font-mono-x text-xs">{s.code}</td>
                     <td className="p-3">{s.name}</td>
@@ -355,7 +355,7 @@ export default function AdminSmsPage() {
                       return (
                         <tr key={p.code} className={`border-t border-border ${!p.has_price ? "opacity-50" : ""}`}>
                           <td className="p-3 w-8">
-                            {p.icon_url ? <img src={p.icon_url} alt="" className="w-7 h-7 rounded" /> : <div className="w-7 h-7 bg-muted rounded" />}
+                            <ServiceIcon url={p.icon_url} name={p.name} />
                           </td>
                           <td className="p-3">
                             <div>{p.name}</div>
