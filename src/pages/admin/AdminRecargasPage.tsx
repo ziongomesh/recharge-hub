@@ -1,23 +1,52 @@
 import { useEffect, useState } from "react";
 import { recargasApi, type Recarga } from "@/lib/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdminRecargasPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
     recargasApi.listAll().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleSyncAll = async () => {
+    setSyncing(true);
+    try {
+      const r = await recargasApi.syncAll("all");
+      toast.success(`Sincronizado: ${r.total} pedidos verificados na Poeki, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao sincronizar com Poeki");
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const statusLabel = (s: string) => {
-    const map: Record<string, string> = { pendente: "Pendente", andamento: "Em andamento", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada" };
+    const map: Record<string, string> = { pendente: "Pendente", andamento: "Em andamento", feita: "Feita", cancelada: "Cancelada", expirada: "Expirada", reembolsado: "Reembolsado" };
     return map[s] || s;
   };
 
   return (
     <div>
-      <h1 className="text-lg font-semibold mb-6">Todas as Recargas</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-lg font-semibold">Todas as Recargas</h1>
+        <button
+          onClick={handleSyncAll}
+          disabled={syncing || loading}
+          className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
+        >
+          <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
+          {syncing ? "Sincronizando…" : "Sincronizar todas com Poeki"}
+        </button>
+      </div>
       {loading ? (
         <p className="text-sm text-muted-foreground">Carregando...</p>
       ) : (
