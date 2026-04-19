@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { recargasApi, type Recarga } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import RecargaStatusModal from "@/components/RecargaStatusModal";
+import { toast } from "sonner";
 
 export default function HistoricoPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
@@ -15,9 +16,23 @@ export default function HistoricoPage() {
   const [highlightId, setHighlightId] = useState<number | null>(navState.newRecargaId ?? null);
 
   const [liveCount, setLiveCount] = useState(0);
+  const [syncing, setSyncing] = useState(false);
 
   const load = () => {
     recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
+  };
+
+  const handleSyncAll = async () => {
+    setSyncing(true);
+    try {
+      const r = await recargasApi.syncAll("mine");
+      toast.success(`Sincronizado: ${r.total} pedidos verificados, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
+      load();
+    } catch (e: any) {
+      toast.error(e?.message || "Falha ao sincronizar com Poeki");
+    } finally {
+      setSyncing(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -79,6 +94,14 @@ export default function HistoricoPage() {
           <h2 className="font-display text-5xl mt-1">Suas recargas.</h2>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={handleSyncAll}
+            disabled={syncing || loading}
+            className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
+          >
+            <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
+            {syncing ? "Sincronizando…" : "Sincronizar com Poeki"}
+          </button>
           {liveCount > 0 && (
             <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono text-success">
               <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />

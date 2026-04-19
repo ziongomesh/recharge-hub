@@ -186,6 +186,10 @@ export const recargasApi = {
       ...response,
       recargas: response.recargas.map(normalizeRecarga),
     })),
+  syncAll: (scope: "mine" | "all" = "mine") =>
+    api<{ scope: string; total: number; changed: number; errors: number }>(
+      "/recargas/sync-all", { method: "POST", body: { scope } }
+    ),
 };
 
 // Pagamentos
