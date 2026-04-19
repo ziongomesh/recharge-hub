@@ -126,17 +126,65 @@ function isGenericService(name: string): boolean {
   return /^(any\s*other|other|others|outro|outros|any|gen[ée]rico|generic)$/.test(n);
 }
 
-// Deriva favicon oficial a partir do nome do serviço (1ª palavra → .com)
+// Mapa nome (normalizado) → domínio oficial — corrige casos onde a derivação falha
+const NAME_DOMAIN: Record<string, string> = {
+  "burger king": "burgerking.com",
+  "c6 bank": "c6bank.com.br", "c6": "c6bank.com.br",
+  "caixa": "caixa.gov.br", "caixa econômica": "caixa.gov.br",
+  "banco do brasil": "bb.com.br", "bb": "bb.com.br",
+  "santander": "santander.com.br",
+  "itau": "itau.com.br", "itaú": "itau.com.br",
+  "bradesco": "bradesco.com.br", "nubank": "nubank.com.br",
+  "inter": "bancointer.com.br", "banco inter": "bancointer.com.br",
+  "picpay": "picpay.com", "mercado pago": "mercadopago.com",
+  "mercado livre": "mercadolivre.com.br", "mercadolivre": "mercadolivre.com.br",
+  "magazine luiza": "magazineluiza.com.br", "magalu": "magazineluiza.com.br",
+  "americanas": "americanas.com.br", "casas bahia": "casasbahia.com.br",
+  "ponto frio": "pontofrio.com.br", "submarino": "submarino.com.br",
+  "shopee": "shopee.com.br", "shein": "shein.com",
+  "ifood": "ifood.com.br", "rappi": "rappi.com.br",
+  "uber": "uber.com", "uber eats": "ubereats.com",
+  "99": "99app.com", "99app": "99app.com",
+  "bigo live": "bigo.tv", "bigo": "bigo.tv",
+  "tinder": "tinder.com", "happn": "happn.com", "bumble": "bumble.com",
+  "any other": "", // ignorado (cai no genérico)
+  "google": "google.com", "gmail": "google.com", "youtube": "youtube.com",
+  "facebook": "facebook.com", "instagram": "instagram.com",
+  "whatsapp": "whatsapp.com", "telegram": "telegram.org",
+  "discord": "discord.com", "twitter": "twitter.com", "x": "x.com",
+  "tiktok": "tiktok.com", "snapchat": "snapchat.com",
+  "amazon": "amazon.com", "apple": "apple.com", "microsoft": "microsoft.com",
+  "netflix": "netflix.com", "spotify": "spotify.com",
+  "openai": "openai.com", "chatgpt": "openai.com",
+  "claude": "claude.ai", "anthropic": "anthropic.com",
+  "paypal": "paypal.com", "binance": "binance.com",
+  "coinbase": "coinbase.com", "bybit": "bybit.com", "bunq": "bunq.com",
+  "revolut": "revolut.com", "wise": "wise.com",
+  "airbnb": "airbnb.com", "booking": "booking.com",
+  "linkedin": "linkedin.com", "twitch": "twitch.tv", "reddit": "reddit.com",
+  "pinterest": "pinterest.com", "ebay": "ebay.com",
+  "blizzard": "blizzard.com", "steam": "steampowered.com",
+  "epic games": "epicgames.com", "roblox": "roblox.com",
+  "baidu": "baidu.com", "yandex": "yandex.com", "yahoo": "yahoo.com",
+};
+
+// Deriva favicon oficial a partir do nome do serviço
 function deriveIconUrl(name: string): string | null {
   if (!name || isGenericService(name)) return null;
-  const clean = String(name)
-    .trim()
-    .replace(/[\u00A0]/g, " ")
-    .split(/[\s,/+|·•\-—–]/)[0]
-    .replace(/[^\w]/g, "")
-    .toLowerCase();
-  if (!clean || clean.length < 2) return null;
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(clean + ".com")}&sz=128`;
+  const norm = String(name).toLowerCase().trim().replace(/\s+/g, " ");
+  // 1) match exato no mapa
+  if (NAME_DOMAIN[norm]) {
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(NAME_DOMAIN[norm])}&sz=128`;
+  }
+  // 2) tenta nome inteiro como domínio .com (ex: "burger king" → "burgerking.com")
+  const joined = norm.replace(/[^\w]/g, "");
+  if (joined.length >= 3 && joined.length <= 24) {
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(joined + ".com")}&sz=128`;
+  }
+  // 3) fallback: 1ª palavra
+  const first = norm.split(/[\s,/+|·•\-—–]/)[0].replace(/[^\w]/g, "");
+  if (!first || first.length < 2) return null;
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(first + ".com")}&sz=128`;
 }
 
 function ServiceIcon({ src, name }: { src?: string | null; name: string }) {
