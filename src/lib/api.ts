@@ -477,6 +477,7 @@ export interface Operadora {
   id: number;
   name: string;
   enabled: boolean;
+  poeki_allowed?: boolean;
 }
 
 export interface Plano {

@@ -10,27 +10,49 @@ const poekiHeaders = () => ({ 'X-API-Key': process.env.POEKI_API_KEY, 'Content-T
 
 router.get('/', authMiddleware, async (req, res) => {
   try {
-    const [operadoras] = await db.query('SELECT * FROM operadoras ORDER BY name');
+    const isAdmin = req.user?.role === 'admin';
+    const where = isAdmin ? '' : 'WHERE poeki_allowed = 1 AND enabled = 1';
+    const [operadoras] = await db.query(`SELECT * FROM operadoras ${where} ORDER BY name`);
     res.json({ operadoras });
   } catch (err) {
     res.status(500).json({ message: 'Erro interno' });
   }
 });
 
-// Sincroniza o flag enabled local com o que a Poeki realmente libera para esta chave
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { data } = await axios.get(`${POEKI_URL}/operators`, { headers: poekiHeaders() });
     const list = data.data || data;
     if (!Array.isArray(list)) return res.status(500).json({ message: 'Resposta inesperada da Poeki' });
 
-    const poekiMap = new Map(list.map((o) => [String(o.operator).toLowerCase(), !!o.enabled]));
-    const [locais] = await db.query('SELECT id, name FROM operadoras');
-    for (const op of locais) {
-      const enabled = poekiMap.get(String(op.name).toLowerCase()) === true;
-      await db.query('UPDATE operadoras SET enabled = ? WHERE id = ?', [enabled ? 1 : 0, op.id]);
+    const allowedNames = list
+      .filter((o) => o.enabled !== false)
+      .map((o) => String(o.operator).toLowerCase());
+
+    for (const name of allowedNames) {
+      await db.query(
+        `INSERT INTO operadoras (name, enabled, poeki_allowed) VALUES (?, 0, 1)
+         ON DUPLICATE KEY UPDATE poeki_allowed = 1`,
+        [name]
+      );
     }
-    res.json({ message: `Sincronizadas ${locais.length} operadoras com a Poeki`, poeki: list });
+
+    if (allowedNames.length > 0) {
+      const placeholders = allowedNames.map(() => '?').join(',');
+      await db.query(
+        `UPDATE operadoras SET poeki_allowed = 0, enabled = 0
+         WHERE LOWER(name) NOT IN (${placeholders})`,
+        allowedNames
+      );
+    } else {
+      await db.query(`UPDATE operadoras SET poeki_allowed = 0, enabled = 0`);
+    }
+
+    const [locais] = await db.query('SELECT id, name, poeki_allowed, enabled FROM operadoras ORDER BY name');
+    res.json({
+      message: `Sincronizado: ${allowedNames.length} operadora(s) autorizada(s) pela Poeki`,
+      operadoras: locais,
+    });
   } catch (err) {
     const msg = err.response?.data?.message || err.message;
     res.status(500).json({ message: `Erro ao sincronizar com a Poeki: ${msg}` });
@@ -40,8 +62,21 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { name, enabled } = req.body;
-    await db.query('UPDATE operadoras SET name = COALESCE(?, name), enabled = COALESCE(?, enabled) WHERE id = ?',
-      [name, enabled, req.params.id]);
+
+    if (enabled === true || enabled === 1) {
+      const [[op]] = await db.query('SELECT poeki_allowed FROM operadoras WHERE id = ?', [req.params.id]);
+      if (!op) return res.status(404).json({ message: 'Operadora não encontrada' });
+      if (!op.poeki_allowed) {
+        return res.status(403).json({
+          message: 'Esta operadora não está autorizada pela sua chave Poeki. Sincronize primeiro.',
+        });
+      }
+    }
+
+    await db.query(
+      'UPDATE operadoras SET name = COALESCE(?, name), enabled = COALESCE(?, enabled) WHERE id = ?',
+      [name ?? null, enabled ?? null, req.params.id]
+    );
     const [rows] = await db.query('SELECT * FROM operadoras WHERE id = ?', [req.params.id]);
     res.json(rows[0]);
   } catch (err) {
