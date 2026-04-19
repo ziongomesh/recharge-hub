@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { adminApi } from "@/lib/api";
+import { adminApi, pagamentosApi } from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 const fmtBRL = (n: number) => `R$ ${Number(n || 0).toFixed(2)}`;
 
@@ -31,6 +32,16 @@ export default function AdminDepositosPage() {
 
   return (
     <div className="space-y-6">
+      <AdminBalanceHero
+        label="VizzionPay"
+        fetcher={async () => {
+          const r = await pagamentosApi.adminBalance();
+          return {
+            balance: r.balance,
+            extra: r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
+          };
+        }}
+      />
       <div>
         <div className="label-eyebrow">Financeiro</div>
         <h1 className="font-display text-4xl mt-1">Depósitos.</h1>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Search } from "lucide-react";
+import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 type Tab = "services" | "countries" | "brprices" | "activations" | "config";
 
@@ -36,7 +37,7 @@ export default function AdminSmsPage() {
   const [countries, setCountries] = useState<SmsCountry[]>([]);
   const [activations, setActivations] = useState<SmsActivation[]>([]);
   const [config, setConfig] = useState<Record<string, string>>({});
-  const [balance, setBalance] = useState<{ raw: string; balance: number | null } | null>(null);
+  const [, setBalance] = useState<{ raw: string; balance: number | null } | null>(null);
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
@@ -140,21 +141,28 @@ export default function AdminSmsPage() {
           <div className="label-eyebrow">Módulo</div>
           <h1 className="font-display text-4xl mt-1">SMS.</h1>
         </div>
-        <div className="flex items-center gap-3">
-          {balance && (
-            <span className="text-xs text-muted-foreground">
-              Saldo hero-sms: <span className="font-mono-x">{balance.balance ?? balance.raw}</span>
-            </span>
-          )}
-          <button
-            onClick={sync}
-            disabled={syncing}
-            className="px-3 py-2 text-sm bg-foreground text-background rounded flex items-center gap-2 disabled:opacity-50"
-          >
-            {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-            Sincronizar API
-          </button>
-        </div>
+        <button
+          onClick={sync}
+          disabled={syncing}
+          className="px-3 py-2 text-sm bg-foreground text-background rounded flex items-center gap-2 disabled:opacity-50"
+        >
+          {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
+          Sincronizar API
+        </button>
+      </div>
+
+      {/* Saldo grande da API hero-sms */}
+      <div className="mb-6">
+        <AdminBalanceHero
+          label="Hero-SMS"
+          fetcher={async () => {
+            const r = await smsApi.adminBalance();
+            return {
+              balance: r.balance,
+              extra: r.balance_rub != null ? `≈ ₽ ${r.balance_rub.toFixed(2)} · taxa 1₽=R$${r.rate.toFixed(4)}` : null,
+            };
+          }}
+        />
       </div>
 
       <div className="flex gap-1 border-b border-border mb-5 flex-wrap">
@@ -205,7 +213,6 @@ export default function AdminSmsPage() {
                   <th className="text-left p-3"></th>
                   <th className="text-left p-3">Código</th>
                   <th className="text-left p-3">Nome</th>
-                  <th className="text-right p-3">Markup %</th>
                   <th className="text-center p-3">Ativo</th>
                 </tr>
               </thead>
@@ -217,19 +224,6 @@ export default function AdminSmsPage() {
                     </td>
                     <td className="p-3 font-mono-x text-xs">{s.code}</td>
                     <td className="p-3">{s.name}</td>
-                    <td className="p-3 text-right">
-                      <input
-                        type="number"
-                        step="0.01"
-                        defaultValue={s.default_markup_percent}
-                        onBlur={(e) => {
-                          const v = parseFloat(e.target.value);
-                          if (!isNaN(v) && v !== Number(s.default_markup_percent))
-                            updateService(s.code, { default_markup_percent: v });
-                        }}
-                        className="w-20 text-right px-2 py-1 bg-background border border-border rounded text-sm"
-                      />
-                    </td>
                     <td className="p-3 text-center">
                       <input
                         type="checkbox"
@@ -338,7 +332,6 @@ export default function AdminSmsPage() {
                     <th className="text-right p-3">Custo (₽)</th>
                     <th className="text-right p-3">Custo (R$)</th>
                     <th className="text-right p-3">Estoque</th>
-                    <th className="text-right p-3">Sugerido (R$)</th>
                     <th className="text-right p-3">Preço de venda (R$)</th>
                     <th className="text-right p-3"></th>
                   </tr>
@@ -370,9 +363,6 @@ export default function AdminSmsPage() {
                           <td className="p-3 text-right tabular text-xs text-muted-foreground">
                             {p.stock}
                           </td>
-                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
-                            {p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
-                          </td>
                           <td className="p-3 text-right">
                             <input
                               type="text"
@@ -400,7 +390,7 @@ export default function AdminSmsPage() {
               </table>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              Deixe vazio para usar o preço sugerido (custo × markup). Preencha para travar um valor fixo de venda.
+              Defina manualmente o preço de venda em R$ que será cobrado do usuário. O custo (R$) é a conversão do custo da hero-sms.
             </p>
           </>
         )
@@ -449,15 +439,9 @@ export default function AdminSmsPage() {
             />
             <p className="text-xs text-muted-foreground mt-1">Conversão do custo da hero-sms (em rublos) para BRL.</p>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground block mb-1">Markup global padrão (%)</label>
-            <input
-              type="number" step="0.01"
-              value={config.global_markup || ""}
-              onChange={(e) => setConfig({ ...config, global_markup: e.target.value })}
-              className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
-            />
-          </div>
+          <p className="text-xs text-muted-foreground">
+            Os preços de venda são definidos manualmente em <strong>Preços Brasil</strong>.
+          </p>
           <button onClick={saveConfig} className="px-4 py-2 bg-foreground text-background rounded text-sm">Salvar</button>
         </div>
       )}

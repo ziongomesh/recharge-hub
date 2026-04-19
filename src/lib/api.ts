@@ -214,9 +214,10 @@ export const pagamentosApi = {
       ...response,
       pagamentos: response.pagamentos.map(normalizePagamento),
     })),
+  adminBalance: () =>
+    api<{ balance: number; blocked?: number; raw?: unknown }>("/pagamentos/admin/balance"),
 };
 
-// Noticias
 export const noticiasApi = {
   list: () => api<{ noticias: Noticia[] }>("/noticias"),
   create: (data: { title: string; content: string; pinned?: boolean }) =>
@@ -345,7 +346,10 @@ export const smsApi = {
   finish: (id: number) => api(`/sms/activations/${id}/finish`, { method: "POST" }),
   active: () => api<{ activations: SmsActivation[] }>("/sms/active"),
   history: () => api<{ activations: SmsActivation[] }>("/sms/history"),
-  adminBalance: () => api<{ raw: string; balance: number | null }>("/sms/admin/balance"),
+  adminBalance: () =>
+    api<{ raw: string; balance: number | null; balance_rub: number | null; balance_brl: number | null; rate: number }>(
+      "/sms/admin/balance"
+    ),
   adminSyncAll: () =>
     api<{ ok: true; services: number; countries: number; prices: number }>("/sms/admin/sync-all", { method: "POST" }),
   adminServices: () => api<{ services: SmsAdminService[] }>("/sms/admin/services"),

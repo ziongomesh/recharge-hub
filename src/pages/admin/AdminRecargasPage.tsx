@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { recargasApi, type Recarga } from "@/lib/api";
+import { recargasApi, planosApi, type Recarga } from "@/lib/api";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 export default function AdminRecargasPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
@@ -36,6 +37,16 @@ export default function AdminRecargasPage() {
 
   return (
     <div>
+      <div className="mb-6">
+        <AdminBalanceHero
+          label="Poeki"
+          fetcher={async () => {
+            const r: any = await planosApi.poekiBalance();
+            const bal = r?.data?.balance ?? r?.balance ?? r?.data?.amount ?? null;
+            return { balance: typeof bal === "number" ? bal : Number(bal) };
+          }}
+        />
+      </div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold">Todas as Recargas</h1>
         <button
