@@ -290,6 +290,95 @@ export default function AdminSmsPage() {
           </table>
         </div>
         </>
+      ) : tab === "brprices" ? (
+        brLoading ? (
+          <div className="text-sm text-muted-foreground"><Loader2 className="inline animate-spin" size={14} /> Carregando preços do Brasil…</div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
+              <div>
+                Taxa atual: <span className="font-mono-x">1 ₽ ≈ R$ {brRate.toFixed(4)}</span> ·
+                {" "}{brPrices.filter(p => p.has_price).length} serviços com preço
+              </div>
+              <button onClick={loadBrPrices} className="px-2 py-1 border border-border rounded hover:bg-paper-2 flex items-center gap-1">
+                <RefreshCw size={12} /> Recarregar
+              </button>
+            </div>
+            <div className="border border-border bg-card overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-paper-2 text-xs text-muted-foreground">
+                  <tr>
+                    <th className="text-left p-3"></th>
+                    <th className="text-left p-3">Serviço</th>
+                    <th className="text-right p-3">Custo (₽)</th>
+                    <th className="text-right p-3">Custo (R$)</th>
+                    <th className="text-right p-3">Estoque</th>
+                    <th className="text-right p-3">Sugerido (R$)</th>
+                    <th className="text-right p-3">Preço de venda (R$)</th>
+                    <th className="text-right p-3"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {brPrices
+                    .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.code.toLowerCase().includes(search.toLowerCase()))
+                    .map((p) => {
+                      const editVal = brEdits[p.code];
+                      const currentDisplay = editVal != null
+                        ? editVal
+                        : (p.sale_price_brl != null ? p.sale_price_brl.toFixed(2) : "");
+                      const dirty = editVal != null;
+                      return (
+                        <tr key={p.code} className={`border-t border-border ${!p.has_price ? "opacity-50" : ""}`}>
+                          <td className="p-3 w-8">
+                            {p.icon_url ? <img src={p.icon_url} alt="" className="w-7 h-7 rounded" /> : <div className="w-7 h-7 bg-muted rounded" />}
+                          </td>
+                          <td className="p-3">
+                            <div>{p.name}</div>
+                            <div className="text-xs text-muted-foreground font-mono-x">{p.code}</div>
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.cost_rub != null ? p.cost_rub.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right tabular">
+                            {p.cost_brl != null ? p.cost_brl.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.stock}
+                          </td>
+                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
+                            {p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
+                          </td>
+                          <td className="p-3 text-right">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder={p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
+                              value={currentDisplay}
+                              onChange={(e) => setBrEdits((s) => ({ ...s, [p.code]: e.target.value }))}
+                              disabled={!p.has_price}
+                              className="w-24 text-right px-2 py-1 bg-background border border-border rounded text-sm font-mono-x"
+                            />
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => saveBrPrice(p.code)}
+                              disabled={!dirty || !p.has_price || brSaving[p.code]}
+                              className="px-2 py-1 text-xs bg-foreground text-background rounded disabled:opacity-30"
+                            >
+                              {brSaving[p.code] ? "…" : dirty ? "Salvar" : "—"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground mt-3">
+              Deixe vazio para usar o preço sugerido (custo × markup). Preencha para travar um valor fixo de venda.
+            </p>
+          </>
+        )
       ) : tab === "activations" ? (
         <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full text-sm">
