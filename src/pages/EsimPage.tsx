@@ -13,16 +13,14 @@ export default function EsimPage() {
   const [confirm, setConfirm] = useState<EsimProduto | null>(null);
   const [modalVenda, setModalVenda] = useState<EsimVenda | null>(null);
   const [modalQr, setModalQr] = useState<string | null>(null);
-  const [history, setHistory] = useState<EsimVenda[]>([]);
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const load = async () => {
     setLoading(true);
     try {
-      const [{ produtos: p }, { vendas }] = await Promise.all([esimApi.produtos(), esimApi.minhas()]);
+      const { produtos: p } = await esimApi.produtos();
       setProdutos(p);
-      setHistory(vendas);
     } catch (e: any) {
       toast.error(e.message || "Erro ao carregar");
     } finally {
