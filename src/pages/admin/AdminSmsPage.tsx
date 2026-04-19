@@ -443,15 +443,9 @@ export default function AdminSmsPage() {
             />
             <p className="text-xs text-muted-foreground mt-1">Conversão do custo da hero-sms (em rublos) para BRL.</p>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground block mb-1">Markup global padrão (%)</label>
-            <input
-              type="number" step="0.01"
-              value={config.global_markup || ""}
-              onChange={(e) => setConfig({ ...config, global_markup: e.target.value })}
-              className="w-full px-3 py-2 bg-background border border-border rounded text-sm"
-            />
-          </div>
+          <p className="text-xs text-muted-foreground">
+            Os preços de venda são definidos manualmente em <strong>Preços Brasil</strong>.
+          </p>
           <button onClick={saveConfig} className="px-4 py-2 bg-foreground text-background rounded text-sm">Salvar</button>
         </div>
       )}
