@@ -5,7 +5,7 @@ import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCh
 const modules = [
   {
     to: "/admin/recargas",
-    title: "Recargas Poeki",
+    title: "Recargas",
     desc: "Recargas de celular, depósitos, operadoras e métricas financeiras.",
     icon: Zap,
     items: ["Dashboard", "Depósitos", "Recargas", "Operadoras"],
