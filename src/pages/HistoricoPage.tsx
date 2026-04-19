@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { recargasApi, type Recarga } from "@/lib/api";
+import { recargasApi, esimApi, smsApi, type Recarga, type EsimVenda, type SmsActivation } from "@/lib/api";
 import { Loader2, RefreshCw } from "lucide-react";
 import RecargaStatusModal from "@/components/RecargaStatusModal";
 import { toast } from "sonner";
+
+type Tab = "recargas" | "esim" | "sms";
 
 export default function HistoricoPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
