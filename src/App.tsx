@@ -26,6 +26,8 @@ import AdminDepositosPage from "@/pages/admin/AdminDepositosPage";
 import AdminLogsPage from "@/pages/admin/AdminLogsPage";
 import AdminSuportePage from "@/pages/admin/AdminSuportePage";
 import AdminStaffPage from "@/pages/admin/AdminStaffPage";
+import AdminEsimPage from "@/pages/admin/AdminEsimPage";
+import EsimPage from "@/pages/EsimPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -56,6 +58,7 @@ const App = () => (
             {/* Área cliente */}
             <Route element={<AppLayout />}>
               <Route path="/recargas" element={<RecargasPage />} />
+              <Route path="/esim" element={<EsimPage />} />
               <Route path="/historico" element={<HistoricoPage />} />
               <Route path="/pagamentos" element={<PagamentosPage />} />
               <Route path="/configuracoes" element={<ConfiguracoesPage />} />
@@ -73,6 +76,7 @@ const App = () => (
               <Route path="/admin/logs" element={<AdminLogsPage />} />
               <Route path="/admin/suporte" element={<AdminSuportePage />} />
               <Route path="/admin/staff" element={<AdminStaffPage />} />
+              <Route path="/admin/esim" element={<AdminEsimPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
