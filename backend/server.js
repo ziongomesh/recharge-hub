@@ -23,6 +23,7 @@ app.use('/api/support', require('./routes/support'));
 app.use('/api/esim', require('./routes/esim'));
 app.use('/api/sms', require('./routes/sms'));
 app.use('/api/webhooks', require('./routes/webhooks'));
+app.use('/api/status', require('./routes/status'));
 
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
