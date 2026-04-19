@@ -441,7 +441,34 @@ export const adminApi = {
     }>("/admin/stats"),
 };
 
-// Support
+// Status agregado dos módulos
+export interface ModuleStatus {
+  maintenance: boolean;
+  apiOk: boolean;
+  paymentOk: boolean;
+  online: boolean;
+  reason?: string | null;
+  operadoras?: string[];
+}
+export interface StatusResponse {
+  recargas: ModuleStatus;
+  sms: ModuleStatus;
+  esim: ModuleStatus;
+  updatedAt: string;
+  cached?: boolean;
+}
+export const statusApi = {
+  get: () => api<StatusResponse>("/status"),
+  adminList: () =>
+    api<{ modules: { module: string; maintenance: boolean; message: string | null; updated_at: string }[] }>(
+      "/status/admin/modules"
+    ),
+  adminToggle: (module: "recargas" | "sms" | "esim", maintenance: boolean, message?: string | null) =>
+    api<{ module: string; maintenance: boolean; message: string | null }>(
+      `/status/admin/modules/${module}`,
+      { method: "POST", body: { maintenance, message } }
+    ),
+};
 export interface SupportSession {
   id: number;
   user_id: number;
