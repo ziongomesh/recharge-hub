@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Loader2, Search, Phone, Copy, X, Check, RefreshCw, Pin, PinOff, ChevronDown, Boxes } from "lucide-react";
 
 const PIN_KEY = "sms:pinned"; // { [countryId]: string[] }
-const MAX_PINS = 5;
+const MAX_PINS = 4;
 
 function loadPins(): Record<string, string[]> {
   try { return JSON.parse(localStorage.getItem(PIN_KEY) || "{}"); } catch { return {}; }
