@@ -9,7 +9,10 @@ type Tab = "recargas" | "esim" | "sms";
 
 export default function HistoricoPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
+  const [esimVendas, setEsimVendas] = useState<EsimVenda[]>([]);
+  const [smsHistory, setSmsHistory] = useState<SmsActivation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>("recargas");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,7 +24,12 @@ export default function HistoricoPage() {
   const [syncing, setSyncing] = useState(false);
 
   const load = () => {
-    recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}).finally(() => setLoading(false));
+    setLoading(true);
+    Promise.all([
+      recargasApi.list().then((r) => setRecargas(r.recargas)).catch(() => {}),
+      esimApi.minhas().then((r) => setEsimVendas(r.vendas)).catch(() => {}),
+      smsApi.history().then((r) => setSmsHistory(r.activations)).catch(() => {}),
+    ]).finally(() => setLoading(false));
   };
 
   const handleSyncAll = async () => {
