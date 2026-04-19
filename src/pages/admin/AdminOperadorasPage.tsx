@@ -35,11 +35,15 @@ export default function AdminOperadorasPage() {
   };
 
   const toggleEnabled = async (op: Operadora) => {
+    if (!op.enabled && !op.poeki_allowed) {
+      toast.error("Operadora não autorizada pela sua chave Poeki. Sincronize primeiro.");
+      return;
+    }
     try {
       await operadorasApi.update(op.id, { enabled: !op.enabled });
       setOperadoras((prev) => prev.map((o) => o.id === op.id ? { ...o, enabled: !o.enabled } : o));
       toast.success(`${op.name} ${!op.enabled ? "ativada" : "desativada"}`);
-    } catch { toast.error("Erro ao atualizar"); }
+    } catch (e: any) { toast.error(e?.message || "Erro ao atualizar"); }
   };
 
   const savePrice = async (plano: Plano) => {
@@ -107,20 +111,38 @@ export default function AdminOperadorasPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
-        {operadoras.map((op) => (
-          <Card key={op.id} className={selected?.id === op.id ? "ring-1 ring-primary" : ""}>
-            <CardContent className="p-4 flex items-center justify-between">
-              <button onClick={() => setSelected(selected?.id === op.id ? null : op)} className="font-semibold">
-                {op.name}
-              </button>
-              <Switch checked={op.enabled} onCheckedChange={() => toggleEnabled(op)} />
-            </CardContent>
-          </Card>
-        ))}
+        {operadoras.map((op) => {
+          const allowed = !!op.poeki_allowed;
+          return (
+            <Card key={op.id} className={`${selected?.id === op.id ? "ring-1 ring-primary" : ""} ${!allowed ? "opacity-60" : ""}`}>
+              <CardContent className="p-4 flex items-center justify-between">
+                <button
+                  onClick={() => setSelected(selected?.id === op.id ? null : op)}
+                  className="font-semibold flex items-center gap-2"
+                  title={allowed ? "" : "Não autorizada pela Poeki"}
+                >
+                  {op.name}
+                  {!allowed && (
+                    <span className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground border border-border px-1.5 py-0.5">
+                      sem acesso
+                    </span>
+                  )}
+                </button>
+                <Switch
+                  checked={op.enabled}
+                  onCheckedChange={() => toggleEnabled(op)}
+                  disabled={!allowed && !op.enabled}
+                />
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <p className="text-xs text-muted-foreground mb-3">
-        {selected ? `Filtrando: ${selected.name}. Clique de novo para ver todas.` : "Mostrando todas as operadoras. Clique numa operadora para filtrar. Custo Poeki = API. Preço cliente = editável."}
+        {selected
+          ? `Filtrando: ${selected.name}. Clique de novo para ver todas.`
+          : "Apenas operadoras autorizadas pela sua chave Poeki podem ser ativadas. Use 'Sincronizar Poeki' para atualizar a lista."}
       </p>
 
       {loadingAll ? (
