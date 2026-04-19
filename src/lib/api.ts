@@ -354,6 +354,8 @@ export const smsApi = {
   adminCountries: () => api<{ countries: SmsCountry[] }>("/sms/admin/countries"),
   adminUpdateCountry: (id: number, data: { enabled: boolean }) =>
     api(`/sms/admin/countries/${id}`, { method: "PUT", body: data }),
+  adminBulkCountries: (scope: "all" | "brazil" | "none") =>
+    api<{ ok: true; affected: number }>("/sms/admin/countries/bulk", { method: "POST", body: { scope } }),
   adminConfig: () => api<{ config: Record<string, string> }>("/sms/admin/config"),
   adminUpdateConfig: (data: Record<string, string>) =>
     api("/sms/admin/config", { method: "PUT", body: data }),

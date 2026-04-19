@@ -181,6 +181,48 @@ export default function AdminSmsPage() {
           </div>
         )
       ) : tab === "countries" ? (
+        <>
+          <div className="flex flex-wrap gap-2 mb-3">
+            <button
+              onClick={async () => {
+                if (!confirm("Ativar SMS apenas para o Brasil (desativa os demais)?")) return;
+                try {
+                  const r = await smsApi.adminBulkCountries("brazil");
+                  toast.success(`Brasil ativado (${r.affected} registro(s))`);
+                  loadAll();
+                } catch (e: any) { toast.error(e.message); }
+              }}
+              className="px-3 py-1.5 text-xs bg-foreground text-background rounded"
+            >
+              Ativar só Brasil
+            </button>
+            <button
+              onClick={async () => {
+                if (!confirm("Ativar SMS para TODOS os países?")) return;
+                try {
+                  const r = await smsApi.adminBulkCountries("all");
+                  toast.success(`${r.affected} países ativados`);
+                  loadAll();
+                } catch (e: any) { toast.error(e.message); }
+              }}
+              className="px-3 py-1.5 text-xs border border-border rounded hover:bg-paper-2"
+            >
+              Ativar todos
+            </button>
+            <button
+              onClick={async () => {
+                if (!confirm("Desativar TODOS os países?")) return;
+                try {
+                  const r = await smsApi.adminBulkCountries("none");
+                  toast.success(`${r.affected} países desativados`);
+                  loadAll();
+                } catch (e: any) { toast.error(e.message); }
+              }}
+              className="px-3 py-1.5 text-xs border border-border rounded hover:bg-paper-2 text-muted-foreground"
+            >
+              Desativar todos
+            </button>
+          </div>
         <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-paper-2 text-xs text-muted-foreground">
@@ -209,6 +251,7 @@ export default function AdminSmsPage() {
             </tbody>
           </table>
         </div>
+        </>
       ) : tab === "activations" ? (
         <div className="border border-border bg-card overflow-x-auto">
           <table className="w-full text-sm">
