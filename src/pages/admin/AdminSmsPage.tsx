@@ -15,6 +15,40 @@ export default function AdminSmsPage() {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
+  const [brPrices, setBrPrices] = useState<SmsCountryPriceItem[]>([]);
+  const [brRate, setBrRate] = useState<number>(0.06);
+  const [brLoading, setBrLoading] = useState(false);
+  const [brEdits, setBrEdits] = useState<Record<string, string>>({});
+  const [brSaving, setBrSaving] = useState<Record<string, boolean>>({});
+
+  const loadBrPrices = async () => {
+    setBrLoading(true);
+    try {
+      const r = await smsApi.adminCountryPrices(73);
+      setBrPrices(r.items);
+      setBrRate(r.rate);
+      setBrEdits({});
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBrLoading(false); }
+  };
+
+  const saveBrPrice = async (code: string) => {
+    const raw = brEdits[code];
+    const sale = raw === "" || raw == null ? null : parseFloat(raw.replace(",", "."));
+    if (sale != null && (isNaN(sale) || sale < 0)) { toast.error("Preço inválido"); return; }
+    setBrSaving((s) => ({ ...s, [code]: true }));
+    try {
+      await smsApi.adminUpdateCountryPrice(code, 73, { sale_price_brl: sale });
+      setBrPrices((arr) => arr.map((x) => x.code === code ? {
+        ...x,
+        sale_price_brl: sale,
+        effective_price_brl: sale != null ? sale : x.computed_price_brl,
+      } : x));
+      setBrEdits((e) => { const n = { ...e }; delete n[code]; return n; });
+      toast.success("Preço salvo");
+    } catch (e: any) { toast.error(e.message); }
+    finally { setBrSaving((s) => { const n = { ...s }; delete n[code]; return n; }); }
+  };
 
   const loadAll = async () => {
     setLoading(true);
