@@ -5,6 +5,31 @@ import { Loader2, RefreshCw, Search } from "lucide-react";
 
 type Tab = "services" | "countries" | "brprices" | "activations" | "config";
 
+// Fallback: deriva favicon do nome do serviço quando icon_url não vem do backend
+function fallbackIcon(name: string): string {
+  const slug = (name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "")
+    .slice(0, 24);
+  if (!slug) return "";
+  return `https://www.google.com/s2/favicons?sz=64&domain=${slug}.com`;
+}
+
+function ServiceIcon({ url, name }: { url: string | null; name: string }) {
+  const src = url || fallbackIcon(name);
+  if (!src) return <div className="w-7 h-7 bg-muted rounded" />;
+  return (
+    <img
+      src={src}
+      alt=""
+      className="w-7 h-7 rounded"
+      onError={(e) => {
+        (e.currentTarget as HTMLImageElement).style.visibility = "hidden";
+      }}
+    />
+  );
+}
+
 export default function AdminSmsPage() {
   const [tab, setTab] = useState<Tab>("services");
   const [services, setServices] = useState<SmsAdminService[]>([]);
