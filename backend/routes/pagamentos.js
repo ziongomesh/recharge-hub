@@ -130,25 +130,58 @@ router.get('/', authMiddleware, async (req, res) => {
 // ---- ADMIN: saldo da conta VizzionPay ----
 const { adminMiddleware } = require('../middleware/auth');
 router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
-  try {
-    if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
-      return res.status(500).json({ message: 'VIZZION_PUBLIC_KEY/SECRET_KEY ausentes no .env do backend' });
-    }
-    // VizzionPay v1: GET /gateway/balance retorna { availableBalance, blockedBalance }
-    const { data } = await axios.get(`${VIZZION_URL}/gateway/balance`, {
-      headers: {
-        'x-public-key': process.env.VIZZION_PUBLIC_KEY,
-        'x-secret-key': process.env.VIZZION_SECRET_KEY,
-      },
-    });
-    const available = Number(data?.availableBalance ?? data?.balance ?? data?.available ?? 0);
-    const blocked = Number(data?.blockedBalance ?? data?.blocked ?? 0);
-    res.json({ balance: available, blocked, raw: data });
-  } catch (err) {
-    const status = err.response?.status;
-    const msg = err.response?.data?.message || err.response?.data?.error || err.message;
-    res.status(500).json({ message: `VizzionPay ${status || ''}: ${msg}` });
+  if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
+    return res.status(500).json({ message: 'VIZZION_PUBLIC_KEY/SECRET_KEY ausentes no .env do backend' });
   }
+  const headers = {
+    'x-public-key': process.env.VIZZION_PUBLIC_KEY,
+    'x-secret-key': process.env.VIZZION_SECRET_KEY,
+  };
+  // Tenta múltiplos paths conhecidos da VizzionPay (a doc varia entre versões)
+  const candidates = [
+    `${VIZZION_URL}/gateway/balance`,
+    `${VIZZION_URL}/user/balance`,
+    `${VIZZION_URL}/balance`,
+    `${VIZZION_URL}/account/balance`,
+  ];
+  const errors = [];
+  for (const url of candidates) {
+    try {
+      const { data } = await axios.get(url, { headers, timeout: 8000 });
+      // Extrai saldo de qualquer formato comum
+      const available = Number(
+        data?.availableBalance ??
+        data?.balance ??
+        data?.available ??
+        data?.data?.availableBalance ??
+        data?.data?.balance ??
+        data?.user?.balance ??
+        0
+      );
+      const blocked = Number(
+        data?.blockedBalance ??
+        data?.blocked ??
+        data?.data?.blockedBalance ??
+        0
+      );
+      logger?.info?.(`[VizzionPay balance] OK via ${url}`);
+      return res.json({ balance: available, blocked, source: url, raw: data });
+    } catch (err) {
+      const status = err.response?.status;
+      const body = err.response?.data;
+      errors.push({ url, status, body: typeof body === 'string' ? body.slice(0, 200) : body });
+      // Só continua tentando se for 404 — outros erros (401/403/500) param na hora
+      if (status && status !== 404) {
+        const msg = body?.message || body?.error || err.message;
+        return res.status(500).json({ message: `VizzionPay ${status}: ${msg}`, source: url });
+      }
+    }
+  }
+  console.error('[VizzionPay balance] todos paths falharam:', errors);
+  res.status(502).json({
+    message: 'Endpoint de saldo não encontrado na VizzionPay (testei /gateway/balance, /user/balance, /balance, /account/balance). Confirme o path correto na sua doc.',
+    tried: errors,
+  });
 });
 
 module.exports = router;
