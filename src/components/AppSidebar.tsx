@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const userLinks = [
   { to: "/recargas",       label: "Recargas" },
+  { to: "/esim",           label: "eSIM" },
   { to: "/historico",      label: "Histórico" },
   { to: "/pagamentos",     label: "Pagamentos" },
   { to: "/configuracoes",  label: "Conta" },

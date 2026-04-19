@@ -1,7 +1,7 @@
 import { Link, NavLink, Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import AdminTopBar from "./AdminTopBar";
-import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Users, ArrowDownToLine, Zap, Newspaper, Building2, ScrollText, LogOut, ArrowLeftRight, Headphones, ShieldCheck, Smartphone } from "lucide-react";
 
 const links = [
   { to: "/admin",            label: "Visão geral",  icon: LayoutDashboard, end: true },
@@ -10,6 +10,7 @@ const links = [
   { to: "/admin/staff",      label: "Equipe",       icon: ShieldCheck, adminOnly: true },
   { to: "/admin/depositos",  label: "Depósitos",    icon: ArrowDownToLine, adminOnly: true },
   { to: "/admin/recargas",   label: "Recargas",     icon: Zap, adminOnly: true },
+  { to: "/admin/esim",       label: "eSIM",         icon: Smartphone, adminOnly: true },
   { to: "/admin/operadoras", label: "Operadoras",   icon: Building2, adminOnly: true },
   { to: "/admin/noticias",   label: "Notícias",     icon: Newspaper, adminOnly: true },
   { to: "/admin/logs",       label: "Logs",         icon: ScrollText, adminOnly: true },
