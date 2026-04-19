@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { iconUrlFor } = require('../lib/sms-service-domains');
 
 const router = express.Router();
 
@@ -334,7 +335,7 @@ router.post('/admin/sync-all', authMiddleware, adminMiddleware, async (req, res)
       for (const s of list) {
         const code = s.code || s.id || s.service;
         const name = s.name || s.title || code;
-        const icon = s.icon || s.icon_url || s.image || `https://sms-activate.guru/assets/ico/${code}0.webp`;
+        const icon = iconUrlFor(code, name);
         if (!code) continue;
         await db.query(
           `INSERT INTO sms_services (code, name, icon_url) VALUES (?, ?, ?)
