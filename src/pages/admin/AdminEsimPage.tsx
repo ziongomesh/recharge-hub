@@ -3,6 +3,28 @@ import { esimApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload, Package, X, Pencil } from "lucide-react";
 
+function EstoqueThumb({ id, onRemove }: { id: number; onRemove: () => void }) {
+  const [src, setSrc] = useState<string | null>(null);
+  useEffect(() => {
+    let url: string | null = null;
+    const token = localStorage.getItem("token");
+    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+    fetch(`${base}/esim/admin/estoque/${id}/image`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      .then((r) => r.blob())
+      .then((b) => { url = URL.createObjectURL(b); setSrc(url); })
+      .catch(() => {});
+    return () => { if (url) URL.revokeObjectURL(url); };
+  }, [id]);
+  return (
+    <div className="relative border border-border bg-white aspect-square group">
+      {src ? <img src={src} alt="" className="w-full h-full object-contain" /> : <div className="w-full h-full animate-pulse bg-paper-2" />}
+      <button onClick={onRemove} className="absolute top-1 right-1 bg-black/70 text-white p-1 opacity-0 group-hover:opacity-100 transition">
+        <Trash2 size={12} />
+      </button>
+    </div>
+  );
+}
+
 const OPERADORAS = ["Vivo", "Claro", "TIM", "Outras"];
 
 interface FormState {
@@ -229,17 +251,7 @@ export default function AdminEsimPage() {
               ) : (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                   {estoque.map((u) => (
-                    <div key={u.id} className="relative border border-border bg-white aspect-square group">
-                      <img
-                        src={`${import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api"}/esim/admin/estoque/${u.id}/image`}
-                        alt=""
-                        className="w-full h-full object-contain"
-                      />
-                      <button onClick={() => removeUnit(u.id)}
-                        className="absolute top-1 right-1 bg-black/70 text-white p-1 opacity-0 group-hover:opacity-100 transition">
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
+                    <EstoqueThumb key={u.id} id={u.id} onRemove={() => removeUnit(u.id)} />
                   ))}
                 </div>
               )}
