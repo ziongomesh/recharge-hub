@@ -15,6 +15,61 @@ function savePins(p: Record<string, string[]>) {
   localStorage.setItem(PIN_KEY, JSON.stringify(p));
 }
 
+// Mapa nome (EN/PT) → ISO-2 — fallback quando o backend não retorna iso
+const COUNTRY_ISO: Record<string, string> = {
+  brasil: "br", brazil: "br", afghanistan: "af", afeganistao: "af",
+  albania: "al", algeria: "dz", argelia: "dz", angola: "ao", anguilla: "ai",
+  "antigua and barbuda": "ag", argentina: "ar", armenia: "am", aruba: "aw",
+  australia: "au", austria: "at", azerbaijan: "az", bahamas: "bs", bahrain: "bh",
+  bangladesh: "bd", barbados: "bb", belarus: "by", belgium: "be", belgica: "be",
+  belize: "bz", benin: "bj", bermuda: "bm", bhutan: "bt", bolivia: "bo",
+  "bosnia and herzegovina": "ba", botswana: "bw", bulgaria: "bg",
+  "burkina faso": "bf", burundi: "bi", cambodia: "kh", cameroon: "cm",
+  canada: "ca", "cape verde": "cv", "central african republic": "cf",
+  chad: "td", chile: "cl", china: "cn", colombia: "co", comoros: "km",
+  congo: "cg", "costa rica": "cr", croatia: "hr", cuba: "cu", cyprus: "cy",
+  "czech republic": "cz", czechia: "cz", denmark: "dk", djibouti: "dj",
+  dominica: "dm", "dominican republic": "do", ecuador: "ec", egypt: "eg",
+  "el salvador": "sv", "equatorial guinea": "gq", eritrea: "er", estonia: "ee",
+  ethiopia: "et", fiji: "fj", finland: "fi", france: "fr", franca: "fr",
+  gabon: "ga", gambia: "gm", georgia: "ge", germany: "de", alemanha: "de",
+  ghana: "gh", greece: "gr", grenada: "gd", guatemala: "gt", guinea: "gn",
+  "guinea-bissau": "gw", guyana: "gy", haiti: "ht", honduras: "hn",
+  "hong kong": "hk", hungary: "hu", iceland: "is", india: "in",
+  indonesia: "id", iran: "ir", iraq: "iq", ireland: "ie", israel: "il",
+  italy: "it", italia: "it", "ivory coast": "ci", jamaica: "jm", japan: "jp",
+  japao: "jp", jordan: "jo", kazakhstan: "kz", kenya: "ke", kosovo: "xk",
+  kuwait: "kw", kyrgyzstan: "kg", laos: "la", latvia: "lv", lebanon: "lb",
+  lesotho: "ls", liberia: "lr", libya: "ly", lithuania: "lt", luxembourg: "lu",
+  macau: "mo", macedonia: "mk", madagascar: "mg", malawi: "mw", malaysia: "my",
+  maldives: "mv", mali: "ml", malta: "mt", mauritania: "mr", mauritius: "mu",
+  mexico: "mx", moldova: "md", monaco: "mc", mongolia: "mn", montenegro: "me",
+  morocco: "ma", marrocos: "ma", mozambique: "mz", mocambique: "mz",
+  myanmar: "mm", namibia: "na", nepal: "np", netherlands: "nl",
+  "new zealand": "nz", nicaragua: "ni", niger: "ne", nigeria: "ng",
+  "north korea": "kp", norway: "no", oman: "om", pakistan: "pk", palestine: "ps",
+  panama: "pa", "papua new guinea": "pg", paraguay: "py", peru: "pe",
+  philippines: "ph", filipinas: "ph", poland: "pl", portugal: "pt",
+  "puerto rico": "pr", qatar: "qa", romania: "ro", russia: "ru", russia2: "ru",
+  rwanda: "rw", "saudi arabia": "sa", senegal: "sn", serbia: "rs",
+  seychelles: "sc", "sierra leone": "sl", singapore: "sg", slovakia: "sk",
+  slovenia: "si", somalia: "so", "south africa": "za", "south korea": "kr",
+  spain: "es", espanha: "es", "sri lanka": "lk", sudan: "sd", suriname: "sr",
+  sweden: "se", switzerland: "ch", syria: "sy", taiwan: "tw", tajikistan: "tj",
+  tanzania: "tz", thailand: "th", "trinidad and tobago": "tt", tunisia: "tn",
+  turkey: "tr", turquia: "tr", turkmenistan: "tm", uganda: "ug", ukraine: "ua",
+  "united arab emirates": "ae", "united kingdom": "gb", uk: "gb",
+  "united states": "us", usa: "us", "estados unidos": "us", uruguay: "uy",
+  uzbekistan: "uz", venezuela: "ve", vietnam: "vn", yemen: "ye",
+  zambia: "zm", zimbabwe: "zw",
+};
+
+function resolveIso(c: { iso?: string | null; name: string }): string | null {
+  if (c.iso) return c.iso.toLowerCase();
+  const key = (c.name || "").toLowerCase().trim();
+  return COUNTRY_ISO[key] || null;
+}
+
 function flagUrl(iso?: string | null) {
   if (!iso) return null;
   return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
@@ -106,15 +161,16 @@ export default function SmsPage() {
     (async () => {
       try {
         const [c, a] = await Promise.all([smsApi.countries(), smsApi.active()]);
-        // Brasil sempre no topo
-        const sorted = [...c.countries].sort((a, b) => {
-          const aBR = a.iso === "BR" || /brasil/i.test(a.name) ? -1 : 0;
-          const bBR = b.iso === "BR" || /brasil/i.test(b.name) ? -1 : 0;
+        // Enriquece com iso resolvido + Brasil sempre no topo
+        const enriched = c.countries.map((x) => ({ ...x, iso: resolveIso(x) }));
+        const sorted = [...enriched].sort((a, b) => {
+          const aBR = a.iso === "br" ? -1 : 0;
+          const bBR = b.iso === "br" ? -1 : 0;
           if (aBR !== bBR) return aBR - bBR;
           return a.name.localeCompare(b.name);
         });
         setCountries(sorted);
-        const br = sorted.find((x) => x.iso === "BR" || /brasil/i.test(x.name));
+        const br = sorted.find((x) => x.iso === "br");
         setCountry(br?.id ?? sorted[0]?.id ?? null);
         if (a.activations[0]) setActive(a.activations[0]);
       } catch (e: any) {
@@ -301,8 +357,10 @@ export default function SmsPage() {
                 onClick={() => setOpenCountry((v) => !v)}
                 className="w-full px-3 py-2 text-sm bg-background border border-border rounded outline-none flex items-center gap-2 hover:border-foreground transition"
               >
-                {currentCountry?.iso && (
+                {currentCountry?.iso ? (
                   <img src={flagUrl(currentCountry.iso)!} alt="" className="w-5 h-auto" />
+                ) : (
+                  <div className="w-5 h-3.5 bg-muted rounded-sm" />
                 )}
                 <span className="flex-1 text-left truncate">{currentCountry?.name || "Selecionar país"}</span>
                 <ChevronDown size={14} className={`transition ${openCountry ? "rotate-180" : ""}`} />
@@ -331,15 +389,20 @@ export default function SmsPage() {
                         {c.iso ? (
                           <img src={flagUrl(c.iso)!} alt="" className="w-5 h-auto" loading="lazy" />
                         ) : (
-                          <div className="w-5 h-3.5 bg-muted" />
+                          <div className="w-5 h-3.5 bg-muted rounded-sm" />
                         )}
                         <span className="flex-1 truncate">{c.name}</span>
-                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground">{c.iso}</span>}
+                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground uppercase">{c.iso}</span>}
                       </button>
                     ))}
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Dica fixar */}
+            <div className="text-[10px] text-muted-foreground flex items-center gap-1 px-1">
+              <Pin size={9} /> Passe o mouse num serviço e clique no pin para fixar (até {MAX_PINS} por país).
             </div>
           </div>
 
