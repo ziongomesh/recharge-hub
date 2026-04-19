@@ -127,4 +127,28 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// ---- ADMIN: saldo da conta VizzionPay ----
+const { adminMiddleware } = require('../middleware/auth');
+router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
+      return res.status(500).json({ message: 'VIZZION_PUBLIC_KEY/SECRET_KEY ausentes no .env do backend' });
+    }
+    // VizzionPay v1: GET /gateway/balance retorna { availableBalance, blockedBalance }
+    const { data } = await axios.get(`${VIZZION_URL}/gateway/balance`, {
+      headers: {
+        'x-public-key': process.env.VIZZION_PUBLIC_KEY,
+        'x-secret-key': process.env.VIZZION_SECRET_KEY,
+      },
+    });
+    const available = Number(data?.availableBalance ?? data?.balance ?? data?.available ?? 0);
+    const blocked = Number(data?.blockedBalance ?? data?.blocked ?? 0);
+    res.json({ balance: available, blocked, raw: data });
+  } catch (err) {
+    const status = err.response?.status;
+    const msg = err.response?.data?.message || err.response?.data?.error || err.message;
+    res.status(500).json({ message: `VizzionPay ${status || ''}: ${msg}` });
+  }
+});
+
 module.exports = router;

@@ -320,9 +320,11 @@ router.post('/webhook', express.json(), async (req, res) => {
 router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { text } = await heroGet('getBalance');
-    // formato: "ACCESS_BALANCE:123.45"
-    const balance = text.startsWith('ACCESS_BALANCE:') ? parseFloat(text.split(':')[1]) : null;
-    res.json({ raw: text, balance });
+    // formato: "ACCESS_BALANCE:123.45" — saldo em RUBLOS na hero-sms
+    const balance_rub = text.startsWith('ACCESS_BALANCE:') ? parseFloat(text.split(':')[1]) : null;
+    const rate = await rubToBrl();
+    const balance_brl = balance_rub != null ? Math.round(balance_rub * rate * 100) / 100 : null;
+    res.json({ raw: text, balance: balance_brl, balance_rub, balance_brl, rate });
   } catch (e) {
     res.status(500).json({ message: e.message });
   }
