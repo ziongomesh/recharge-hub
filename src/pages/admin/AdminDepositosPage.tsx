@@ -32,16 +32,24 @@ export default function AdminDepositosPage() {
 
   return (
     <div className="space-y-6">
-      <AdminBalanceHero
-        label="VizzionPay"
-        fetcher={async () => {
-          const r = await pagamentosApi.adminBalance();
-          return {
-            balance: r.balance,
-            extra: r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
-          };
-        }}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {(["recargas", "esim", "sms"] as const).map((mod) => (
+          <AdminBalanceHero
+            key={mod}
+            label={`VizzionPay · ${mod === "recargas" ? "Recargas" : mod === "esim" ? "eSIM" : "SMS"}`}
+            fetcher={async () => {
+              const r = await pagamentosApi.adminBalance(mod);
+              return {
+                balance: r.balance,
+                extra: [
+                  r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
+                  r.usingFallback ? "chave global" : null,
+                ].filter(Boolean).join(" · ") || null,
+              };
+            }}
+          />
+        ))}
+      </div>
       <div>
         <div className="label-eyebrow">Financeiro</div>
         <h1 className="font-display text-4xl mt-1">Depósitos.</h1>

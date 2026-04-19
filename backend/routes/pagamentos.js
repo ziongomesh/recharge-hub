@@ -129,15 +129,32 @@ router.get('/', authMiddleware, async (req, res) => {
 
 // ---- ADMIN: saldo da conta VizzionPay ----
 const { adminMiddleware } = require('../middleware/auth');
-router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
-  if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
-    return res.status(500).json({ message: 'VIZZION_PUBLIC_KEY/SECRET_KEY ausentes no .env do backend' });
-  }
-  const headers = {
-    'x-public-key': process.env.VIZZION_PUBLIC_KEY,
-    'x-secret-key': process.env.VIZZION_SECRET_KEY,
+
+// Resolve as keys conforme módulo (?module=recargas|esim|sms). Falta -> fallback global.
+function resolveVizzionKeys(mod) {
+  const map = {
+    recargas: ['VIZZION_RECARGAS_PUBLIC_KEY', 'VIZZION_RECARGAS_SECRET_KEY'],
+    esim:     ['VIZZION_ESIM_PUBLIC_KEY',     'VIZZION_ESIM_SECRET_KEY'],
+    sms:      ['VIZZION_SMS_PUBLIC_KEY',      'VIZZION_SMS_SECRET_KEY'],
   };
-  // Tenta múltiplos paths conhecidos da VizzionPay (a doc varia entre versões)
+  const [pubName, secName] = map[mod] || [];
+  const pub = (pubName && process.env[pubName]) || process.env.VIZZION_PUBLIC_KEY;
+  const sec = (secName && process.env[secName]) || process.env.VIZZION_SECRET_KEY;
+  const usingFallback = !(pubName && process.env[pubName] && process.env[secName]);
+  return { pub, sec, usingFallback, pubName, secName };
+}
+
+router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) => {
+  const mod = String(req.query.module || '').toLowerCase();
+  const { pub, sec, usingFallback, pubName, secName } = resolveVizzionKeys(mod);
+  if (!pub || !sec) {
+    return res.status(500).json({
+      message: mod
+        ? `Configure ${pubName}/${secName} no .env do backend (módulo ${mod})`
+        : 'VIZZION_PUBLIC_KEY/SECRET_KEY ausentes no .env do backend',
+    });
+  }
+  const headers = { 'x-public-key': pub, 'x-secret-key': sec };
   const candidates = [
     `${VIZZION_URL}/gateway/balance`,
     `${VIZZION_URL}/user/balance`,
@@ -148,39 +165,30 @@ router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) =
   for (const url of candidates) {
     try {
       const { data } = await axios.get(url, { headers, timeout: 8000 });
-      // Extrai saldo de qualquer formato comum
       const available = Number(
-        data?.availableBalance ??
-        data?.balance ??
-        data?.available ??
-        data?.data?.availableBalance ??
-        data?.data?.balance ??
-        data?.user?.balance ??
-        0
+        data?.availableBalance ?? data?.balance ?? data?.available ??
+        data?.data?.availableBalance ?? data?.data?.balance ??
+        data?.user?.balance ?? 0
       );
       const blocked = Number(
-        data?.blockedBalance ??
-        data?.blocked ??
-        data?.data?.blockedBalance ??
-        0
+        data?.blockedBalance ?? data?.blocked ?? data?.data?.blockedBalance ?? 0
       );
-      logger?.info?.(`[VizzionPay balance] OK via ${url}`);
-      return res.json({ balance: available, blocked, source: url, raw: data });
+      return res.json({ balance: available, blocked, module: mod || null, usingFallback, source: url, raw: data });
     } catch (err) {
       const status = err.response?.status;
       const body = err.response?.data;
       errors.push({ url, status, body: typeof body === 'string' ? body.slice(0, 200) : body });
-      // Só continua tentando se for 404 — outros erros (401/403/500) param na hora
       if (status && status !== 404) {
         const msg = body?.message || body?.error || err.message;
-        return res.status(500).json({ message: `VizzionPay ${status}: ${msg}`, source: url });
+        return res.status(500).json({ message: `VizzionPay ${status}: ${msg}`, source: url, module: mod || null });
       }
     }
   }
   console.error('[VizzionPay balance] todos paths falharam:', errors);
   res.status(502).json({
-    message: 'Endpoint de saldo não encontrado na VizzionPay (testei /gateway/balance, /user/balance, /balance, /account/balance). Confirme o path correto na sua doc.',
+    message: 'Endpoint de saldo não encontrado na VizzionPay (testei /gateway/balance, /user/balance, /balance, /account/balance).',
     tried: errors,
+    module: mod || null,
   });
 });
 

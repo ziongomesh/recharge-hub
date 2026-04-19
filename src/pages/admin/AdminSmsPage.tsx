@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { smsApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
+import { smsApi, pagamentosApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, RefreshCw, Search } from "lucide-react";
 import AdminBalanceHero from "@/components/AdminBalanceHero";
@@ -151,8 +151,8 @@ export default function AdminSmsPage() {
         </button>
       </div>
 
-      {/* Saldo grande da API hero-sms */}
-      <div className="mb-6">
+      {/* Saldo grande das APIs do módulo SMS */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <AdminBalanceHero
           label="Hero-SMS"
           fetcher={async () => {
@@ -160,6 +160,19 @@ export default function AdminSmsPage() {
             return {
               balance: r.balance,
               extra: r.balance_rub != null ? `≈ ₽ ${r.balance_rub.toFixed(2)} · taxa 1₽=R$${r.rate.toFixed(4)}` : null,
+            };
+          }}
+        />
+        <AdminBalanceHero
+          label="VizzionPay · SMS"
+          fetcher={async () => {
+            const r = await pagamentosApi.adminBalance("sms");
+            return {
+              balance: r.balance,
+              extra: [
+                r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
+                r.usingFallback ? "usando chave global" : null,
+              ].filter(Boolean).join(" · ") || null,
             };
           }}
         />

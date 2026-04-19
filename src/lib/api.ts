@@ -214,8 +214,10 @@ export const pagamentosApi = {
       ...response,
       pagamentos: response.pagamentos.map(normalizePagamento),
     })),
-  adminBalance: () =>
-    api<{ balance: number; blocked?: number; raw?: unknown }>("/pagamentos/admin/balance"),
+  adminBalance: (module?: "recargas" | "esim" | "sms") =>
+    api<{ balance: number; blocked?: number; module?: string | null; usingFallback?: boolean; raw?: unknown }>(
+      `/pagamentos/admin/balance${module ? `?module=${module}` : ""}`
+    ),
 };
 
 export const noticiasApi = {
