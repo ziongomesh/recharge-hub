@@ -332,7 +332,6 @@ export default function AdminSmsPage() {
                     <th className="text-right p-3">Custo (₽)</th>
                     <th className="text-right p-3">Custo (R$)</th>
                     <th className="text-right p-3">Estoque</th>
-                    <th className="text-right p-3">Sugerido (R$)</th>
                     <th className="text-right p-3">Preço de venda (R$)</th>
                     <th className="text-right p-3"></th>
                   </tr>
@@ -364,9 +363,6 @@ export default function AdminSmsPage() {
                           <td className="p-3 text-right tabular text-xs text-muted-foreground">
                             {p.stock}
                           </td>
-                          <td className="p-3 text-right tabular text-xs text-muted-foreground">
-                            {p.computed_price_brl != null ? p.computed_price_brl.toFixed(2) : "—"}
-                          </td>
                           <td className="p-3 text-right">
                             <input
                               type="text"
@@ -394,7 +390,7 @@ export default function AdminSmsPage() {
               </table>
             </div>
             <p className="text-xs text-muted-foreground mt-3">
-              Deixe vazio para usar o preço sugerido (custo × markup). Preencha para travar um valor fixo de venda.
+              Defina manualmente o preço de venda em R$ que será cobrado do usuário. O custo (R$) é a conversão do custo da hero-sms.
             </p>
           </>
         )
