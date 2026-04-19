@@ -13,16 +13,14 @@ export default function EsimPage() {
   const [confirm, setConfirm] = useState<EsimProduto | null>(null);
   const [modalVenda, setModalVenda] = useState<EsimVenda | null>(null);
   const [modalQr, setModalQr] = useState<string | null>(null);
-  const [history, setHistory] = useState<EsimVenda[]>([]);
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const load = async () => {
     setLoading(true);
     try {
-      const [{ produtos: p }, { vendas }] = await Promise.all([esimApi.produtos(), esimApi.minhas()]);
+      const { produtos: p } = await esimApi.produtos();
       setProdutos(p);
-      setHistory(vendas);
     } catch (e: any) {
       toast.error(e.message || "Erro ao carregar");
     } finally {
@@ -92,24 +90,7 @@ export default function EsimPage() {
         </div>
       )}
 
-      {history.length > 0 && (
-        <div className="mt-12">
-          <div className="label-eyebrow mb-3">Minhas compras</div>
-          <div className="border border-border divide-y divide-border">
-            {history.map((v) => (
-              <div key={v.id} className="flex items-center justify-between p-4">
-                <div>
-                  <div className="text-sm font-medium">{v.produto_name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {v.operadora} · {v.created_at ? new Date(v.created_at).toLocaleString() : ""}
-                  </div>
-                </div>
-                <div className="font-mono tabular text-sm">R$ {v.amount.toFixed(2)}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Histórico movido para a página /historico */}
 
       {/* Confirmar */}
       {confirm && (
