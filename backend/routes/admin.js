@@ -45,9 +45,17 @@ router.get('/staff', authMiddleware, adminMiddleware, async (req, res) => {
 
 router.put('/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { role, balance } = req.body;
-    await db.query('UPDATE users SET role = COALESCE(?, role), balance = COALESCE(?, balance) WHERE id = ?',
-      [role, balance, req.params.id]);
+    const { role, balance, username, email, phone } = req.body;
+    await db.query(
+      `UPDATE users SET
+        role     = COALESCE(?, role),
+        balance  = COALESCE(?, balance),
+        username = COALESCE(?, username),
+        email    = COALESCE(?, email),
+        phone    = COALESCE(?, phone)
+       WHERE id = ?`,
+      [role ?? null, balance ?? null, username ?? null, email ?? null, phone ?? null, req.params.id]
+    );
     const [rows] = await db.query('SELECT id, username, email, phone, cpf, role, balance, created_at FROM users WHERE id = ?', [req.params.id]);
     res.json(rows[0]);
   } catch (err) { res.status(500).json({ message: 'Erro interno' }); }
