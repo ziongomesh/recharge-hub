@@ -36,7 +36,7 @@ export default function AdminOperadorasPage() {
 
   const toggleEnabled = async (op: Operadora) => {
     if (!op.enabled && !op.poeki_allowed) {
-      toast.error("Operadora não autorizada pela sua chave Poeki. Sincronize primeiro.");
+      toast.error("Operadora não autorizada pela sua chave da API. Sincronize primeiro.");
       return;
     }
     try {
@@ -93,7 +93,7 @@ export default function AdminOperadorasPage() {
               <DialogHeader><DialogTitle>Markup global</DialogTitle></DialogHeader>
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Aplica % sobre o custo Poeki em <strong>{selected ? selected.name : "TODAS as operadoras"}</strong>.
+                  Aplica % sobre o custo da API em <strong>{selected ? selected.name : "TODAS as operadoras"}</strong>.
                 </p>
                 <div className="space-y-2">
                   <Label>Percentual (%)</Label>
@@ -105,7 +105,7 @@ export default function AdminOperadorasPage() {
           </Dialog>
           <Button variant="outline" size="sm" onClick={syncCatalog} disabled={syncing}>
             <RefreshCw size={14} className={`mr-1 ${syncing ? "animate-spin" : ""}`} />
-            {syncing ? "Sincronizando..." : "Sincronizar Poeki"}
+            {syncing ? "Sincronizando..." : "Sincronizar API"}
           </Button>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function AdminOperadorasPage() {
                 <button
                   onClick={() => setSelected(selected?.id === op.id ? null : op)}
                   className="font-semibold flex items-center gap-2"
-                  title={allowed ? "" : "Não autorizada pela Poeki"}
+                  title={allowed ? "" : "Não autorizada pela API"}
                 >
                   {op.name}
                   {!allowed && (
@@ -142,7 +142,7 @@ export default function AdminOperadorasPage() {
       <p className="text-xs text-muted-foreground mb-3">
         {selected
           ? `Filtrando: ${selected.name}. Clique de novo para ver todas.`
-          : "Apenas operadoras autorizadas pela sua chave Poeki podem ser ativadas. Use 'Sincronizar Poeki' para atualizar a lista."}
+          : "Apenas operadoras autorizadas pela sua chave da API podem ser ativadas. Use 'Sincronizar API' para atualizar a lista."}
       </p>
 
       {loadingAll ? (
@@ -156,12 +156,12 @@ export default function AdminOperadorasPage() {
               </CardHeader>
               <CardContent>
                 {ps.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">Nenhum plano. Sincronize com a Poeki.</p>
+                  <p className="text-sm text-muted-foreground text-center py-4">Nenhum plano. Sincronize com a API.</p>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Custo Poeki</TableHead>
+                        <TableHead>Custo API</TableHead>
                         <TableHead>Preço cliente</TableHead>
                         <TableHead>Lucro</TableHead>
                         <TableHead>Margem</TableHead>

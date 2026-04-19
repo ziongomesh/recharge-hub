@@ -39,7 +39,7 @@ export default function HistoricoPage() {
       toast.success(`Sincronizado: ${r.total} pedidos verificados, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Falha ao sincronizar com Poeki");
+      toast.error(e?.message || "Falha ao sincronizar com a API");
     } finally {
       setSyncing(false);
     }
@@ -62,7 +62,7 @@ export default function HistoricoPage() {
     return () => clearTimeout(t);
   }, [highlightId]);
 
-  // Live sync: a cada 5s, consulta Poeki para cada recarga não-final
+  // Live sync: a cada 5s, consulta a API para cada recarga não-final
   const FINAL = new Set(["feita", "cancelada", "expirada", "reembolsado"]);
   useEffect(() => {
     if (loading) return;
@@ -113,7 +113,7 @@ export default function HistoricoPage() {
               className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
             >
               <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
-              {syncing ? "Sincronizando…" : "Sincronizar com Poeki"}
+              {syncing ? "Sincronizando…" : "Sincronizar com API"}
             </button>
           )}
           {tab === "recargas" && liveCount > 0 && (

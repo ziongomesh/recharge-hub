@@ -18,7 +18,7 @@ const sections: { title: string; adminOnly?: boolean; links: LinkDef[] }[] = [
     ],
   },
   {
-    title: "Recargas Poeki",
+    title: "Recargas",
     adminOnly: true,
     links: [
       { to: "/admin/recargas",   label: "Dashboard",  icon: LayoutDashboard, end: true },

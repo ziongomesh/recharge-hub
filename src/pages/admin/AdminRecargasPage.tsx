@@ -20,10 +20,10 @@ export default function AdminRecargasPage() {
     setSyncing(true);
     try {
       const r = await recargasApi.syncAll("all");
-      toast.success(`Sincronizado: ${r.total} pedidos verificados na Poeki, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
+      toast.success(`Sincronizado: ${r.total} pedidos verificados na API, ${r.changed} atualizados${r.errors ? `, ${r.errors} erros` : ""}`);
       load();
     } catch (e: any) {
-      toast.error(e?.message || "Falha ao sincronizar com Poeki");
+      toast.error(e?.message || "Falha ao sincronizar com a API");
     } finally {
       setSyncing(false);
     }
@@ -44,7 +44,7 @@ export default function AdminRecargasPage() {
           className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
         >
           <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
-          {syncing ? "Sincronizando…" : "Sincronizar todas com Poeki"}
+          {syncing ? "Sincronizando…" : "Sincronizar todas com API"}
         </button>
       </div>
       {loading ? (
@@ -62,7 +62,7 @@ export default function AdminRecargasPage() {
                 <TableHead>Valor</TableHead>
                 <TableHead>Custo</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Poeki ID</TableHead>
+                <TableHead>Pedido ID</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

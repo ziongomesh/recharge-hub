@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
         <h1 className="font-display text-4xl mt-1">Visão geral.</h1>
       </div>
 
-      {/* Saldo Poeki em destaque */}
+      {/* Saldo API em destaque */}
       <PoekiBalanceHero />
 
       {/* KPIs */}

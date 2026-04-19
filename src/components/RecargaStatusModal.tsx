@@ -28,7 +28,7 @@ export default function RecargaStatusModal({ recargaId, initial, onClose }: Prop
         setSource(src);
         setLive(src === "poeki");
         setLastCheck(new Date());
-        setError(syncErr === "poeki_unreachable" ? "Poeki indisponível — exibindo último status local" : null);
+        setError(syncErr === "poeki_unreachable" ? "API indisponível — exibindo último status local" : null);
         if (FINAL.has(r.status)) return;
         timerRef.current = window.setTimeout(tick, 3000);
       } catch (e: any) {
@@ -72,7 +72,7 @@ export default function RecargaStatusModal({ recargaId, initial, onClose }: Prop
           <div className="label-eyebrow">Acompanhamento</div>
           <div className={`flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono ${live ? "text-success" : "text-muted-foreground"}`}>
             <Radio size={10} className={live && !isFinal ? "animate-pulse" : ""} />
-            {isFinal ? "FINAL" : live ? "AO VIVO • POEKI" : source === "local" ? "LOCAL" : "VERIFICANDO…"}
+            {isFinal ? "FINAL" : live ? "AO VIVO" : source === "local" ? "LOCAL" : "VERIFICANDO…"}
           </div>
         </div>
         <h3 className="font-display text-3xl mb-1">Sua recarga.</h3>
