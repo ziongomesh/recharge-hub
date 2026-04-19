@@ -16,6 +16,7 @@ import HistoricoPage from "@/pages/HistoricoPage";
 import PagamentosPage from "@/pages/PagamentosPage";
 import ConfiguracoesPage from "@/pages/ConfiguracoesPage";
 import AdminPinPage from "@/pages/admin/AdminPinPage";
+import AdminHubPage from "@/pages/admin/AdminHubPage";
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage";
 import AdminOperadorasPage from "@/pages/admin/AdminOperadorasPage";
 import AdminNoticiasPage from "@/pages/admin/AdminNoticiasPage";
@@ -69,11 +70,12 @@ const App = () => (
 
             {/* Área admin (layout + sidebar separados) */}
             <Route element={<AdminLayout />}>
-              <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin" element={<AdminHubPage />} />
               <Route path="/admin/usuarios" element={<AdminUsuariosPage />} />
               <Route path="/admin/usuarios/:id" element={<AdminUserDetailPage />} />
               <Route path="/admin/depositos" element={<AdminDepositosPage />} />
-              <Route path="/admin/recargas" element={<AdminRecargasPage />} />
+              <Route path="/admin/recargas" element={<AdminDashboardPage />} />
+              <Route path="/admin/recargas/lista" element={<AdminRecargasPage />} />
               <Route path="/admin/operadoras" element={<AdminOperadorasPage />} />
               <Route path="/admin/noticias" element={<AdminNoticiasPage />} />
               <Route path="/admin/logs" element={<AdminLogsPage />} />
