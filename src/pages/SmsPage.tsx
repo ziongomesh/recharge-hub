@@ -492,6 +492,26 @@ export default function SmsPage() {
     </li>
   );
 
+  // Módulo em manutenção quando não há nenhum país habilitado no backend
+  if (!loadingC && countries.length === 0) {
+    return (
+      <div className="max-w-6xl">
+        <div className="label-eyebrow">Recebimento</div>
+        <h1 className="font-display text-5xl mt-2 mb-8">SMS.</h1>
+        <div className="border border-border bg-card p-12 flex flex-col items-center justify-center text-center min-h-[50vh]">
+          <div className="w-14 h-14 rounded-full bg-paper-2 border border-border flex items-center justify-center mb-4">
+            <Phone size={22} className="text-muted-foreground" />
+          </div>
+          <div className="label-eyebrow mb-2">Indisponível</div>
+          <h2 className="font-display text-3xl mb-2">Em manutenção.</h2>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            O módulo SMS está temporariamente indisponível. Volte em instantes.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl">
       <div className="label-eyebrow">Recebimento</div>
