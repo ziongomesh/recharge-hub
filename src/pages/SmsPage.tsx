@@ -227,6 +227,12 @@ const NAME_DOMAIN: Record<string, string> = {
   "remitly": "remitly.com", "moneygram": "moneygram.com",
   "cashapp": "cash.app", "cash app": "cash.app", "venmo": "venmo.com",
   "zelle": "zellepay.com",
+  // Mais marcas vistas em /sms
+  "ultragaz": "ultragaz.com.br", "uol host": "uolhost.uol.com.br", "uolhost": "uolhost.uol.com.br",
+  "valora": "valora.com.br", "vesseo": "vesseo.com",
+  "vfs global": "vfsglobal.com", "vfsglobal": "vfsglobal.com", "vfs": "vfsglobal.com",
+  "vk.com": "vk.com", "vonage": "vonage.com", "voov meeting": "voovmeeting.com",
+  "voov": "voovmeeting.com", "ukrnet": "ukr.net", "ukr.net": "ukr.net",
 };
 
 // Deriva favicon oficial a partir do nome do serviço
