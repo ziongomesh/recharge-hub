@@ -19,7 +19,6 @@ export default function ConfiguracoesPage() {
     ["E-mail",       user?.email ?? "—"],
     ["Telefone",     user?.phone ? fmtPhone(user.phone) : "—"],
     ["CPF",          user?.cpf ? fmtCPF(user.cpf) : "—"],
-    ["Função",       user?.role === "admin" ? "Administrador" : "Cliente"],
     ["Membro desde", user?.created_at ? new Date(user.created_at).toLocaleDateString("pt-BR") : "—"],
   ];
 
@@ -28,7 +27,6 @@ export default function ConfiguracoesPage() {
       {/* Identidade */}
       <aside className="md:col-span-1">
         <div className="label-eyebrow">Identidade</div>
-        <div className="font-display text-6xl leading-none mt-2 break-words">{user?.username?.[0]?.toUpperCase() ?? "?"}</div>
         <div className="font-display text-2xl mt-3 break-words">{user?.username}</div>
         <div className="text-xs font-mono text-muted-foreground mt-1 break-all">{user?.email}</div>
       </aside>
