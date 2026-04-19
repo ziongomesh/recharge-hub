@@ -233,7 +233,6 @@ const NAME_DOMAIN: Record<string, string> = {
   "vfs global": "vfsglobal.com", "vfsglobal": "vfsglobal.com", "vfs": "vfsglobal.com",
   "vk.com": "vk.com", "vonage": "vonage.com", "voov meeting": "voovmeeting.com",
   "voov": "voovmeeting.com", "ukrnet": "ukr.net", "ukr.net": "ukr.net",
-  "viber": "viber.com",
 };
 
 // Deriva favicon oficial a partir do nome do serviço
