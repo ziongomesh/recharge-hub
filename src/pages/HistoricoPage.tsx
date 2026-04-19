@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { recargasApi, type Recarga } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import RecargaStatusModal from "@/components/RecargaStatusModal";
+import { toast } from "sonner";
 
 export default function HistoricoPage() {
   const [recargas, setRecargas] = useState<Recarga[]>([]);
