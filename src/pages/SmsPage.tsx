@@ -3,7 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { smsApi, type SmsService, type SmsCountry, type SmsActivation } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, Search, Phone, Copy, X, Check, RefreshCw } from "lucide-react";
+import { Loader2, Search, Phone, Copy, X, Check, RefreshCw, Pin, PinOff, ChevronDown } from "lucide-react";
+
+const PIN_KEY = "sms:pinned"; // { [countryId]: string[] }
+const MAX_PINS = 5;
+
+function loadPins(): Record<string, string[]> {
+  try { return JSON.parse(localStorage.getItem(PIN_KEY) || "{}"); } catch { return {}; }
+}
+function savePins(p: Record<string, string[]>) {
+  localStorage.setItem(PIN_KEY, JSON.stringify(p));
+}
+
+function flagUrl(iso?: string | null) {
+  if (!iso) return null;
+  return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
+}
 
 export default function SmsPage() {
   const [countries, setCountries] = useState<SmsCountry[]>([]);
@@ -14,17 +29,28 @@ export default function SmsPage() {
   const [loadingS, setLoadingS] = useState(false);
   const [buying, setBuying] = useState<string | null>(null);
   const [active, setActive] = useState<SmsActivation | null>(null);
+  const [pins, setPins] = useState<Record<string, string[]>>(() => loadPins());
+  const [openCountry, setOpenCountry] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const pollRef = useRef<number | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     (async () => {
       try {
         const [c, a] = await Promise.all([smsApi.countries(), smsApi.active()]);
-        setCountries(c.countries);
-        const br = c.countries.find((x) => x.iso === "BR" || /brasil/i.test(x.name));
-        setCountry(br?.id ?? c.countries[0]?.id ?? null);
+        // Brasil sempre no topo
+        const sorted = [...c.countries].sort((a, b) => {
+          const aBR = a.iso === "BR" || /brasil/i.test(a.name) ? -1 : 0;
+          const bBR = b.iso === "BR" || /brasil/i.test(b.name) ? -1 : 0;
+          if (aBR !== bBR) return aBR - bBR;
+          return a.name.localeCompare(b.name);
+        });
+        setCountries(sorted);
+        const br = sorted.find((x) => x.iso === "BR" || /brasil/i.test(x.name));
+        setCountry(br?.id ?? sorted[0]?.id ?? null);
         if (a.activations[0]) setActive(a.activations[0]);
       } catch (e: any) {
         toast.error(e.message || "Erro ao carregar");
@@ -60,11 +86,58 @@ export default function SmsPage() {
     return () => { if (pollRef.current) window.clearInterval(pollRef.current); };
   }, [active?.id, active?.status]);
 
-  const filtered = useMemo(() => {
+  // Fechar dropdown clicando fora
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setOpenCountry(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
+
+  const currentPins = pins[String(country ?? "")] || [];
+
+  const togglePin = (code: string) => {
+    if (country == null) return;
+    const key = String(country);
+    const list = pins[key] || [];
+    let next: string[];
+    if (list.includes(code)) {
+      next = list.filter((c) => c !== code);
+    } else {
+      if (list.length >= MAX_PINS) {
+        toast.error(`Máximo de ${MAX_PINS} fixados`);
+        return;
+      }
+      next = [...list, code];
+    }
+    const updated = { ...pins, [key]: next };
+    setPins(updated);
+    savePins(updated);
+  };
+
+  const { pinned, others } = useMemo(() => {
     const q = search.toLowerCase().trim();
-    if (!q) return services;
-    return services.filter((s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q));
-  }, [services, search]);
+    const base = q
+      ? services.filter((s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q))
+      : services;
+    const pinSet = new Set(currentPins);
+    const pinned = currentPins
+      .map((code) => base.find((s) => s.code === code))
+      .filter((s): s is SmsService => !!s);
+    const others = base.filter((s) => !pinSet.has(s.code));
+    return { pinned, others };
+  }, [services, search, currentPins]);
+
+  const filteredCountries = useMemo(() => {
+    const q = countrySearch.toLowerCase().trim();
+    if (!q) return countries;
+    return countries.filter((c) => c.name.toLowerCase().includes(q) || c.iso?.toLowerCase().includes(q));
+  }, [countries, countrySearch]);
+
+  const currentCountry = countries.find((c) => c.id === country);
 
   const buy = async (s: SmsService) => {
     if ((user?.balance ?? 0) < s.price) {
@@ -108,6 +181,42 @@ export default function SmsPage() {
     }
   };
 
+  const renderItem = (s: SmsService, isPinned: boolean) => (
+    <li key={s.code} className="group/item">
+      <div className="flex items-center hover:bg-paper-2 transition-colors">
+        <button
+          onClick={() => buy(s)}
+          disabled={!!buying || s.stock === 0}
+          className="flex-1 px-3 py-2 flex items-center gap-3 disabled:opacity-50 text-left"
+        >
+          {s.icon_url ? (
+            <img src={s.icon_url} alt="" className="w-7 h-7 rounded object-cover bg-muted" />
+          ) : (
+            <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-xs font-medium">
+              {s.name[0]?.toUpperCase()}
+            </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm truncate">{s.name}</div>
+            <div className="text-[10px] text-muted-foreground">estoque {s.stock}</div>
+          </div>
+          <div className="text-sm tabular font-mono-x">
+            {buying === s.code ? <Loader2 className="animate-spin" size={14} /> : `R$ ${s.price.toFixed(2)}`}
+          </div>
+        </button>
+        <button
+          onClick={() => togglePin(s.code)}
+          title={isPinned ? "Desfixar" : "Fixar"}
+          className={`p-2 mr-1 rounded transition ${
+            isPinned ? "text-foreground" : "text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-foreground"
+          }`}
+        >
+          {isPinned ? <Pin size={13} className="fill-current" /> : <Pin size={13} />}
+        </button>
+      </div>
+    </li>
+  );
+
   return (
     <div className="max-w-6xl">
       <div className="label-eyebrow">Recebimento</div>
@@ -126,15 +235,53 @@ export default function SmsPage() {
                 className="w-full pl-9 pr-3 py-2 text-sm bg-background border border-border rounded outline-none focus:border-foreground"
               />
             </div>
-            <select
-              value={country ?? ""}
-              onChange={(e) => setCountry(parseInt(e.target.value, 10))}
-              className="w-full px-3 py-2 text-sm bg-background border border-border rounded outline-none"
-            >
-              {countries.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+
+            {/* Country dropdown com bandeira */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setOpenCountry((v) => !v)}
+                className="w-full px-3 py-2 text-sm bg-background border border-border rounded outline-none flex items-center gap-2 hover:border-foreground transition"
+              >
+                {currentCountry?.iso && (
+                  <img src={flagUrl(currentCountry.iso)!} alt="" className="w-5 h-auto" />
+                )}
+                <span className="flex-1 text-left truncate">{currentCountry?.name || "Selecionar país"}</span>
+                <ChevronDown size={14} className={`transition ${openCountry ? "rotate-180" : ""}`} />
+              </button>
+
+              {openCountry && (
+                <div className="absolute z-20 left-0 right-0 mt-1 bg-background border border-border rounded shadow-lg max-h-72 flex flex-col">
+                  <div className="p-2 border-b border-border">
+                    <input
+                      autoFocus
+                      value={countrySearch}
+                      onChange={(e) => setCountrySearch(e.target.value)}
+                      placeholder="Buscar país…"
+                      className="w-full px-2 py-1.5 text-xs bg-paper-2 border border-border rounded outline-none focus:border-foreground"
+                    />
+                  </div>
+                  <div className="flex-1 overflow-y-auto">
+                    {filteredCountries.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => { setCountry(c.id); setOpenCountry(false); setCountrySearch(""); }}
+                        className={`w-full px-3 py-1.5 text-sm flex items-center gap-2 hover:bg-paper-2 text-left ${
+                          c.id === country ? "bg-paper-2 font-medium" : ""
+                        }`}
+                      >
+                        {c.iso ? (
+                          <img src={flagUrl(c.iso)!} alt="" className="w-5 h-auto" loading="lazy" />
+                        ) : (
+                          <div className="w-5 h-3.5 bg-muted" />
+                        )}
+                        <span className="flex-1 truncate">{c.name}</span>
+                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground">{c.iso}</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto">
@@ -142,37 +289,27 @@ export default function SmsPage() {
               <div className="p-6 text-center text-sm text-muted-foreground">
                 <Loader2 className="animate-spin inline" size={14} /> Carregando…
               </div>
-            ) : filtered.length === 0 ? (
+            ) : pinned.length === 0 && others.length === 0 ? (
               <div className="p-6 text-center text-sm text-muted-foreground">
                 Nenhum serviço disponível neste país.
               </div>
             ) : (
-              <ul className="divide-y divide-border">
-                {filtered.map((s) => (
-                  <li key={s.code}>
-                    <button
-                      onClick={() => buy(s)}
-                      disabled={!!buying || s.stock === 0}
-                      className="w-full px-3 py-2 flex items-center gap-3 hover:bg-paper-2 disabled:opacity-50 text-left transition-colors"
-                    >
-                      {s.icon_url ? (
-                        <img src={s.icon_url} alt="" className="w-7 h-7 rounded object-cover bg-muted" />
-                      ) : (
-                        <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-xs font-medium">
-                          {s.name[0]?.toUpperCase()}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm truncate">{s.name}</div>
-                        <div className="text-[10px] text-muted-foreground">estoque {s.stock}</div>
-                      </div>
-                      <div className="text-sm tabular font-mono-x">
-                        {buying === s.code ? <Loader2 className="animate-spin" size={14} /> : `R$ ${s.price.toFixed(2)}`}
-                      </div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <>
+                {pinned.length > 0 && (
+                  <>
+                    <div className="px-3 pt-2 pb-1 text-[10px] font-mono-x uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+                      <Pin size={10} className="fill-current" /> Fixados ({pinned.length}/{MAX_PINS})
+                    </div>
+                    <ul className="divide-y divide-border bg-paper-2/30">
+                      {pinned.map((s) => renderItem(s, true))}
+                    </ul>
+                    <div className="rule mx-3 my-1" />
+                  </>
+                )}
+                <ul className="divide-y divide-border">
+                  {others.map((s) => renderItem(s, false))}
+                </ul>
+              </>
             )}
           </div>
         </div>
@@ -188,6 +325,7 @@ export default function SmsPage() {
                 <li>› O SMS chega aqui em segundos</li>
                 <li>› Cancele em até 2min sem cobrança se nada chegar</li>
                 <li>› Estorno automático se não receber</li>
+                <li>› Fixe até {MAX_PINS} serviços favoritos por país</li>
               </ul>
             </div>
           ) : (
