@@ -222,6 +222,74 @@ export const noticiasApi = {
   delete: (id: number) => api(`/noticias/${id}`, { method: "DELETE" }),
 };
 
+// eSIM
+export interface EsimProduto {
+  id: number;
+  name: string;
+  operadora: string;
+  amount: number;
+  observacao: string;
+  enabled?: boolean;
+  stock?: number;
+  created_at?: string;
+}
+export interface EsimVenda {
+  id: number;
+  produto_name: string;
+  operadora: string;
+  amount: number;
+  observacao: string;
+  created_at?: string;
+}
+export interface EsimEstoqueItem {
+  id: number;
+  qr_image: string;
+  created_at: string;
+}
+export const esimApi = {
+  // user
+  produtos: () =>
+    api<{ produtos: EsimProduto[] }>("/esim/produtos").then((r) => ({
+      produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
+    })),
+  comprar: (produtoId: number) =>
+    api<{ venda: EsimVenda; qr: string | null }>(`/esim/comprar/${produtoId}`, { method: "POST" }).then((r) => ({
+      ...r,
+      venda: { ...r.venda, amount: toNumber(r.venda.amount) },
+    })),
+  minhas: () =>
+    api<{ vendas: EsimVenda[] }>("/esim/minhas").then((r) => ({
+      vendas: r.vendas.map((v) => ({ ...v, amount: toNumber(v.amount) })),
+    })),
+  // admin
+  adminProdutos: () =>
+    api<{ produtos: EsimProduto[] }>("/esim/admin/produtos").then((r) => ({
+      produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
+    })),
+  adminCreate: (data: { name: string; operadora: string; amount: number; observacao?: string; enabled?: boolean }) =>
+    api<{ id: number }>("/esim/admin/produtos", { method: "POST", body: data }),
+  adminUpdate: (id: number, data: Partial<EsimProduto>) =>
+    api(`/esim/admin/produtos/${id}`, { method: "PUT", body: data }),
+  adminDelete: (id: number) => api(`/esim/admin/produtos/${id}`, { method: "DELETE" }),
+  adminEstoque: (id: number) =>
+    api<{ estoque: EsimEstoqueItem[] }>(`/esim/admin/produtos/${id}/estoque`),
+  adminUploadEstoque: async (id: number, files: File[]) => {
+    const fd = new FormData();
+    files.forEach((f) => fd.append("files", f));
+    const token = localStorage.getItem("token");
+    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+    const res = await fetch(`${base}/esim/admin/produtos/${id}/estoque`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: fd,
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || "Erro upload");
+    return res.json() as Promise<{ added: number }>;
+  },
+  adminDeleteEstoque: (estoqueId: number) =>
+    api(`/esim/admin/estoque/${estoqueId}`, { method: "DELETE" }),
+};
+
 // Admin
 export const adminApi = {
   users: {
