@@ -103,7 +103,8 @@ export default function HistoricoPage() {
       <div className="flex items-baseline justify-between mb-6">
         <div>
           <div className="label-eyebrow">Arquivo</div>
-          <h2 className="font-display text-5xl mt-1">Seu histórico.</h2>
+          <h2 className="font-display text-5xl mt-1">Histórico.</h2>
+          <p className="text-xs text-muted-foreground mt-2">Recargas, eSIMs e ativações SMS.</p>
         </div>
         <div className="flex items-center gap-3">
           {tab === "recargas" && (
