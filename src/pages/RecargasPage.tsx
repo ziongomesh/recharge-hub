@@ -44,6 +44,10 @@ export default function RecargasPage() {
   const detect = useCallback(async (digits: string) => {
     if (digits.length < 10) return;
     setDetecting(true);
+    setDetectedOp(null);
+    setSelectedOp(null);
+    setPlanos([]);
+    setSelectedPlano(null);
     try {
       const r = await recargasApi.detectOperator(digits);
       if (r.operator) {
@@ -51,8 +55,13 @@ export default function RecargasPage() {
         setDetectedOp(name);
         const op = operadoras.find((o) => o.name.toLowerCase() === r.operator.toLowerCase());
         if (op) { setSelectedOp(op); loadPlanos(op.id); }
+        else { toast.error(`Operadora ${name} não habilitada`); }
+      } else {
+        toast.error(r.message || "Operadora não identificada para esse número");
       }
-    } catch {} finally { setDetecting(false); }
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao detectar operadora");
+    } finally { setDetecting(false); }
   }, [operadoras]);
 
   const onPhone = (v: string) => {

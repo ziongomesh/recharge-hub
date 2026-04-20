@@ -18,10 +18,17 @@ router.post('/detect', authMiddleware, async (req, res) => {
     const { phone } = req.body;
     logger.recarga.detect(phone, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, { headers: poekiHeaders() });
-    res.json(data.data || data);
+    // Poeki responde { success, data: { operator, ... } } em sucesso
+    // ou { success: false, message } quando não identifica
+    if (data && data.success === false) {
+      return res.json({ operator: null, message: data.message || 'Operadora não identificada' });
+    }
+    const payload = data.data || data;
+    return res.json({ operator: payload.operator || null, ...payload });
   } catch (err) {
     console.error('Detect error:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Erro ao detectar operadora' });
+    const msg = err.response?.data?.message || 'Erro ao detectar operadora';
+    res.status(200).json({ operator: null, message: msg });
   }
 });
 

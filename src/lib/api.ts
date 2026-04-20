@@ -158,7 +158,7 @@ export const planosApi = {
 // Recargas
 export const recargasApi = {
   detectOperator: (phone: string) =>
-    api<{ operator: string; enabled: boolean }>("/recargas/detect", { method: "POST", body: { phone } }),
+    api<{ operator: string | null; enabled?: boolean; message?: string }>("/recargas/detect", { method: "POST", body: { phone } }),
   checkPhone: (phoneNumber: string, carrierName?: string) =>
     api<{ status: string; message: string; isCooldown: boolean; isBlacklisted: boolean }>(
       "/recargas/check-phone", { method: "POST", body: { phoneNumber, carrierName } }
