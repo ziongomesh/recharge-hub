@@ -248,8 +248,8 @@ router.get('/:id(\\d+)/sync', authMiddleware, async (req, res) => {
       return res.json({ recarga, source: 'local', poekiStatus: null });
     }
 
+    normalizeRecargaRow(recarga);
     const finalStates = ['feita', 'cancelada', 'expirada', 'reembolsado'];
-    // Se já é final, não precisa consultar
     if (finalStates.includes(recarga.status)) {
       return res.json({ recarga, source: 'local-final', poekiStatus: recarga.status });
     }
