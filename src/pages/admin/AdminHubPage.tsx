@@ -144,6 +144,35 @@ export default function AdminHubPage() {
         </div>
       )}
 
+      {isAdmin && (
+        <div className="border border-border bg-paper p-6">
+          <div className="flex items-center gap-2 label-eyebrow mb-4">
+            <Send size={12} />
+            Contato Telegram (rodapé)
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Aparece no rodapé como link clicável (https://t.me/&lt;usuário&gt;).
+          </p>
+          <div className="flex items-center gap-2 max-w-md">
+            <span className="px-3 py-2 border border-border bg-paper-2 font-mono text-sm">@</span>
+            <input
+              type="text"
+              value={tgHandle}
+              onChange={(e) => setTgHandle(e.target.value)}
+              placeholder="cometasms"
+              className="flex-1 px-3 py-2 border border-border bg-paper font-mono text-sm focus:outline-none focus:border-foreground"
+            />
+            <button
+              onClick={saveTelegram}
+              disabled={tgSaving}
+              className="px-4 py-2 bg-foreground text-background text-xs uppercase tracking-widest font-mono hover:opacity-90 disabled:opacity-50"
+            >
+              {tgSaving ? "Salvando…" : "Salvar"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {modules.filter((m) => !m.adminOnly || isAdmin).map((m) => {
           const Icon = m.icon;
