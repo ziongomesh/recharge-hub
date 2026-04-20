@@ -13,6 +13,25 @@ function poekiHeaders() {
   return { 'X-API-Key': process.env.POEKI_API_KEY, 'Content-Type': 'application/json' };
 }
 
+// Normaliza status vindos da Poeki/legados para o vocabulário do frontend.
+// "enviado_provedor", "processing", "enviada", etc. viram "andamento".
+function normalizeStatus(s) {
+  if (!s) return s;
+  const v = String(s).toLowerCase().trim();
+  const inProgress = new Set([
+    'enviado_provedor', 'enviado-provedor', 'enviado',
+    'processing', 'processando', 'em_andamento', 'em-andamento',
+    'enviada', 'enviada_provedor', 'in_progress',
+  ]);
+  if (inProgress.has(v)) return 'andamento';
+  return v;
+}
+
+function normalizeRecargaRow(r) {
+  if (r && r.status) r.status = normalizeStatus(r.status);
+  return r;
+}
+
 router.post('/detect', authMiddleware, async (req, res) => {
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
