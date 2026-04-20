@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText, AlertTriangle } from "lucide-react";
+import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText, AlertTriangle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { statusApi } from "@/lib/api";
+import { statusApi, settingsApi } from "@/lib/api";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
