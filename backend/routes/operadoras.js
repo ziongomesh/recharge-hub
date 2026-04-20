@@ -43,8 +43,8 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
 
     for (const name of allowedNames) {
       await db.query(
-        `INSERT INTO operadoras (name, enabled, poeki_allowed) VALUES (?, 0, 1)
-         ON DUPLICATE KEY UPDATE poeki_allowed = 1`,
+        `INSERT INTO operadoras (name, enabled, poeki_allowed) VALUES (?, 1, 1)
+         ON DUPLICATE KEY UPDATE poeki_allowed = 1, enabled = 1`,
         [name]
       );
     }
