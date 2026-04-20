@@ -107,22 +107,6 @@ export default function HistoricoPage() {
           <p className="text-xs text-muted-foreground mt-2">Recargas, eSIMs e ativações SMS.</p>
         </div>
         <div className="flex items-center gap-3">
-          {tab === "recargas" && (
-            <button
-              onClick={handleSyncAll}
-              disabled={syncing || loading}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs uppercase tracking-widest font-mono border border-foreground hover:bg-paper-2 disabled:opacity-50"
-            >
-              <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
-              {syncing ? "Sincronizando…" : "Sincronizar com API"}
-            </button>
-          )}
-          {tab === "recargas" && liveCount > 0 && (
-            <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-mono text-success">
-              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              Ao vivo • {liveCount} pendente{liveCount > 1 ? "s" : ""}
-            </span>
-          )}
           <div className="label-eyebrow tabular">Total: {String(totalByTab).padStart(3, "0")}</div>
         </div>
       </div>
