@@ -131,6 +131,7 @@ export const authApi = {
 export const operadorasApi = {
   list: () => api<{ operadoras: Operadora[] }>("/operadoras"),
   sync: () => api<{ message: string; operadoras: Operadora[] }>("/operadoras/sync", { method: "POST" }),
+  poekiStatus: () => api<{ poeki: { operator: string; enabled: boolean }[]; key_tail: string }>("/operadoras/poeki-status"),
   update: (id: number, data: Partial<Operadora>) =>
     api<Operadora>(`/operadoras/${id}`, { method: "PUT", body: data }),
 };
