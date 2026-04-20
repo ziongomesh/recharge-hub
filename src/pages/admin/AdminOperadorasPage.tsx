@@ -60,12 +60,22 @@ export default function AdminOperadorasPage() {
   const syncCatalog = async () => {
     setSyncing(true);
     try {
-      const op = await operadorasApi.sync();
-      const pl = await planosApi.sync();
-      toast.success(`${op.message} · ${pl.message}`);
+      const op: any = await operadorasApi.sync();
+      console.log("[Sync Operadoras] resposta:", op);
+      if (op.poeki_raw) console.log("[Sync Operadoras] poeki_raw:", op.poeki_raw);
+      if (op.poeki_allowed) console.log("[Sync Operadoras] autorizadas:", op.poeki_allowed);
+
+      const pl: any = await planosApi.sync();
+      console.log("[Sync Planos] resposta:", pl);
+
+      toast.success(`${op.message} · ${pl.message}`, {
+        description: `Autorizadas: ${(op.poeki_allowed || []).join(", ") || "nenhuma"}`,
+        duration: 8000,
+      });
       loadOperadoras();
       loadAllPlanos();
     } catch (e: any) {
+      console.error("[Sync] erro:", e);
       toast.error(e?.message || "Erro ao sincronizar");
     } finally { setSyncing(false); }
   };
