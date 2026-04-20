@@ -89,6 +89,7 @@ export default function AdminOperadorasPage() {
       });
       loadOperadoras();
       loadAllPlanos();
+      loadPoekiStatus();
     } catch (e: any) {
       console.error("[Sync] erro:", e);
       toast.error(e?.message || "Erro ao sincronizar");
