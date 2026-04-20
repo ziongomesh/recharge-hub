@@ -59,9 +59,15 @@ export default function AdminOperadorasPage() {
 
   const syncCatalog = async () => {
     setSyncing(true);
-    try { const r = await planosApi.sync(); toast.success(r.message); loadAllPlanos(); }
-    catch { toast.error("Erro ao sincronizar"); }
-    finally { setSyncing(false); }
+    try {
+      const op = await operadorasApi.sync();
+      const pl = await planosApi.sync();
+      toast.success(`${op.message} · ${pl.message}`);
+      loadOperadoras();
+      loadAllPlanos();
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao sincronizar");
+    } finally { setSyncing(false); }
   };
 
   const applyMarkup = async () => {

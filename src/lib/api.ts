@@ -130,6 +130,7 @@ export const authApi = {
 // Operadoras
 export const operadorasApi = {
   list: () => api<{ operadoras: Operadora[] }>("/operadoras"),
+  sync: () => api<{ message: string; operadoras: Operadora[] }>("/operadoras/sync", { method: "POST" }),
   update: (id: number, data: Partial<Operadora>) =>
     api<Operadora>(`/operadoras/${id}`, { method: "PUT", body: data }),
 };
