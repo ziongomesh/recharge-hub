@@ -14,17 +14,55 @@ function poekiHeaders() {
 }
 
 router.post('/detect', authMiddleware, async (req, res) => {
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   try {
     const raw = String(req.body.phone || '').replace(/\D/g, '');
-    // Poeki exige formato internacional com DDI 55
-    const phone = raw.startsWith('55') ? raw : `55${raw}`;
-    logger.recarga.detect(phone, req.userId);
-    const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, { headers: poekiHeaders() });
-    if (data && data.success === false) {
-      return res.json({ operator: null, message: data.message || 'Operadora não identificada' });
+    const localPhone = raw.startsWith('55') && raw.length > 11 ? raw.slice(2) : raw;
+    const candidates = [...new Set([
+      localPhone,
+      localPhone.startsWith('55') ? localPhone : `55${localPhone}`,
+    ].filter((phone) => phone.length >= 10))];
+
+    let lastData = null;
+    let lastError = null;
+
+    for (let i = 0; i < candidates.length; i++) {
+      const phone = candidates[i];
+      logger.recarga.detect(phone, req.userId);
+      console.log(`[POEKI detect] tentativa ${i + 1}/${candidates.length} telefone=${phone}`);
+
+      try {
+        const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, {
+          headers: poekiHeaders(),
+          timeout: 8000,
+        });
+
+        lastData = data;
+        const payload = data?.data || data;
+        const operator = payload?.operator || null;
+
+        if (data?.success === false || !operator) {
+          console.warn('[POEKI detect] não identificada:', data);
+          if (i < candidates.length - 1) await wait(700);
+          continue;
+        }
+
+        return res.json({ operator, ...payload, attemptedPhones: candidates, usedPhone: phone });
+      } catch (err) {
+        lastError = err;
+        console.warn('[POEKI detect] falha tentativa:', err.response?.data || err.message);
+        if (i < candidates.length - 1) await wait(700);
+      }
     }
-    const payload = data.data || data;
-    return res.json({ operator: payload.operator || null, ...payload });
+
+    const msg = lastData?.message || lastError?.response?.data?.message || 'Operadora não identificada';
+    return res.status(200).json({
+      operator: null,
+      message: msg,
+      attemptedPhones: candidates,
+      poeki_response: lastData || lastError?.response?.data || null,
+    });
   } catch (err) {
     console.error('Detect error:', err.response?.data || err.message);
     const msg = err.response?.data?.message || 'Erro ao detectar operadora';
