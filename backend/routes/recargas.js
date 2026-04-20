@@ -15,11 +15,11 @@ function poekiHeaders() {
 
 router.post('/detect', authMiddleware, async (req, res) => {
   try {
-    const { phone } = req.body;
+    const raw = String(req.body.phone || '').replace(/\D/g, '');
+    // Poeki exige formato internacional com DDI 55
+    const phone = raw.startsWith('55') ? raw : `55${raw}`;
     logger.recarga.detect(phone, req.userId);
     const { data } = await axios.post(`${POEKI_URL}/detect-operator`, { phone }, { headers: poekiHeaders() });
-    // Poeki responde { success, data: { operator, ... } } em sucesso
-    // ou { success: false, message } quando não identifica
     if (data && data.success === false) {
       return res.json({ operator: null, message: data.message || 'Operadora não identificada' });
     }
