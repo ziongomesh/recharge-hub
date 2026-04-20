@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { esimApi, type EsimProduto, type EsimVenda } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, ShoppingCart } from "lucide-react";
+import { Loader2, ShoppingCart, X } from "lucide-react";
 import EsimQrModal from "@/components/EsimQrModal";
 
 export default function EsimPage() {
@@ -13,6 +13,7 @@ export default function EsimPage() {
   const [confirm, setConfirm] = useState<EsimProduto | null>(null);
   const [modalVenda, setModalVenda] = useState<EsimVenda | null>(null);
   const [modalQr, setModalQr] = useState<string | null>(null);
+  const [termsOpen, setTermsOpen] = useState(false);
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
@@ -85,6 +86,17 @@ export default function EsimPage() {
                 {buying === p.id ? <Loader2 className="animate-spin" size={14} /> : <ShoppingCart size={14} />}
                 Comprar
               </button>
+              <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+                Ao comprar você concorda com os{" "}
+                <button
+                  type="button"
+                  onClick={() => setTermsOpen(true)}
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  termos da iFlash Store
+                </button>
+                .
+              </p>
             </div>
           ))}
         </div>
