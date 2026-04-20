@@ -52,6 +52,13 @@ export default function AppLayout() {
   const { user, loading } = useAuth();
   const { pathname } = useLocation();
   const [status, setStatus] = useState<StatusResponse | null>(null);
+  const [tgHandle, setTgHandle] = useState<string>("");
+
+  useEffect(() => {
+    settingsApi.public()
+      .then((r) => setTgHandle(r.settings?.telegram_handle || ""))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!user) return;
