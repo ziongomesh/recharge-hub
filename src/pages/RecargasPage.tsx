@@ -36,8 +36,17 @@ export default function RecargasPage() {
 
   const loadPlanos = async (id: number) => {
     setLoadingPlanos(true);
-    try { const { planos } = await planosApi.listByOperadora(id); setPlanos(planos); }
-    catch { setPlanos([]); }
+    try {
+      const { planos } = await planosApi.listByOperadora(id);
+      console.log("[RecargasPage] planos recebidos para operadora", id, planos);
+      setPlanos(planos);
+      if (!planos.length) toast.error("Nenhum plano cadastrado para essa operadora. Sincronize o catálogo no admin.");
+    }
+    catch (e: any) {
+      console.error("[RecargasPage] erro ao carregar planos", e);
+      toast.error(e?.message || "Erro ao carregar planos");
+      setPlanos([]);
+    }
     finally { setLoadingPlanos(false); }
   };
 
@@ -158,7 +167,7 @@ export default function RecargasPage() {
       </section>
 
       {/* Step 2 */}
-      {selectedOp && (loadingPlanos || planos.length > 0) && (
+      {selectedOp && (
         <section>
           <div className="flex items-baseline justify-between mb-6">
             <div className="label-eyebrow">Passo 02 · Valor</div>
@@ -168,6 +177,10 @@ export default function RecargasPage() {
           {loadingPlanos ? (
             <div className="text-sm text-muted-foreground flex items-center gap-2">
               <Loader2 className="animate-spin" size={14} /> Carregando planos…
+            </div>
+          ) : planos.length === 0 ? (
+            <div className="text-sm text-muted-foreground border border-dashed border-border p-6">
+              Nenhum plano disponível para <strong>{selectedOp.name}</strong>. Peça ao admin para sincronizar o catálogo da Poeki em Admin → Operadoras & Planos.
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-l border-border">
