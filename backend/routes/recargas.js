@@ -177,7 +177,7 @@ async function syncOneRecarga(recarga) {
   try {
     const { data } = await axios.get(`${POEKI_URL}/me/orders/${recarga.poeki_id}`, { headers: poekiHeaders(), timeout: 10000 });
     const poekiRaw = data.data || data;
-    const poekiStatus = poekiRaw.status;
+    const poekiStatus = normalizeStatus(poekiRaw.status);
     if (!poekiStatus || poekiStatus === recarga.status) {
       return { recarga, changed: false, poekiStatus };
     }
@@ -259,7 +259,7 @@ router.get('/:id(\\d+)/sync', authMiddleware, async (req, res) => {
     try {
       const { data } = await axios.get(`${POEKI_URL}/me/orders/${recarga.poeki_id}`, { headers: poekiHeaders(), timeout: 8000 });
       poekiRaw = data.data || data;
-      poekiStatus = poekiRaw.status;
+      poekiStatus = normalizeStatus(poekiRaw.status);
     } catch (err) {
       console.warn('[POEKI sync] falha consulta:', err.response?.data || err.message);
       return res.json({ recarga, source: 'local', poekiStatus: null, error: 'poeki_unreachable' });
@@ -295,7 +295,7 @@ router.get('/:id(\\d+)', authMiddleware, async (req, res) => {
       [req.params.id, req.userId]
     );
     if (rows.length === 0) return res.status(404).json({ message: 'Recarga não encontrada' });
-    res.json({ recarga: rows[0] });
+    res.json({ recarga: normalizeRecargaRow(rows[0]) });
   } catch (err) {
     console.error('Get recarga error:', err);
     res.status(500).json({ message: 'Erro interno' });
@@ -316,7 +316,7 @@ router.get('/', authMiddleware, async (req, res) => {
     );
     const [[{ total }]] = await db.query('SELECT COUNT(*) as total FROM recargas WHERE user_id = ?', [req.userId]);
 
-    res.json({ recargas, total });
+    res.json({ recargas: recargas.map(normalizeRecargaRow), total });
   } catch (err) {
     console.error('List recargas error:', err);
     res.status(500).json({ message: 'Erro interno' });
