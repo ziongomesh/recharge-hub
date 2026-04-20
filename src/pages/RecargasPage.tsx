@@ -232,9 +232,26 @@ export default function RecargasPage() {
       {/* Step 2 */}
       {selectedOp && (
         <section>
-          <div className="flex items-baseline justify-between mb-6">
+          <div className="flex items-baseline justify-between mb-4">
             <div className="label-eyebrow">Passo 02 · Valor</div>
             <div className="label-eyebrow">{planos.length} opções</div>
+          </div>
+
+          {/* Aviso de operadora */}
+          <div className="border-l-2 border-destructive bg-destructive/5 p-4 mb-6">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={16} className="text-destructive mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <div className="font-semibold text-destructive uppercase tracking-wide text-xs mb-1">
+                  Confira a operadora antes de prosseguir
+                </div>
+                <p className="text-foreground/80 leading-relaxed">
+                  Você selecionou <strong className="uppercase">{selectedOp.name}</strong>. Se o número{" "}
+                  <span className="font-mono tabular">{phone}</span> não pertencer a essa operadora, a recarga
+                  falhará e <strong>não há reembolso</strong>.
+                </p>
+              </div>
+            </div>
           </div>
 
           {loadingPlanos ? (
