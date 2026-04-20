@@ -54,6 +54,25 @@ export default function AdminHubPage() {
     esim: false,
   });
   const [busy, setBusy] = useState<ModuleKey | null>(null);
+  const [tgHandle, setTgHandle] = useState("");
+  const [tgSaving, setTgSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    settingsApi.get().then((r) => setTgHandle(r.settings?.telegram_handle || "")).catch(() => {});
+  }, [isAdmin]);
+
+  const saveTelegram = async () => {
+    setTgSaving(true);
+    try {
+      await settingsApi.update({ telegram_handle: tgHandle.trim().replace(/^@/, "") });
+      toast.success("Telegram atualizado");
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao salvar");
+    } finally {
+      setTgSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
