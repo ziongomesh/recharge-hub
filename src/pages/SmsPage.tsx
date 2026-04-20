@@ -513,29 +513,71 @@ export default function SmsPage() {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div className="max-w-7xl">
       <div className="label-eyebrow">Recebimento</div>
       <h1 className="font-display text-5xl mt-2 mb-8">SMS.</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-        {/* Sidebar serviços */}
-        <div className="border border-border bg-card flex flex-col h-[70vh]">
-          <div className="p-3 border-b border-border space-y-2">
-            <div className="relative">
+      <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+        {/* Sidebar — serviço + país (cards arredondados, estilo sms.online) */}
+        <div className="space-y-4">
+          {/* Tabs */}
+          <div className="flex gap-2 p-2 bg-card rounded-2xl shadow-sm ring-1 ring-border">
+            <button className="flex-1 py-2 text-sm rounded-xl bg-primary text-primary-foreground font-medium">
+              Ativação
+            </button>
+            <button
+              disabled
+              className="flex-1 py-2 text-sm rounded-xl text-muted-foreground hover:bg-muted/60 transition cursor-not-allowed opacity-60"
+              title="Em breve"
+            >
+              Aluguel
+            </button>
+          </div>
+
+          {/* Selecione o serviço */}
+          <div className="bg-card rounded-2xl shadow-sm ring-1 ring-border p-3 flex flex-col">
+            <div className="text-sm font-medium px-1 pt-1 pb-2">Selecione o serviço</div>
+            <div className="relative mb-2">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Pesquisar serviço…"
-                className="w-full pl-9 pr-3 py-2 text-sm bg-background border border-border rounded outline-none focus:border-foreground"
+                placeholder="Buscar"
+                className="w-full pl-9 pr-3 py-2 text-sm bg-paper-2 border border-transparent rounded-xl outline-none focus:border-primary focus:bg-card transition"
               />
             </div>
+            <div className="max-h-[340px] overflow-y-auto -mx-1 px-1">
+              {loadingS ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  <Loader2 className="animate-spin inline" size={14} /> Carregando…
+                </div>
+              ) : pinned.length === 0 && others.length === 0 ? (
+                <div className="p-6 text-center text-sm text-muted-foreground">Nenhum serviço.</div>
+              ) : (
+                <>
+                  {pinned.length > 0 && (
+                    <ul className="space-y-1 mb-1">
+                      {pinned.map((s) => renderItem(s, true))}
+                    </ul>
+                  )}
+                  <ul className="space-y-1">
+                    {others.map((s) => renderItem(s, false))}
+                  </ul>
+                </>
+              )}
+            </div>
+            <div className="text-[10px] text-muted-foreground flex items-center gap-1 px-1 pt-2 mt-2 border-t border-border">
+              <Pin size={9} /> Fixe até {MAX_PINS} favoritos por país.
+            </div>
+          </div>
 
-            {/* Country dropdown com bandeira */}
+          {/* Selecione o país */}
+          <div className="bg-card rounded-2xl shadow-sm ring-1 ring-border p-3">
+            <div className="text-sm font-medium px-1 pt-1 pb-2">Selecione o país</div>
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setOpenCountry((v) => !v)}
-                className="w-full px-3 py-2 text-sm bg-background border border-border rounded outline-none flex items-center gap-2 hover:border-foreground transition"
+                className="w-full px-3 py-2 text-sm bg-paper-2 border border-transparent rounded-xl outline-none flex items-center gap-2 hover:border-primary transition"
               >
                 {currentCountry?.iso ? (
                   <img src={flagUrl(currentCountry.iso)!} alt="" className="w-5 h-auto" />
@@ -547,14 +589,14 @@ export default function SmsPage() {
               </button>
 
               {openCountry && (
-                <div className="absolute z-20 left-0 right-0 mt-1 bg-background border border-border rounded shadow-lg max-h-72 flex flex-col">
+                <div className="absolute z-20 left-0 right-0 mt-1 bg-card border border-border rounded-xl shadow-lg max-h-72 flex flex-col overflow-hidden">
                   <div className="p-2 border-b border-border">
                     <input
                       autoFocus
                       value={countrySearch}
                       onChange={(e) => setCountrySearch(e.target.value)}
                       placeholder="Buscar país…"
-                      className="w-full px-2 py-1.5 text-xs bg-paper-2 border border-border rounded outline-none focus:border-foreground"
+                      className="w-full px-2 py-1.5 text-xs bg-paper-2 border border-transparent rounded-lg outline-none focus:border-primary"
                     />
                   </div>
                   <div className="flex-1 overflow-y-auto">
@@ -579,70 +621,87 @@ export default function SmsPage() {
                 </div>
               )}
             </div>
-
-            {/* Dica fixar */}
-            <div className="text-[10px] text-muted-foreground flex items-center gap-1 px-1">
-              <Pin size={9} /> Passe o mouse num serviço e clique no pin para fixar (até {MAX_PINS} por país).
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto">
-            {loadingS ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                <Loader2 className="animate-spin inline" size={14} /> Carregando…
-              </div>
-            ) : pinned.length === 0 && others.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                Nenhum serviço disponível neste país.
-              </div>
-            ) : (
-              <>
-                {pinned.length > 0 && (
-                  <>
-                    <div className="px-3 pt-2 pb-1 text-[10px] font-mono-x uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                      <Pin size={10} className="fill-current" /> Fixados ({pinned.length}/{MAX_PINS})
-                    </div>
-                    <ul className="divide-y divide-border bg-paper-2/30">
-                      {pinned.map((s) => renderItem(s, true))}
-                    </ul>
-                    <div className="rule mx-3 my-1" />
-                  </>
-                )}
-                <ul className="divide-y divide-border">
-                  {others.map((s) => renderItem(s, false))}
-                </ul>
-              </>
-            )}
           </div>
         </div>
 
-        {/* Painel ativação */}
-        <div className="border border-border bg-card p-6">
+        {/* Painel principal */}
+        <div className="space-y-6">
           {!active ? (
-            <div className="h-full flex flex-col items-center justify-center text-center text-sm text-muted-foreground gap-2">
-              <Phone size={36} className="opacity-30" />
-              <div>Selecione um serviço à esquerda para comprar um número.</div>
-              <ul className="mt-6 text-xs text-left space-y-1 max-w-md">
-                <li>› Compre o número e use no serviço escolhido</li>
-                <li>› O SMS chega aqui em segundos</li>
-                <li>› Cancele em até 2min sem cobrança se nada chegar</li>
-                <li>› Estorno automático se não receber</li>
-                <li>› Fixe até {MAX_PINS} serviços favoritos por país</li>
-              </ul>
-            </div>
+            <>
+              {/* HERO roxo */}
+              <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary to-[hsl(280_85%_65%)] text-primary-foreground shadow-lg">
+                <div
+                  className="absolute inset-0 opacity-30 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(600px circle at 90% 10%, hsl(0 0% 100% / 0.4), transparent 50%)",
+                  }}
+                />
+                <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                  <div>
+                    <h2 className="font-display text-3xl md:text-4xl leading-tight tracking-tight">
+                      Receba SMS rapidamente em números virtuais do mundo todo
+                    </h2>
+                    <p className="mt-3 text-sm text-primary-foreground/85 leading-relaxed">
+                      Compre um número virtual e receba SMS sem limites. Para qualquer site ou aplicativo.
+                    </p>
+                  </div>
+
+                  {/* Mockups de SMS */}
+                  <div className="space-y-2">
+                    {[
+                      { brand: "Discord", code: "Your Discord security code is: 191919", time: "há 1 min." },
+                      { brand: "Telegram", code: "Telegram code: 87434", time: "há 1 min." },
+                      { brand: "Google", code: "G-319515 is your code.", time: "há 36 seg." },
+                    ].map((m) => (
+                      <div key={m.brand} className="bg-card text-foreground rounded-xl px-3 py-2.5 shadow-md">
+                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                          <span className="font-medium text-foreground">{m.brand}</span>
+                          <span className="flex items-center gap-1.5">
+                            {m.time}
+                            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                          </span>
+                        </div>
+                        <div className="text-sm mt-0.5 truncate">{m.code}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Banner saldo */}
+              <div className="rounded-2xl bg-card ring-1 ring-border p-6">
+                <div className="text-xs text-muted-foreground uppercase tracking-wider">Seu saldo</div>
+                <div className="mt-1 flex items-end justify-between gap-4 flex-wrap">
+                  <div className="font-display text-3xl tabular">
+                    R$ {(user?.balance ?? 0).toFixed(2)}
+                  </div>
+                  <button
+                    onClick={() => navigate("/pagamentos")}
+                    className="px-4 py-2 text-sm rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-90 transition"
+                  >
+                    Recarregar
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                  Selecione um serviço à esquerda para comprar um número. O SMS chega em segundos.
+                  Cancele em até 2 min sem cobrança e receba estorno automático se nada chegar.
+                </p>
+              </div>
+            </>
           ) : (
-            <div className="space-y-5">
+            <div className="rounded-2xl bg-card ring-1 ring-border p-6 space-y-5">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="label-eyebrow">{active.country_name}</div>
                   <div className="font-display text-2xl mt-1">{active.service_name}</div>
                 </div>
                 <span
-                  className={`text-xs px-2 py-1 rounded-full ${
+                  className={`text-xs px-2.5 py-1 rounded-full ${
                     active.status === "waiting"
-                      ? "bg-amber-500/10 text-amber-600"
+                      ? "bg-warning/15 text-warning"
                       : active.status === "received"
-                      ? "bg-emerald-500/10 text-emerald-600"
+                      ? "bg-success/15 text-success"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
@@ -650,12 +709,12 @@ export default function SmsPage() {
                 </span>
               </div>
 
-              <div className="border border-border rounded p-4 bg-background">
+              <div className="rounded-xl p-4 bg-paper-2">
                 <div className="text-xs text-muted-foreground mb-1">Número</div>
                 <div className="flex items-center gap-2">
                   <span className="font-display text-3xl tabular">+{active.phone}</span>
                   <button
-                    className="p-2 hover:bg-paper-2 rounded"
+                    className="p-2 hover:bg-card rounded-lg"
                     onClick={() => { navigator.clipboard.writeText(active.phone); toast.success("Copiado"); }}
                   >
                     <Copy size={14} />
@@ -663,7 +722,7 @@ export default function SmsPage() {
                 </div>
               </div>
 
-              <div className="border border-border rounded p-4 bg-background min-h-[100px]">
+              <div className="rounded-xl p-4 bg-paper-2 min-h-[100px]">
                 <div className="text-xs text-muted-foreground mb-1 flex items-center gap-2">
                   Código / SMS
                   {active.status === "waiting" && <Loader2 size={12} className="animate-spin" />}
@@ -672,7 +731,7 @@ export default function SmsPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-display text-3xl tabular">{active.sms_code}</span>
                     <button
-                      className="p-2 hover:bg-paper-2 rounded"
+                      className="p-2 hover:bg-card rounded-lg"
                       onClick={() => { navigator.clipboard.writeText(active.sms_code || ""); toast.success("Copiado"); }}
                     >
                       <Copy size={14} />
@@ -689,21 +748,21 @@ export default function SmsPage() {
               <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={cancel}
-                  className="px-4 py-2 text-sm border border-border rounded hover:bg-paper-2 flex items-center gap-2"
+                  className="px-4 py-2 text-sm border border-border rounded-xl hover:bg-paper-2 flex items-center gap-2"
                 >
                   <X size={14} /> Cancelar / Estornar
                 </button>
                 {active.status === "received" && (
                   <button
                     onClick={finish}
-                    className="px-4 py-2 text-sm bg-foreground text-background rounded flex items-center gap-2"
+                    className="px-4 py-2 text-sm bg-primary text-primary-foreground rounded-xl flex items-center gap-2 hover:opacity-90"
                   >
                     <Check size={14} /> Concluir
                   </button>
                 )}
                 <button
                   onClick={() => smsApi.status(active.id).then((r) => setActive(r.activation))}
-                  className="px-4 py-2 text-sm border border-border rounded hover:bg-paper-2 flex items-center gap-2"
+                  className="px-4 py-2 text-sm border border-border rounded-xl hover:bg-paper-2 flex items-center gap-2"
                 >
                   <RefreshCw size={14} /> Atualizar
                 </button>
