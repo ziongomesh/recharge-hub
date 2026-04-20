@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { recargasApi, planosApi, operadorasApi, type Operadora, type Plano } from "@/lib/api";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowUpRight, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Check, Loader2, AlertTriangle, Clock } from "lucide-react";
 
 const fmtPhone = (v: string) => {
   const d = v.replace(/\D/g, "").slice(0, 11);
@@ -156,6 +156,47 @@ export default function RecargasPage() {
             </div>
           ))}
         </dl>
+
+        {/* Avisos importantes */}
+        <div className="mt-6 space-y-3">
+          <div className="border-l-2 border-destructive bg-destructive/5 p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={16} className="text-destructive mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <div className="font-semibold text-destructive uppercase tracking-wide text-xs mb-1">
+                  Confira a operadora!
+                </div>
+                <p className="text-foreground/80 leading-relaxed">
+                  Se o número não for da operadora <strong className="uppercase">{selectedOp?.name}</strong>, a recarga
+                  falhará e <strong>não poderemos reembolsar o valor</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-l-2 border-warning bg-warning/5 p-4">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={16} className="text-warning mt-0.5 shrink-0" />
+              <div className="text-sm">
+                <div className="font-semibold uppercase tracking-wide text-xs mb-1">Confira o número</div>
+                <p className="text-foreground/80 leading-relaxed">
+                  Confira o número digitado: <strong className="font-mono tabular">{phone}</strong>. Recargas
+                  enviadas para número errado <strong>não têm reembolso</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-l-2 border-border bg-paper-2 p-4">
+            <div className="flex items-start gap-2">
+              <Clock size={16} className="text-muted-foreground mt-0.5 shrink-0" />
+              <div className="text-sm text-foreground/80 leading-relaxed">
+                A recarga é geralmente <strong>instantânea</strong>, mas pode levar até <strong>24h</strong> para cair.
+                Se não cair nesse prazo, o valor é estornado automaticamente para seu saldo.
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button onClick={confirm} disabled={loading}
           className="mt-8 w-full inline-flex items-center justify-center gap-2 bg-foreground text-background px-6 py-4 text-sm disabled:opacity-50">
