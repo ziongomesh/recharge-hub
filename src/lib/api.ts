@@ -1,4 +1,18 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+function resolveApiBaseUrl(): string {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl) return envUrl;
+  if (typeof window !== "undefined") {
+    const { hostname, protocol } = window.location;
+    // Em localhost mantém localhost; em qualquer outro host usa o mesmo IP/domínio na porta 4000
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return "http://localhost:4000/api";
+    }
+    return `${protocol}//${hostname}:4000/api`;
+  }
+  return "http://localhost:4000/api";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 interface RequestOptions {
   method?: string;
