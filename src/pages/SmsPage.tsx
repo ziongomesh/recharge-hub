@@ -464,26 +464,26 @@ export default function SmsPage() {
 
   const renderItem = (s: SmsService, isPinned: boolean) => (
     <li key={s.code} className="group/item">
-      <div className="flex items-center hover:bg-paper-2 transition-colors">
+      <div className="flex items-center rounded-xl hover:bg-paper-2 transition-colors">
         <button
           onClick={() => buy(s)}
           disabled={!!buying || s.stock === 0}
-          className="flex-1 px-3 py-2 flex items-center gap-3 disabled:opacity-50 text-left"
+          className="flex-1 px-2.5 py-2 flex items-center gap-2.5 disabled:opacity-50 text-left"
         >
           <ServiceIcon src={s.icon_url} name={s.name} />
           <div className="flex-1 min-w-0">
             <div className="text-sm truncate">{s.name}</div>
             <div className="text-[10px] text-muted-foreground">estoque {s.stock}</div>
           </div>
-          <div className="text-sm tabular font-mono-x">
-            {buying === s.code ? <Loader2 className="animate-spin" size={14} /> : `R$ ${s.price.toFixed(2)}`}
+          <div className="text-[11px] tabular font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
+            {buying === s.code ? <Loader2 className="animate-spin" size={12} /> : `R$ ${s.price.toFixed(2)}`}
           </div>
         </button>
         <button
           onClick={() => togglePin(s.code)}
           title={isPinned ? "Desfixar" : "Fixar"}
-          className={`p-2 mr-1 rounded transition ${
-            isPinned ? "text-foreground" : "text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-foreground"
+          className={`p-2 mr-1 rounded-lg transition ${
+            isPinned ? "text-primary" : "text-muted-foreground/40 opacity-0 group-hover/item:opacity-100 hover:text-primary"
           }`}
         >
           {isPinned ? <Pin size={13} className="fill-current" /> : <Pin size={13} />}
