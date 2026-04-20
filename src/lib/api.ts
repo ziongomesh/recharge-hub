@@ -478,6 +478,8 @@ export const settingsApi = {
   update: (updates: Record<string, string>) =>
     api<{ message: string }>("/admin/settings", { method: "PUT", body: updates }),
 };
+
+export interface SupportSession {
   id: number;
   user_id: number;
   agent_id: number | null;
