@@ -22,12 +22,18 @@ router.get('/', authMiddleware, async (req, res) => {
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const { data } = await axios.get(`${POEKI_URL}/operators`, { headers: poekiHeaders() });
+    console.log('[POEKI /operators] resposta crua:', JSON.stringify(data, null, 2));
     const list = data.data || data;
-    if (!Array.isArray(list)) return res.status(500).json({ message: 'Resposta inesperada da Poeki' });
+    if (!Array.isArray(list)) {
+      console.error('[POEKI /operators] resposta inesperada:', data);
+      return res.status(500).json({ message: 'Resposta inesperada da Poeki', poeki_response: data });
+    }
 
     const allowedNames = list
       .filter((o) => o.enabled !== false)
       .map((o) => String(o.operator).toLowerCase());
+
+    console.log('[POEKI /operators] operadoras autorizadas:', allowedNames);
 
     for (const name of allowedNames) {
       await db.query(
@@ -49,13 +55,22 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
     }
 
     const [locais] = await db.query('SELECT id, name, poeki_allowed, enabled FROM operadoras ORDER BY name');
+    console.log('[POEKI /operators] operadoras no banco após sync:', locais);
+
     res.json({
       message: `Sincronizado: ${allowedNames.length} operadora(s) autorizada(s) pela Poeki`,
       operadoras: locais,
+      poeki_raw: data,
+      poeki_allowed: allowedNames,
     });
   } catch (err) {
     const msg = err.response?.data?.message || err.message;
-    res.status(500).json({ message: `Erro ao sincronizar com a Poeki: ${msg}` });
+    console.error('[POEKI /operators] erro:', err.response?.status, err.response?.data || err.message);
+    res.status(500).json({
+      message: `Erro ao sincronizar com a Poeki: ${msg}`,
+      poeki_status: err.response?.status,
+      poeki_response: err.response?.data,
+    });
   }
 });
 
