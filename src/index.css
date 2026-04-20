@@ -4,45 +4,45 @@
 
 @layer base {
   :root {
-    /* Editorial-techno palette: warm off-white paper, ink, electric lime accent */
-    --background: 40 30% 96%;
-    --foreground: 30 15% 10%;
+    /* Vibrant violet palette inspired by sms.online */
+    --background: 270 30% 98%;
+    --foreground: 270 25% 12%;
 
-    --paper: 40 30% 96%;
-    --paper-2: 38 25% 92%;
-    --ink: 30 15% 10%;
-    --ink-soft: 30 10% 30%;
+    --paper: 270 30% 98%;
+    --paper-2: 270 25% 94%;
+    --ink: 270 25% 12%;
+    --ink-soft: 270 15% 32%;
 
     --card: 0 0% 100%;
-    --card-foreground: 30 15% 10%;
+    --card-foreground: 270 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 30 15% 10%;
+    --popover-foreground: 270 25% 12%;
 
-    --primary: 30 15% 10%;
-    --primary-foreground: 40 30% 96%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 38 20% 90%;
-    --secondary-foreground: 30 15% 10%;
+    --secondary: 270 25% 94%;
+    --secondary-foreground: 270 25% 12%;
 
-    --muted: 38 18% 88%;
-    --muted-foreground: 30 8% 40%;
+    --muted: 270 20% 92%;
+    --muted-foreground: 270 10% 42%;
 
-    --accent: 70 95% 55%;
-    --accent-foreground: 30 15% 10%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 8 75% 48%;
-    --destructive-foreground: 40 30% 96%;
+    --destructive: 8 75% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --success: 145 50% 32%;
-    --success-foreground: 40 30% 96%;
+    --success: 152 60% 38%;
+    --success-foreground: 0 0% 100%;
 
-    --warning: 35 90% 45%;
-    --warning-foreground: 30 15% 10%;
+    --warning: 35 95% 50%;
+    --warning-foreground: 270 25% 12%;
 
-    --border: 30 12% 82%;
-    --input: 30 12% 82%;
-    --ring: 30 15% 10%;
+    --border: 270 20% 88%;
+    --input: 270 20% 88%;
+    --ring: 262 83% 58%;
 
     --radius: 0.25rem;
 
@@ -55,27 +55,27 @@
   }
 
   .dark {
-    --background: 30 12% 8%;
-    --foreground: 40 25% 92%;
-    --paper: 30 12% 8%;
-    --paper-2: 30 10% 12%;
-    --ink: 40 25% 92%;
-    --ink-soft: 40 15% 70%;
-    --card: 30 12% 11%;
-    --card-foreground: 40 25% 92%;
-    --popover: 30 12% 11%;
-    --popover-foreground: 40 25% 92%;
-    --primary: 40 25% 92%;
-    --primary-foreground: 30 12% 8%;
-    --secondary: 30 10% 16%;
-    --secondary-foreground: 40 25% 92%;
-    --muted: 30 10% 18%;
-    --muted-foreground: 40 10% 60%;
-    --accent: 70 95% 55%;
-    --accent-foreground: 30 12% 8%;
-    --border: 30 10% 22%;
-    --input: 30 10% 22%;
-    --ring: 40 25% 92%;
+    --background: 270 25% 8%;
+    --foreground: 270 15% 92%;
+    --paper: 270 25% 8%;
+    --paper-2: 270 20% 12%;
+    --ink: 270 15% 92%;
+    --ink-soft: 270 10% 70%;
+    --card: 270 22% 11%;
+    --card-foreground: 270 15% 92%;
+    --popover: 270 22% 11%;
+    --popover-foreground: 270 15% 92%;
+    --primary: 262 83% 65%;
+    --primary-foreground: 270 25% 8%;
+    --secondary: 270 20% 16%;
+    --secondary-foreground: 270 15% 92%;
+    --muted: 270 18% 18%;
+    --muted-foreground: 270 10% 62%;
+    --accent: 262 83% 65%;
+    --accent-foreground: 0 0% 100%;
+    --border: 270 18% 22%;
+    --input: 270 18% 22%;
+    --ring: 262 83% 65%;
   }
 }
 
