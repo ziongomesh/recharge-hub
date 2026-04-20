@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { recargasApi, planosApi, operadorasApi, type Operadora, type Plano } from "@/lib/api";
 import { toast } from "sonner";
@@ -24,13 +24,14 @@ export default function RecargasPage() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"form" | "confirm">("form");
   const navigate = useNavigate();
+  const detectSeqRef = useRef(0);
 
   useEffect(() => {
     operadorasApi.list().then((r) => setOperadoras(r.operadoras.filter((o) => o.enabled)))
       .catch(() => setOperadoras([
         { id: 1, name: "Claro", enabled: true },
-        { id: 2, name: "TIM",   enabled: true },
-        { id: 3, name: "Vivo",  enabled: true },
+        { id: 2, name: "TIM", enabled: true },
+        { id: 3, name: "Vivo", enabled: true },
       ]));
   }, []);
 
@@ -50,15 +51,16 @@ export default function RecargasPage() {
     finally { setLoadingPlanos(false); }
   };
 
-  const detect = useCallback(async (digits: string) => {
+  const detect = useCallback(async (digits: string, seq: number) => {
     if (digits.length < 10) return;
-    setDetecting(true);
     setDetectedOp(null);
     setSelectedOp(null);
     setPlanos([]);
     setSelectedPlano(null);
     try {
       const r = await recargasApi.detectOperator(digits);
+      if (seq !== detectSeqRef.current) return;
+      console.log("[RecargasPage] detect response", r);
       if (r.operator) {
         const name = r.operator.charAt(0).toUpperCase() + r.operator.slice(1).toLowerCase();
         setDetectedOp(name);
@@ -69,16 +71,36 @@ export default function RecargasPage() {
         toast.error(r.message || "Operadora não identificada para esse número");
       }
     } catch (e: any) {
+      if (seq !== detectSeqRef.current) return;
       toast.error(e.message || "Erro ao detectar operadora");
-    } finally { setDetecting(false); }
+    } finally {
+      if (seq === detectSeqRef.current) setDetecting(false);
+    }
   }, [operadoras]);
 
-  const onPhone = (v: string) => {
-    const f = fmtPhone(v); setPhone(f);
-    const d = raw(f);
-    if (d.length >= 10) detect(d);
-    else { setDetectedOp(null); setSelectedOp(null); setPlanos([]); setSelectedPlano(null); }
-  };
+  const onPhone = (v: string) => setPhone(fmtPhone(v));
+
+  useEffect(() => {
+    const d = raw(phone);
+    detectSeqRef.current += 1;
+    const seq = detectSeqRef.current;
+
+    if (d.length < 10) {
+      setDetecting(false);
+      setDetectedOp(null);
+      setSelectedOp(null);
+      setPlanos([]);
+      setSelectedPlano(null);
+      return;
+    }
+
+    setDetecting(true);
+    const timer = window.setTimeout(() => {
+      void detect(d, seq);
+    }, 900);
+
+    return () => window.clearTimeout(timer);
+  }, [phone, detect]);
 
   const pickPlano = async (p: Plano) => {
     const d = raw(phone);
