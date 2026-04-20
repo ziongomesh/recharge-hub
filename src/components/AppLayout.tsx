@@ -158,8 +158,21 @@ export default function AppLayout() {
               )}
               <span>·</span>
               <span>v1.0</span>
-              <span>·</span>
-              <span>suporte</span>
+              {tgHandle && (
+                <>
+                  <span>·</span>
+                  <a
+                    href={`https://t.me/${tgHandle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                    title={`Telegram: @${tgHandle}`}
+                  >
+                    <Send size={11} />
+                    @{tgHandle}
+                  </a>
+                </>
+              )}
             </div>
             <span>Cometa SMS — MMXXVI</span>
           </footer>
