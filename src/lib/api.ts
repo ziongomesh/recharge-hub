@@ -471,7 +471,13 @@ export const statusApi = {
       { method: "POST", body: { maintenance, message } }
     ),
 };
-export interface SupportSession {
+
+export const settingsApi = {
+  public: () => api<{ settings: { telegram_handle?: string } }>("/admin/settings/public"),
+  get: () => api<{ settings: Record<string, string> }>("/admin/settings"),
+  update: (updates: Record<string, string>) =>
+    api<{ message: string }>("/admin/settings", { method: "PUT", body: updates }),
+};
   id: number;
   user_id: number;
   agent_id: number | null;
