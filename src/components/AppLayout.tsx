@@ -3,8 +3,9 @@ import AppSidebar from "./AppSidebar";
 import SupportBubble from "./SupportBubble";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { statusApi, type StatusResponse } from "@/lib/api";
+import { statusApi, settingsApi, type StatusResponse } from "@/lib/api";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Send } from "lucide-react";
 
 const routeMeta: Record<string, { num: string; label: string }> = {
   "/recargas":      { num: "01", label: "Recargas" },
@@ -51,6 +52,13 @@ export default function AppLayout() {
   const { user, loading } = useAuth();
   const { pathname } = useLocation();
   const [status, setStatus] = useState<StatusResponse | null>(null);
+  const [tgHandle, setTgHandle] = useState<string>("");
+
+  useEffect(() => {
+    settingsApi.public()
+      .then((r) => setTgHandle(r.settings?.telegram_handle || ""))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -150,8 +158,21 @@ export default function AppLayout() {
               )}
               <span>·</span>
               <span>v1.0</span>
-              <span>·</span>
-              <span>suporte</span>
+              {tgHandle && (
+                <>
+                  <span>·</span>
+                  <a
+                    href={`https://t.me/${tgHandle}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 hover:text-foreground transition-colors"
+                    title={`Telegram: @${tgHandle}`}
+                  >
+                    <Send size={11} />
+                    @{tgHandle}
+                  </a>
+                </>
+              )}
             </div>
             <span>Cometa SMS — MMXXVI</span>
           </footer>

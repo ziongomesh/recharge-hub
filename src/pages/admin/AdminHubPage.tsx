@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText, AlertTriangle } from "lucide-react";
+import { Zap, Smartphone, MessageSquare, ArrowRight, Headphones, Users, ShieldCheck, ScrollText, AlertTriangle, Send } from "lucide-react";
 import { useEffect, useState } from "react";
-import { statusApi } from "@/lib/api";
+import { statusApi, settingsApi } from "@/lib/api";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
@@ -54,6 +54,25 @@ export default function AdminHubPage() {
     esim: false,
   });
   const [busy, setBusy] = useState<ModuleKey | null>(null);
+  const [tgHandle, setTgHandle] = useState("");
+  const [tgSaving, setTgSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    settingsApi.get().then((r) => setTgHandle(r.settings?.telegram_handle || "")).catch(() => {});
+  }, [isAdmin]);
+
+  const saveTelegram = async () => {
+    setTgSaving(true);
+    try {
+      await settingsApi.update({ telegram_handle: tgHandle.trim().replace(/^@/, "") });
+      toast.success("Telegram atualizado");
+    } catch (e: any) {
+      toast.error(e?.message || "Erro ao salvar");
+    } finally {
+      setTgSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -121,6 +140,35 @@ export default function AdminHubPage() {
                 />
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {isAdmin && (
+        <div className="border border-border bg-paper p-6">
+          <div className="flex items-center gap-2 label-eyebrow mb-4">
+            <Send size={12} />
+            Contato Telegram (rodapé)
+          </div>
+          <p className="text-xs text-muted-foreground mb-4">
+            Aparece no rodapé como link clicável (https://t.me/&lt;usuário&gt;).
+          </p>
+          <div className="flex items-center gap-2 max-w-md">
+            <span className="px-3 py-2 border border-border bg-paper-2 font-mono text-sm">@</span>
+            <input
+              type="text"
+              value={tgHandle}
+              onChange={(e) => setTgHandle(e.target.value)}
+              placeholder="cometasms"
+              className="flex-1 px-3 py-2 border border-border bg-paper font-mono text-sm focus:outline-none focus:border-foreground"
+            />
+            <button
+              onClick={saveTelegram}
+              disabled={tgSaving}
+              className="px-4 py-2 bg-foreground text-background text-xs uppercase tracking-widest font-mono hover:opacity-90 disabled:opacity-50"
+            >
+              {tgSaving ? "Salvando…" : "Salvar"}
+            </button>
           </div>
         </div>
       )}

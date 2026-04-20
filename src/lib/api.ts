@@ -471,6 +471,14 @@ export const statusApi = {
       { method: "POST", body: { maintenance, message } }
     ),
 };
+
+export const settingsApi = {
+  public: () => api<{ settings: { telegram_handle?: string } }>("/admin/settings/public"),
+  get: () => api<{ settings: Record<string, string> }>("/admin/settings"),
+  update: (updates: Record<string, string>) =>
+    api<{ message: string }>("/admin/settings", { method: "PUT", body: updates }),
+};
+
 export interface SupportSession {
   id: number;
   user_id: number;

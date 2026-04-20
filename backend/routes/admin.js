@@ -291,4 +291,47 @@ router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
+// =================== APP SETTINGS ===================
+// Público: retorna só as chaves seguras de exibição
+router.get('/settings/public', async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT `key`, `value` FROM app_settings WHERE `key` IN ('telegram_handle')");
+    const out = {};
+    rows.forEach((r) => { out[r.key] = r.value; });
+    res.json({ settings: out });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao carregar settings' });
+  }
+});
+
+router.get('/settings', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT `key`, `value` FROM app_settings");
+    const out = {};
+    rows.forEach((r) => { out[r.key] = r.value; });
+    res.json({ settings: out });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro ao carregar settings' });
+  }
+});
+
+router.put('/settings', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const updates = req.body || {};
+    const allowed = new Set(['telegram_handle']);
+    const entries = Object.entries(updates).filter(([k]) => allowed.has(k));
+    for (const [k, v] of entries) {
+      const clean = String(v ?? '').trim().replace(/^@/, '');
+      await db.query(
+        "INSERT INTO app_settings (`key`, `value`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)",
+        [k, clean]
+      );
+    }
+    res.json({ message: 'Configurações atualizadas' });
+  } catch (err) {
+    console.error('Update settings error:', err);
+    res.status(500).json({ message: 'Erro ao salvar' });
+  }
+});
+
 module.exports = router;
