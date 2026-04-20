@@ -3,8 +3,9 @@ import AppSidebar from "./AppSidebar";
 import SupportBubble from "./SupportBubble";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { statusApi, type StatusResponse } from "@/lib/api";
+import { statusApi, settingsApi, type StatusResponse } from "@/lib/api";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Send } from "lucide-react";
 
 const routeMeta: Record<string, { num: string; label: string }> = {
   "/recargas":      { num: "01", label: "Recargas" },
