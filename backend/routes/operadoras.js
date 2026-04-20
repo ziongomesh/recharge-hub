@@ -19,6 +19,24 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+// Status ao vivo da Poeki (sem persistir). Usado pelo painel admin.
+router.get('/poeki-status', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const { data } = await axios.get(`${POEKI_URL}/operators`, { headers: poekiHeaders() });
+    const list = Array.isArray(data?.data) ? data.data : Array.isArray(data) ? data : [];
+    const poeki = list.map((o) => ({
+      operator: String(o.operator || '').toLowerCase().trim(),
+      enabled: o.enabled !== false,
+    }));
+    res.json({ poeki, key_tail: (process.env.POEKI_API_KEY || '').slice(-6) });
+  } catch (err) {
+    res.status(500).json({
+      message: err.response?.data?.message || err.message,
+      poeki_status: err.response?.status,
+    });
+  }
+});
+
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const keyTail = (process.env.POEKI_API_KEY || '').slice(-6);
