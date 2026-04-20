@@ -19,8 +19,23 @@ export default function AdminOperadorasPage() {
   const [markupPct, setMarkupPct] = useState("30");
   const [syncing, setSyncing] = useState(false);
   const [loadingAll, setLoadingAll] = useState(false);
+  const [poekiStatus, setPoekiStatus] = useState<{ operator: string; enabled: boolean }[] | null>(null);
+  const [poekiKeyTail, setPoekiKeyTail] = useState<string>("");
+  const [poekiError, setPoekiError] = useState<string | null>(null);
 
-  useEffect(() => { loadOperadoras(); loadAllPlanos(); }, []);
+  useEffect(() => { loadOperadoras(); loadAllPlanos(); loadPoekiStatus(); }, []);
+
+  const loadPoekiStatus = async () => {
+    try {
+      const r = await operadorasApi.poekiStatus();
+      setPoekiStatus(r.poeki);
+      setPoekiKeyTail(r.key_tail);
+      setPoekiError(null);
+    } catch (e: any) {
+      setPoekiStatus([]);
+      setPoekiError(e?.message || "Erro ao consultar Poeki");
+    }
+  };
 
   const loadOperadoras = () => {
     operadorasApi.list().then((r) => setOperadoras(r.operadoras)).catch(() => setOperadoras([]));
