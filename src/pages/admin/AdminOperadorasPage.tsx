@@ -19,8 +19,23 @@ export default function AdminOperadorasPage() {
   const [markupPct, setMarkupPct] = useState("30");
   const [syncing, setSyncing] = useState(false);
   const [loadingAll, setLoadingAll] = useState(false);
+  const [poekiStatus, setPoekiStatus] = useState<{ operator: string; enabled: boolean }[] | null>(null);
+  const [poekiKeyTail, setPoekiKeyTail] = useState<string>("");
+  const [poekiError, setPoekiError] = useState<string | null>(null);
 
-  useEffect(() => { loadOperadoras(); loadAllPlanos(); }, []);
+  useEffect(() => { loadOperadoras(); loadAllPlanos(); loadPoekiStatus(); }, []);
+
+  const loadPoekiStatus = async () => {
+    try {
+      const r = await operadorasApi.poekiStatus();
+      setPoekiStatus(r.poeki);
+      setPoekiKeyTail(r.key_tail);
+      setPoekiError(null);
+    } catch (e: any) {
+      setPoekiStatus([]);
+      setPoekiError(e?.message || "Erro ao consultar Poeki");
+    }
+  };
 
   const loadOperadoras = () => {
     operadorasApi.list().then((r) => setOperadoras(r.operadoras)).catch(() => setOperadoras([]));
@@ -74,6 +89,7 @@ export default function AdminOperadorasPage() {
       });
       loadOperadoras();
       loadAllPlanos();
+      loadPoekiStatus();
     } catch (e: any) {
       console.error("[Sync] erro:", e);
       toast.error(e?.message || "Erro ao sincronizar");
@@ -125,6 +141,71 @@ export default function AdminOperadorasPage() {
           </Button>
         </div>
       </div>
+
+
+      {/* Comparativo lado a lado: Poeki API vs. Sistema local */}
+      <Card className="mb-6">
+        <CardHeader className="py-3">
+          <CardTitle className="text-sm flex items-center justify-between">
+            <span>
+              Status Poeki <span className="text-muted-foreground font-normal">(chave …{poekiKeyTail || "?"})</span>
+            </span>
+            <button onClick={loadPoekiStatus} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
+              <RefreshCw size={12} /> Atualizar
+            </button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {poekiError && (
+            <p className="text-xs text-destructive mb-2">Erro ao consultar Poeki: {poekiError}</p>
+          )}
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <div className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground mb-2">Poeki API retorna</div>
+              {poekiStatus === null ? (
+                <p className="text-xs text-muted-foreground">Carregando…</p>
+              ) : poekiStatus.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Nenhuma operadora retornada</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {poekiStatus.map((p) => (
+                    <li key={p.operator} className="flex items-center justify-between text-sm">
+                      <span className="font-mono">{p.operator}</span>
+                      <span className={`text-[10px] uppercase tracking-widest font-mono px-1.5 py-0.5 border ${p.enabled ? "text-success border-success/40" : "text-muted-foreground border-border"}`}>
+                        {p.enabled ? "ativa" : "inativa"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground mb-2">No sistema (local)</div>
+              {operadoras.length === 0 ? (
+                <p className="text-xs text-muted-foreground">Nenhuma operadora cadastrada</p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {operadoras.map((op) => {
+                    const inPoeki = poekiStatus?.find((p) => p.operator === op.name.toLowerCase().trim());
+                    const mismatch = inPoeki && inPoeki.enabled && !op.enabled;
+                    return (
+                      <li key={op.id} className="flex items-center justify-between text-sm">
+                        <span className="font-mono flex items-center gap-2">
+                          {op.name.toLowerCase()}
+                          {mismatch && <span className="text-[9px] uppercase text-warning">divergente</span>}
+                        </span>
+                        <span className={`text-[10px] uppercase tracking-widest font-mono px-1.5 py-0.5 border ${op.enabled ? "text-success border-success/40" : "text-muted-foreground border-border"}`}>
+                          {op.enabled ? "ativa" : "inativa"}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-3 gap-4 mb-6">
         {operadoras.map((op) => {
