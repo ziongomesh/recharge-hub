@@ -21,6 +21,9 @@ router.get('/', authMiddleware, async (req, res) => {
 
 router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
   try {
+    const keyTail = (process.env.POEKI_API_KEY || '').slice(-6);
+    console.log(`[POEKI /operators] usando chave ...${keyTail}`);
+
     const { data } = await axios.get(`${POEKI_URL}/operators`, { headers: poekiHeaders() });
     console.log('[POEKI /operators] resposta crua:', JSON.stringify(data, null, 2));
     const list = data.data || data;
@@ -29,9 +32,12 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(500).json({ message: 'Resposta inesperada da Poeki', poeki_response: data });
     }
 
+    console.log(`[POEKI /operators] total recebido: ${list.length}`);
+    list.forEach((o, i) => console.log(`  [${i}] operator=${o.operator} enabled=${o.enabled}`));
+
     const allowedNames = list
       .filter((o) => o.enabled !== false)
-      .map((o) => String(o.operator).toLowerCase());
+      .map((o) => String(o.operator).toLowerCase().trim());
 
     console.log('[POEKI /operators] operadoras autorizadas:', allowedNames);
 
