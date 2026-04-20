@@ -36,8 +36,17 @@ export default function RecargasPage() {
 
   const loadPlanos = async (id: number) => {
     setLoadingPlanos(true);
-    try { const { planos } = await planosApi.listByOperadora(id); setPlanos(planos); }
-    catch { setPlanos([]); }
+    try {
+      const { planos } = await planosApi.listByOperadora(id);
+      console.log("[RecargasPage] planos recebidos para operadora", id, planos);
+      setPlanos(planos);
+      if (!planos.length) toast.error("Nenhum plano cadastrado para essa operadora. Sincronize o catálogo no admin.");
+    }
+    catch (e: any) {
+      console.error("[RecargasPage] erro ao carregar planos", e);
+      toast.error(e?.message || "Erro ao carregar planos");
+      setPlanos([]);
+    }
     finally { setLoadingPlanos(false); }
   };
 
