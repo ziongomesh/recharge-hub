@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Check, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, Check, ShieldCheck, Zap, Smartphone, CreditCard, Globe } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { operadorasApi, type Operadora } from "@/lib/api";
 
@@ -26,44 +26,33 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* Top bar */}
+      <header className="border-b border-border/60 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card font-display text-xl">
-              C
-            </div>
-            <div>
-              <div className="text-lg font-semibold tracking-tight">CometaSMS</div>
-              <div className="text-xs text-muted-foreground">Recargas via PIX</div>
+          <Link to="/" className="flex items-center gap-2">
+            <div className="font-display text-2xl tracking-tight">
+              cometa<span className="text-primary">sms</span>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            <a href="#recargas" className="hover:text-foreground transition-colors">Recargas</a>
-            <a href="#operadoras" className="hover:text-foreground transition-colors">Operadoras</a>
-            <a href="#vantagens" className="hover:text-foreground transition-colors">Vantagens</a>
+          <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
+            <a href="#recargas" className="hover:text-primary transition-colors">Recargas</a>
+            <a href="#operadoras" className="hover:text-primary transition-colors">Operadoras</a>
+            <a href="#vantagens" className="hover:text-primary transition-colors">Vantagens</a>
           </nav>
 
           <div className="flex items-center gap-3">
             {user ? (
-              <button
-                onClick={() => navigate("/recargas")}
-                className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
-              >
-                Abrir painel
-                <ArrowRight size={16} />
+              <button onClick={() => navigate("/recargas")} className="btn-pill">
+                Abrir painel <ArrowRight size={16} />
               </button>
             ) : (
               <>
-                <Link to="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link to="/login" className="text-sm font-medium hover:text-primary transition-colors">
                   Entrar
                 </Link>
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm text-background transition-opacity hover:opacity-90"
-                >
-                  Criar conta
-                  <ArrowRight size={16} />
+                <Link to="/register" className="btn-pill">
+                  Criar conta <ArrowRight size={16} />
                 </Link>
               </>
             )}
@@ -72,116 +61,107 @@ export default function HomePage() {
       </header>
 
       <main>
-        <section className="mx-auto grid max-w-7xl gap-10 px-6 py-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-24">
-          <div>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-              <span className="h-2 w-2 rounded-full bg-accent" />
-              PIX automático e recarga instantânea
-            </div>
-            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-              Recarga de celular com cara de produto moderno.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
-              Escolha a operadora, selecione o valor e pague via PIX. Fluxo direto, visual limpo e confirmação rápida.
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                to={user ? "/recargas" : "/register"}
-                className="inline-flex items-center gap-2 rounded-md bg-foreground px-5 py-3 text-sm text-background transition-opacity hover:opacity-90"
-              >
-                {user ? "Nova recarga" : "Começar agora"}
-                <ArrowRight size={16} />
-              </Link>
-              <Link to="/login" className="rounded-md border border-border px-5 py-3 text-sm transition-colors hover:bg-card">
-                Já tenho conta
-              </Link>
-            </div>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                { label: "Confirmação", value: "Em segundos" },
-                { label: "Operadoras", value: `${activeOperadoras.length} ativas` },
-                { label: "Pagamento", value: "PIX" },
-              ].map((item) => (
-                <div key={item.label} className="rounded-xl border border-border bg-card p-4">
-                  <div className="text-xs text-muted-foreground">{item.label}</div>
-                  <div className="mt-2 text-lg font-semibold">{item.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <div className="flex items-center justify-between border-b border-border pb-4">
-              <div>
-                <div className="text-sm font-medium">Fluxo de recarga</div>
-                <div className="text-xs text-muted-foreground">Simples e objetivo</div>
+        {/* Hero */}
+        <section className="mx-auto max-w-7xl px-6 pt-10 pb-16">
+          <div className="hero-gradient rounded-[2rem] p-10 sm:p-16 relative overflow-hidden">
+            <div className="max-w-2xl relative z-10">
+              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] tracking-tight">
+                Recarregue seu celular em segundos.
+              </h1>
+              <p className="mt-6 text-lg text-ink-soft max-w-xl leading-relaxed">
+                Pague no PIX, escolha sua operadora e receba o crédito instantaneamente. Simples, rápido e sem complicação.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link to={user ? "/recargas" : "/register"} className="btn-pill">
+                  {user ? "Nova recarga" : "Começar agora"} <ArrowRight size={16} />
+                </Link>
+                <Link to="/login" className="btn-pill-outline">
+                  Já tenho conta
+                </Link>
               </div>
-              <div className="rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">3 passos</div>
             </div>
+          </div>
+        </section>
 
-            <div className="mt-6 space-y-4">
-              {[
-                "Digite o número com DDD",
-                "Escolha operadora e valor",
-                "Pague no PIX e acompanhe o histórico",
-              ].map((step, index) => (
-                <div key={step} className="flex items-start gap-4 rounded-xl border border-border p-4">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-semibold">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <div className="font-medium">{step}</div>
-                    <div className="mt-1 text-sm text-muted-foreground">
-                      Sem telas poluídas e sem distrações desnecessárias.
-                    </div>
-                  </div>
+        {/* Operadoras */}
+        <section id="operadoras" className="mx-auto max-w-7xl px-6 pb-16">
+          <div className="mb-6 flex items-end justify-between">
+            <h2 className="font-display text-3xl sm:text-4xl tracking-tight">Operadoras disponíveis</h2>
+            <span className="text-sm text-muted-foreground">{activeOperadoras.length} ativas</span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {activeOperadoras.map((op) => (
+              <button
+                key={op.id}
+                onClick={() => (user ? navigate(`/recargas?operadora=${op.id}`) : navigate("/login"))}
+                className="rounded-3xl border border-border/60 bg-card p-6 text-left transition-all hover:border-primary/40 hover:shadow-lg hover:-translate-y-1"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="font-display text-2xl">{op.name}</div>
+                  <ArrowRight className="text-primary" size={20} />
                 </div>
-              ))}
-            </div>
+                <div className="mt-2 text-sm text-muted-foreground">Recarga instantânea via PIX.</div>
+              </button>
+            ))}
           </div>
         </section>
 
-        <section id="operadoras" className="border-y border-border bg-card/40">
-          <div className="mx-auto max-w-7xl px-6 py-10">
-            <div className="mb-5 text-sm font-medium">Operadoras disponíveis</div>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {activeOperadoras.map((op) => (
-                <button
-                  key={op.id}
-                  onClick={() => (user ? navigate(`/recargas?operadora=${op.id}`) : navigate("/login"))}
-                  className="rounded-xl border border-border bg-background p-5 text-left transition-colors hover:bg-card"
-                >
-                  <div className="text-lg font-semibold">{op.name}</div>
-                  <div className="mt-1 text-sm text-muted-foreground">Recargas rápidas com confirmação automática.</div>
-                </button>
-              ))}
+        {/* Bonus card — sms.online style */}
+        <section className="mx-auto max-w-7xl px-6 pb-16">
+          <div className="rounded-[2rem] bg-primary text-primary-foreground p-10 sm:p-14 relative overflow-hidden">
+            <div className="max-w-2xl relative z-10">
+              <div className="text-sm font-mono uppercase tracking-widest opacity-80">Promoção</div>
+              <h3 className="mt-2 font-display text-4xl sm:text-5xl leading-tight">
+                10% de bônus no primeiro depósito
+              </h3>
+              <p className="mt-4 text-base opacity-90 max-w-lg">
+                Crie sua conta, faça seu primeiro PIX e ganhe crédito extra para usar como quiser.
+              </p>
+              <Link to={user ? "/pagamentos" : "/register"} className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold hover:bg-background/90">
+                Depositar agora <ArrowRight size={16} />
+              </Link>
             </div>
+            <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-primary-foreground/10 blur-3xl" />
+            <div className="absolute right-20 top-10 w-40 h-40 rounded-full bg-primary-foreground/10 blur-2xl" />
           </div>
         </section>
 
-        <section id="vantagens" className="mx-auto max-w-7xl px-6 py-16">
-          <div className="mb-8 max-w-2xl">
-            <div className="text-sm font-medium text-muted-foreground">Por que usar</div>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Sem exagero visual, só um front bem resolvido.</h2>
+        {/* Vantagens */}
+        <section id="vantagens" className="mx-auto max-w-7xl px-6 pb-20">
+          <div className="mb-8">
+            <div className="text-sm font-mono uppercase tracking-widest text-muted-foreground">Por que cometa</div>
+            <h2 className="mt-2 font-display text-3xl sm:text-4xl tracking-tight max-w-2xl">
+              Tudo que você precisa, sem fricção.
+            </h2>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { icon: Zap, title: "Rápido", text: "Fluxo curto para recarga e depósito sem atrito." },
-              { icon: ShieldCheck, title: "Confiável", text: "Histórico, status e confirmação claros para o usuário." },
-              { icon: Check, title: "Direto", text: "Interface de app de verdade, sem aparência genérica de IA." },
+              { icon: Zap, title: "Instantâneo", text: "Crédito liberado em segundos após confirmação do PIX." },
+              { icon: ShieldCheck, title: "Seguro", text: "Pagamentos via PIX com confirmação automática e histórico completo." },
+              { icon: Smartphone, title: "Todas operadoras", text: "Claro, TIM, Vivo e mais. Recarregue qualquer número do Brasil." },
+              { icon: CreditCard, title: "Sem taxas escondidas", text: "Você paga só o valor da recarga. Transparente do início ao fim." },
+              { icon: Globe, title: "24/7", text: "Faça recargas a qualquer hora, em qualquer dia da semana." },
+              { icon: Check, title: "Suporte direto", text: "Time disponível pelo chat para resolver qualquer questão." },
             ].map((item) => (
-              <div key={item.title} className="rounded-2xl border border-border bg-card p-6">
-                <item.icon className="text-foreground" size={20} />
-                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+              <div key={item.title} className="rounded-3xl border border-border/60 bg-card p-6 hover:border-primary/30 transition-colors">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <item.icon size={22} />
+                </div>
+                <h3 className="mt-4 font-display text-xl">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.text}</p>
               </div>
             ))}
           </div>
         </section>
       </main>
+
+      <footer className="border-t border-border/60 py-8">
+        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-sm text-muted-foreground">
+          <div>© {new Date().getFullYear()} CometaSMS</div>
+          <Link to="/termos" className="hover:text-foreground">Termos</Link>
+        </div>
+      </footer>
     </div>
   );
 }
