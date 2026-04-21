@@ -1,162 +1,283 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Check, ShieldCheck, Zap, Smartphone, CreditCard, Globe } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { operadorasApi, type Operadora } from "@/lib/api";
+import { ArrowRight, Search, MessageSquare, Smartphone, Wallet } from "lucide-react";
+import { smsApi, type SmsService } from "@/lib/api";
 
-const fallbackOperadoras: Operadora[] = [
-  { id: 1, name: "Claro", enabled: true },
-  { id: 2, name: "TIM", enabled: true },
-  { id: 3, name: "Vivo", enabled: true },
-];
+const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
+
+type Tab = "sms" | "recargas";
 
 export default function HomePage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const [operadoras, setOperadoras] = useState<Operadora[]>([]);
+  const [tab, setTab] = useState<Tab>("sms");
+  const [services, setServices] = useState<SmsService[]>([]);
+  const [search, setSearch] = useState("");
 
+  // Força tema escuro enquanto a Home pública está montada
   useEffect(() => {
-    operadorasApi
-      .list()
-      .then((r) => setOperadoras(r.operadoras.filter((o) => o.enabled)))
-      .catch(() => setOperadoras(fallbackOperadoras));
+    const html = document.documentElement;
+    const had = html.classList.contains("dark");
+    html.classList.add("dark");
+    return () => {
+      if (!had) html.classList.remove("dark");
+    };
   }, []);
 
-  const activeOperadoras = operadoras.length ? operadoras : fallbackOperadoras;
+  // Carrega serviços de SMS do Brasil
+  useEffect(() => {
+    smsApi
+      .services(BRAZIL_COUNTRY_ID)
+      .then((r) => setServices(r.services))
+      .catch(() => setServices([]));
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    const list = q
+      ? services.filter(
+          (s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)
+        )
+      : services;
+    return list.slice(0, 7);
+  }, [services, search]);
+
+  const requireLogin = () => navigate("/login");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Top bar */}
-      <header className="border-b border-border/60 bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="font-display text-2xl tracking-tight">
-              cometa<span className="text-primary">sms</span>
+      {/* Topbar superior fina */}
+      <div className="border-b border-border/50 text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-muted-foreground">
+          <div className="flex items-center gap-5">
+            <a href="#faq" className="hover:text-foreground">FAQ</a>
+            <a href="#api" className="hover:text-foreground">API</a>
+          </div>
+          <div className="flex items-center gap-5">
+            <Link to="/login" className="hover:text-foreground">Suporte</Link>
+            <span>Português (Brasil)</span>
+            <span className="text-primary">● Escuro</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Header com logo + nav */}
+      <header className="border-b border-border/50">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+          <Link to="/" className="flex items-center gap-2" aria-label="cometa sms">
+            {/* Logo estilo sms.online: bold em duas linhas */}
+            <div className="leading-none">
+              <div className="font-display text-3xl text-primary tracking-tight">cometa</div>
+              <div className="font-mono-x text-[11px] text-primary tracking-[0.45em] -mt-0.5 text-center">
+                sms
+              </div>
             </div>
           </Link>
 
           <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
-            <a href="#recargas" className="hover:text-primary transition-colors">Recargas</a>
-            <a href="#operadoras" className="hover:text-primary transition-colors">Operadoras</a>
-            <a href="#vantagens" className="hover:text-primary transition-colors">Vantagens</a>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">SMS</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">Recargas</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">Lista de preços</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">Ajuda ▾</button>
           </nav>
 
-          <div className="flex items-center gap-3">
-            {user ? (
-              <button onClick={() => navigate("/recargas")} className="btn-pill">
-                Abrir painel <ArrowRight size={16} />
-              </button>
-            ) : (
-              <>
-                <Link to="/login" className="text-sm font-medium hover:text-primary transition-colors">
-                  Entrar
-                </Link>
-                <Link to="/register" className="btn-pill">
-                  Criar conta <ArrowRight size={16} />
-                </Link>
-              </>
-            )}
-          </div>
+          <button
+            onClick={requireLogin}
+            className="h-10 w-10 rounded-full border border-border flex items-center justify-center hover:border-primary transition-colors"
+            aria-label="Entrar"
+          >
+            <Smartphone size={16} />
+          </button>
         </div>
       </header>
 
-      <main>
-        {/* Hero */}
-        <section className="mx-auto max-w-7xl px-6 pt-10 pb-16">
-          <div className="hero-gradient rounded-[2rem] p-10 sm:p-16 relative overflow-hidden">
-            <div className="max-w-2xl relative z-10">
-              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] tracking-tight">
-                Recarregue seu celular em segundos.
-              </h1>
-              <p className="mt-6 text-lg text-ink-soft max-w-xl leading-relaxed">
-                Pague no PIX, escolha sua operadora e receba o crédito instantaneamente. Simples, rápido e sem complicação.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <Link to={user ? "/recargas" : "/register"} className="btn-pill">
-                  {user ? "Nova recarga" : "Começar agora"} <ArrowRight size={16} />
-                </Link>
-                <Link to="/login" className="btn-pill-outline">
-                  Já tenho conta
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Operadoras */}
-        <section id="operadoras" className="mx-auto max-w-7xl px-6 pb-16">
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="font-display text-3xl sm:text-4xl tracking-tight">Operadoras disponíveis</h2>
-            <span className="text-sm text-muted-foreground">{activeOperadoras.length} ativas</span>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-3">
-            {activeOperadoras.map((op) => (
+      <main className="mx-auto max-w-7xl px-6 py-8">
+        <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+          {/* Coluna esquerda — abas + serviços */}
+          <div className="space-y-6">
+            {/* Tabs */}
+            <div className="rounded-full bg-card p-1.5 border border-border/60 grid grid-cols-2 gap-1">
               <button
-                key={op.id}
-                onClick={() => (user ? navigate(`/recargas?operadora=${op.id}`) : navigate("/login"))}
-                className="rounded-3xl border border-border/60 bg-card p-6 text-left transition-all hover:border-primary/40 hover:shadow-lg hover:-translate-y-1"
+                onClick={() => setTab("sms")}
+                className={`rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                  tab === "sms" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <div className="flex items-center justify-between">
-                  <div className="font-display text-2xl">{op.name}</div>
-                  <ArrowRight className="text-primary" size={20} />
-                </div>
-                <div className="mt-2 text-sm text-muted-foreground">Recarga instantânea via PIX.</div>
+                SMS
               </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Bonus card — sms.online style */}
-        <section className="mx-auto max-w-7xl px-6 pb-16">
-          <div className="rounded-[2rem] bg-primary text-primary-foreground p-10 sm:p-14 relative overflow-hidden">
-            <div className="max-w-2xl relative z-10">
-              <div className="text-sm font-mono uppercase tracking-widest opacity-80">Promoção</div>
-              <h3 className="mt-2 font-display text-4xl sm:text-5xl leading-tight">
-                10% de bônus no primeiro depósito
-              </h3>
-              <p className="mt-4 text-base opacity-90 max-w-lg">
-                Crie sua conta, faça seu primeiro PIX e ganhe crédito extra para usar como quiser.
-              </p>
-              <Link to={user ? "/pagamentos" : "/register"} className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold hover:bg-background/90">
-                Depositar agora <ArrowRight size={16} />
-              </Link>
+              <button
+                onClick={() => setTab("recargas")}
+                className={`rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                  tab === "recargas" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Recargas
+              </button>
             </div>
-            <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-primary-foreground/10 blur-3xl" />
-            <div className="absolute right-20 top-10 w-40 h-40 rounded-full bg-primary-foreground/10 blur-2xl" />
-          </div>
-        </section>
 
-        {/* Vantagens */}
-        <section id="vantagens" className="mx-auto max-w-7xl px-6 pb-20">
-          <div className="mb-8">
-            <div className="text-sm font-mono uppercase tracking-widest text-muted-foreground">Por que cometa</div>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl tracking-tight max-w-2xl">
-              Tudo que você precisa, sem fricção.
-            </h2>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              { icon: Zap, title: "Instantâneo", text: "Crédito liberado em segundos após confirmação do PIX." },
-              { icon: ShieldCheck, title: "Seguro", text: "Pagamentos via PIX com confirmação automática e histórico completo." },
-              { icon: Smartphone, title: "Todas operadoras", text: "Claro, TIM, Vivo e mais. Recarregue qualquer número do Brasil." },
-              { icon: CreditCard, title: "Sem taxas escondidas", text: "Você paga só o valor da recarga. Transparente do início ao fim." },
-              { icon: Globe, title: "24/7", text: "Faça recargas a qualquer hora, em qualquer dia da semana." },
-              { icon: Check, title: "Suporte direto", text: "Time disponível pelo chat para resolver qualquer questão." },
-            ].map((item) => (
-              <div key={item.title} className="rounded-3xl border border-border/60 bg-card p-6 hover:border-primary/30 transition-colors">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <item.icon size={22} />
-                </div>
-                <h3 className="mt-4 font-display text-xl">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.text}</p>
+            {/* Card de serviços */}
+            <div className="rounded-3xl border border-border/60 bg-card p-5">
+              <div className="text-sm font-semibold mb-3">Selecione o serviço</div>
+              <div className="relative mb-3">
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar"
+                  className="w-full rounded-xl bg-secondary/60 border border-border/40 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-primary/50"
+                />
               </div>
-            ))}
+
+              <div className="space-y-1.5">
+                {tab === "sms" && filtered.length === 0 && (
+                  <div className="text-xs text-muted-foreground py-6 text-center">
+                    Carregando serviços…
+                  </div>
+                )}
+                {tab === "sms" &&
+                  filtered.map((s) => (
+                    <button
+                      key={s.code}
+                      onClick={requireLogin}
+                      className="w-full flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
+                    >
+                      <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                        {s.icon_url ? (
+                          <img src={s.icon_url} alt="" className="h-5 w-5 object-contain" />
+                        ) : (
+                          <MessageSquare size={14} className="text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{s.name}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {s.stock.toLocaleString("pt-BR")} número{s.stock === 1 ? "" : "s"}
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1 whitespace-nowrap">
+                        a partir de R$ {s.price.toFixed(2).replace(".", ",")}
+                      </span>
+                    </button>
+                  ))}
+
+                {tab === "recargas" && (
+                  <div className="space-y-1.5">
+                    {["Claro", "TIM", "Vivo"].map((op) => (
+                      <button
+                        key={op}
+                        onClick={requireLogin}
+                        className="w-full flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-secondary/50 transition-colors text-left"
+                      >
+                        <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                          <Smartphone size={14} className="text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 text-sm font-medium">{op}</div>
+                        <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1">
+                          recarregar
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={requireLogin}
+                  className="w-full text-center text-sm text-muted-foreground hover:text-foreground py-3 mt-2 border-t border-border/40"
+                >
+                  Mostrar todos {tab === "sms" ? services.length : 3}
+                </button>
+              </div>
+            </div>
+
+            {/* Card país — somente Brasil */}
+            <div className="rounded-3xl border border-border/60 bg-card p-5">
+              <div className="text-sm font-semibold mb-3">Selecione o país</div>
+              <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
+                <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center text-lg">
+                  🇧🇷
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">Brasil</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    {services.reduce((acc, s) => acc + s.stock, 0).toLocaleString("pt-BR")} números disponíveis
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+
+          {/* Coluna direita — hero + bônus */}
+          <div className="space-y-6">
+            <section className="rounded-3xl bg-card border border-border/60 p-10 sm:p-12 relative overflow-hidden min-h-[420px] flex flex-col justify-center">
+              <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
+                <div>
+                  <h1 className="font-display text-4xl sm:text-5xl leading-[1.05] tracking-tight">
+                    Receba SMS rapidamente em números virtuais em todo o mundo
+                  </h1>
+                  <p className="mt-5 text-ink-soft max-w-md">
+                    Compre um número virtual e receba SMS sem limites. Para qualquer site ou aplicativo.
+                  </p>
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <button onClick={requireLogin} className="btn-pill">
+                      Comprar número <ArrowRight size={16} />
+                    </button>
+                    <button onClick={requireLogin} className="btn-pill-outline">
+                      Recarregar
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mock de SMS recebidos */}
+                <div className="space-y-3">
+                  {[
+                    { app: "Amazon", time: "há 36 seg.", text: "Amazon code: 1234567890" },
+                    { app: "Twitter", time: "há 1 min.", text: "191919 is your Twitter code" },
+                    { app: "Instagram", time: "há 1 min.", text: "Use 191919 to verify your Instagram account" },
+                  ].map((m) => (
+                    <div key={m.app} className="rounded-2xl bg-secondary/60 border border-border/40 p-4">
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2 font-semibold">
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
+                          {m.app}
+                        </div>
+                        <span className="text-muted-foreground">{m.time}</span>
+                      </div>
+                      <div className="mt-2 text-sm">{m.text}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            {/* Bônus */}
+            <section className="rounded-3xl bg-gradient-to-br from-primary to-accent text-primary-foreground p-10 sm:p-12 relative overflow-hidden">
+              <div className="max-w-xl relative z-10">
+                <h2 className="font-display text-3xl sm:text-4xl leading-tight">
+                  15% de bônus no primeiro depósito
+                </h2>
+                <p className="mt-4 text-sm opacity-90 max-w-lg">
+                  Bônus de 15% no primeiro depósito (creditado uma vez após a confirmação do pagamento) — válido para
+                  valores de R$ 10 a R$ 500; ao depositar acima de R$ 500, o bônus permanece em R$ 75.
+                </p>
+                <button
+                  onClick={requireLogin}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold hover:bg-background/90"
+                >
+                  <Wallet size={16} /> Recarregar
+                </button>
+              </div>
+              <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-primary-foreground/10 blur-3xl" />
+            </section>
+
+            <section>
+              <h3 className="font-display text-2xl sm:text-3xl tracking-tight">
+                Compre um número virtual para registro e recebimento de SMS
+              </h3>
+            </section>
+          </div>
+        </div>
       </main>
 
-      <footer className="border-t border-border/60 py-8">
+      <footer className="border-t border-border/50 mt-10 py-8">
         <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-sm text-muted-foreground">
           <div>© {new Date().getFullYear()} CometaSMS</div>
           <Link to="/termos" className="hover:text-foreground">Termos</Link>
