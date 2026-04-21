@@ -9,31 +9,31 @@
     --foreground: 220 25% 10%;
 
     --paper: 0 0% 100%;
-    --paper-2: 150 30% 96%;
-    --ink: 220 25% 10%;
-    --ink-soft: 220 12% 38%;
+    --paper-2: 270 40% 97%;
+    --ink: 270 30% 12%;
+    --ink-soft: 270 15% 38%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card-foreground: 270 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover-foreground: 270 30% 12%;
 
-    --primary: 158 75% 38%;
+    --primary: 265 75% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 150 30% 96%;
-    --secondary-foreground: 220 25% 10%;
+    --secondary: 270 40% 97%;
+    --secondary-foreground: 270 30% 12%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 270 25% 96%;
+    --muted-foreground: 270 10% 45%;
 
-    --accent: 158 75% 38%;
+    --accent: 280 70% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --hero-from: 152 70% 88%;
-    --hero-via: 0 0% 100%;
-    --hero-to: 270 60% 92%;
+    --hero-from: 270 80% 92%;
+    --hero-via: 285 70% 95%;
+    --hero-to: 260 85% 90%;
 
     --destructive: 8 75% 52%;
     --destructive-foreground: 0 0% 100%;
