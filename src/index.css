@@ -4,32 +4,36 @@
 
 @layer base {
   :root {
-    /* Vibrant violet palette inspired by sms.online */
-    --background: 270 30% 98%;
-    --foreground: 270 25% 12%;
+    /* Emerald + soft lilac palette inspired by sms.online */
+    --background: 0 0% 100%;
+    --foreground: 220 25% 10%;
 
-    --paper: 270 30% 98%;
-    --paper-2: 270 25% 94%;
-    --ink: 270 25% 12%;
-    --ink-soft: 270 15% 32%;
+    --paper: 0 0% 100%;
+    --paper-2: 150 30% 96%;
+    --ink: 220 25% 10%;
+    --ink-soft: 220 12% 38%;
 
     --card: 0 0% 100%;
-    --card-foreground: 270 25% 12%;
+    --card-foreground: 220 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 25% 12%;
+    --popover-foreground: 220 25% 10%;
 
-    --primary: 262 83% 58%;
+    --primary: 158 75% 38%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 270 25% 94%;
-    --secondary-foreground: 270 25% 12%;
+    --secondary: 150 30% 96%;
+    --secondary-foreground: 220 25% 10%;
 
-    --muted: 270 20% 92%;
-    --muted-foreground: 270 10% 42%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 262 83% 58%;
+    --accent: 158 75% 38%;
     --accent-foreground: 0 0% 100%;
+
+    --hero-from: 152 70% 88%;
+    --hero-via: 0 0% 100%;
+    --hero-to: 270 60% 92%;
 
     --destructive: 8 75% 52%;
     --destructive-foreground: 0 0% 100%;
