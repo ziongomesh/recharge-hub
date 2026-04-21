@@ -13,15 +13,7 @@ export default function HomePage() {
   const [services, setServices] = useState<SmsService[]>([]);
   const [search, setSearch] = useState("");
 
-  // Força tema escuro enquanto a Home pública está montada
-  useEffect(() => {
-    const html = document.documentElement;
-    const had = html.classList.contains("dark");
-    html.classList.add("dark");
-    return () => {
-      if (!had) html.classList.remove("dark");
-    };
-  }, []);
+  // Tema padrão branco; usuário escolhe escuro manualmente.
 
   // Carrega serviços de SMS do Brasil
   useEffect(() => {
