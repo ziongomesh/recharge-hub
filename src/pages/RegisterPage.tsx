@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 function formatCPF(v: string) {
   const d = v.replace(/\D/g, "").slice(0, 11);
@@ -42,75 +42,74 @@ export default function RegisterPage() {
     finally { setLoading(false); }
   };
 
+  const inputCls = "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:outline-none focus:border-primary transition-colors";
+  const labelCls = "text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-2";
+
   return (
-    <div className="min-h-screen bg-background text-foreground grid md:grid-cols-2 noise">
-      <aside className="hidden md:flex flex-col justify-between p-10 border-r border-border bg-paper-2">
-        <Link to="/" className="font-display text-3xl">Cometa<em className="italic">sms</em>.</Link>
-        <div>
-          <div className="label-eyebrow">Capítulo 02</div>
-          <h2 className="font-display text-[clamp(3rem,5vw,5rem)] leading-[0.95] mt-3">
-            Abra sua <em className="italic">conta</em>.
-          </h2>
-          <p className="mt-6 text-ink-soft max-w-sm">
-            Leva menos de 90 segundos. Pague o primeiro depósito via PIX e comece a recarregar imediatamente.
-          </p>
-        </div>
-        <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
-          Sem taxa de cadastro · Sem mensalidade
-        </div>
-      </aside>
-
-      <main className="flex flex-col justify-center px-6 md:px-16 py-12 max-w-xl mx-auto w-full">
-        <div className="label-eyebrow">Cadastro · 02/02</div>
-        <h1 className="font-display text-5xl md:text-6xl leading-none mt-3">Nova conta.</h1>
-
-        <form onSubmit={submit} className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6">
-          <div className="col-span-2">
-            <label className="label-eyebrow block mb-2">Usuário</label>
-            <input className="field" required value={form.username} onChange={upd("username")} placeholder="seu_usuario" />
-          </div>
-          <div className="col-span-2">
-            <label className="label-eyebrow block mb-2">E-mail</label>
-            <input className="field" type="email" required value={form.email} onChange={upd("email")} placeholder="voce@dominio.com" />
-          </div>
-          <div className="col-span-2 sm:col-span-1">
-            <label className="label-eyebrow block mb-2">Telefone</label>
-            <input className="field font-mono" required value={form.phone} onChange={upd("phone")} placeholder="11 99999-9999" />
-          </div>
-          <div className="col-span-2 sm:col-span-1">
-            <label className="label-eyebrow block mb-2">CPF</label>
-            <input className="field font-mono" required value={form.cpf} onChange={upd("cpf")} placeholder="000.000.000-00" />
-            <p className="text-xs text-muted-foreground mt-1.5 leading-snug">
-              Pedimos o CPF por conta das recargas — algumas operadoras exigem o documento do titular pra processar.
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 rounded-[2rem] overflow-hidden border border-border/60 shadow-xl">
+        <aside className="hero-gradient hidden md:flex flex-col justify-between p-12">
+          <Link to="/" className="font-display text-2xl tracking-tight">
+            cometa<span className="text-primary">sms</span>
+          </Link>
+          <div>
+            <h2 className="font-display text-5xl leading-[0.95] tracking-tight">
+              Abra sua conta.
+            </h2>
+            <p className="mt-5 text-ink-soft max-w-sm">
+              Leva menos de 90 segundos. Pague o primeiro depósito via PIX e comece a recarregar imediatamente.
             </p>
           </div>
-          <div className="col-span-2">
-            <label className="label-eyebrow block mb-2">Senha</label>
-            <input className="field" type="password" required value={form.password} onChange={upd("password")} placeholder="••••••••" />
+          <div className="text-xs font-mono uppercase tracking-widest text-muted-foreground">
+            Sem taxa de cadastro · Sem mensalidade
           </div>
+        </aside>
 
-          <div className="col-span-2 mt-2 text-xs text-ink-soft">
-            Ao criar a conta, você concorda com nossos{" "}
-            <Link to="/termos" target="_blank" className="underline underline-offset-2 hover:text-foreground">
-              Termos de Uso
-            </Link>
-            .
+        <main className="flex flex-col justify-center p-8 sm:p-12 bg-card">
+          <h1 className="font-display text-4xl sm:text-5xl leading-none tracking-tight">Nova conta</h1>
+          <p className="text-muted-foreground mt-3 text-sm">Preencha seus dados para começar.</p>
+
+          <form onSubmit={submit} className="mt-8 grid grid-cols-2 gap-x-4 gap-y-5">
+            <div className="col-span-2">
+              <label className={labelCls}>Usuário</label>
+              <input className={inputCls} required value={form.username} onChange={upd("username")} placeholder="seu_usuario" />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>E-mail</label>
+              <input className={inputCls} type="email" required value={form.email} onChange={upd("email")} placeholder="voce@dominio.com" />
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Telefone</label>
+              <input className={`${inputCls} font-mono`} required value={form.phone} onChange={upd("phone")} placeholder="11 99999-9999" />
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>CPF</label>
+              <input className={`${inputCls} font-mono`} required value={form.cpf} onChange={upd("cpf")} placeholder="000.000.000-00" />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>Senha</label>
+              <input className={inputCls} type="password" required value={form.password} onChange={upd("password")} placeholder="••••••••" />
+            </div>
+
+            <div className="col-span-2 text-xs text-muted-foreground">
+              Ao criar a conta, você concorda com nossos{" "}
+              <Link to="/termos" target="_blank" className="underline hover:text-primary">Termos de Uso</Link>.
+            </div>
+
+            <div className="col-span-2 mt-2">
+              <button type="submit" disabled={loading} className="btn-pill w-full justify-center disabled:opacity-50">
+                {loading ? "Criando…" : "Criar conta"}
+                <ArrowRight size={16} />
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-8 pt-6 border-t border-border text-sm flex items-center justify-between">
+            <span className="text-muted-foreground">Já é cadastrado?</span>
+            <Link to="/login" className="font-semibold text-primary hover:underline">Entrar →</Link>
           </div>
-
-          <div className="col-span-2 mt-1">
-            <button type="submit" disabled={loading}
-              className="group inline-flex items-center gap-2 bg-foreground text-background px-6 py-3 text-sm disabled:opacity-50">
-              {loading ? "Criando…" : "Criar conta"}
-              <ArrowUpRight size={16} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </button>
-          </div>
-        </form>
-
-        <div className="mt-12 pt-6 border-t border-border text-sm flex items-center justify-between">
-          <span className="text-ink-soft">Já é cadastrado?</span>
-          <Link to="/login" className="underline underline-offset-4 hover:text-foreground/70">Entrar →</Link>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
