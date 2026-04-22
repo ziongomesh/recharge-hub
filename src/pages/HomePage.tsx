@@ -470,7 +470,7 @@ export default function HomePage() {
                 src={cometaBackground}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-16 -top-8 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:top-8 lg:w-72"
+                className="pointer-events-none absolute -right-16 bottom-4 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:bottom-10 lg:w-72"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1/2 bg-gradient-to-l from-background/55 to-transparent" aria-hidden="true" />
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
