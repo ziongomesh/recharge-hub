@@ -152,6 +152,17 @@ function HomeSmsServiceIcon({ service }: { service: SmsService }) {
   );
 }
 
+function BrazilFlagIcon() {
+  return (
+    <svg viewBox="0 0 36 24" className="h-5 w-7 overflow-hidden rounded-sm shadow-sm" aria-hidden="true">
+      <rect width="36" height="24" rx="2" fill="#229E45" />
+      <path d="M18 3 32 12 18 21 4 12 18 3Z" fill="#F8E034" />
+      <circle cx="18" cy="12" r="5.1" fill="#2B49A3" />
+      <path d="M13.2 10.9c3.5-.6 6.7.1 9.7 2" stroke="#fff" strokeWidth="1.1" fill="none" />
+    </svg>
+  );
+}
+
 const paymentMethods = [
   {
     name: "Visa",
@@ -216,6 +227,8 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("sms");
   const [services, setServices] = useState<SmsService[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(false);
   const [search, setSearch] = useState("");
   const messageIndexRef = useRef(2);
   const [visibleMessages, setVisibleMessages] = useState<LiveNotification[]>(
@@ -234,8 +247,9 @@ export default function HomePage() {
   useEffect(() => {
     smsApi
       .services(BRAZIL_COUNTRY_ID)
-      .then((r) => setServices(r.services))
-      .catch(() => setServices([]));
+      .then((r) => { setServices(r.services); setServicesError(false); })
+      .catch(() => { setServices([]); setServicesError(true); })
+      .finally(() => setServicesLoading(false));
   }, []);
 
   useEffect(() => {
@@ -262,6 +276,7 @@ export default function HomePage() {
   }, [services, search]);
 
   const requireLogin = () => navigate("/login");
+  const totalSmsNumbers = services.reduce((acc, s) => acc + s.stock, 0);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
@@ -376,7 +391,7 @@ export default function HomePage() {
               <div className="space-y-1.5">
                 {tab === "sms" && filtered.length === 0 && (
                   <div className="text-xs text-muted-foreground py-6 text-center">
-                    {t.loading}
+                    {servicesLoading ? t.loading : servicesError ? "Não foi possível carregar da API" : "Nenhum serviço ativo"}
                   </div>
                 )}
                 {tab === "sms" && filtered.length > 0 && (
@@ -435,13 +450,13 @@ export default function HomePage() {
             <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
               <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
               <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
-                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-lg">
-                  🇧🇷
+                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
+                  <BrazilFlagIcon />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{t.brazil}</div>
                   <div className="text-[11px] text-muted-foreground">
-                    {services.reduce((acc, s) => acc + s.stock, 0).toLocaleString("pt-BR")} {t.available}
+                    {servicesLoading ? t.loading : servicesError ? "API indisponível" : `${totalSmsNumbers.toLocaleString("pt-BR")} ${t.available}`}
                   </div>
                 </div>
               </div>
@@ -455,7 +470,7 @@ export default function HomePage() {
                 src={cometaBackground}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-16 -top-8 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:top-8 lg:w-72"
+                className="pointer-events-none absolute -right-16 bottom-4 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:bottom-10 lg:w-72"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1/2 bg-gradient-to-l from-background/55 to-transparent" aria-hidden="true" />
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">

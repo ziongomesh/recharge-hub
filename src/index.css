@@ -149,7 +149,7 @@
   }
 
   .sms-bonus-panel {
-    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 62%, hsl(var(--success)) 100%);
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 58%, hsl(var(--ring)) 100%);
   }
 
   /* Pill button */
