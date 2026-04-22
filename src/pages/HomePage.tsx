@@ -115,6 +115,42 @@ const liveMessages = [
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
 type FaqItem = { question: string; answer: string };
 
+const serviceIconDomains: Record<string, string> = {
+  google: "google.com", gmail: "google.com", youtube: "youtube.com",
+  whatsapp: "whatsapp.com", telegram: "telegram.org", instagram: "instagram.com",
+  facebook: "facebook.com", twitter: "x.com", x: "x.com", discord: "discord.com",
+  tiktok: "tiktok.com", amazon: "amazon.com", apple: "apple.com", microsoft: "microsoft.com",
+  netflix: "netflix.com", spotify: "spotify.com", uber: "uber.com", ifood: "ifood.com.br",
+  shopee: "shopee.com.br", nubank: "nubank.com.br", picpay: "picpay.com", binance: "binance.com",
+  mercado: "mercadolivre.com.br", "mercado livre": "mercadolivre.com.br", "mercado pago": "mercadopago.com",
+};
+
+function iconFromServiceName(name: string) {
+  const normalized = name.toLowerCase().trim().replace(/\s+/g, " ");
+  const domain = serviceIconDomains[normalized] || serviceIconDomains[normalized.split(/[\s,/+|·•\-—–]/)[0]];
+  const fallback = normalized.replace(/[^a-z0-9]/g, "");
+  const target = domain || (fallback.length >= 2 ? `${fallback}.com` : null);
+  return target ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(target)}&sz=128` : null;
+}
+
+function HomeSmsServiceIcon({ service }: { service: SmsService }) {
+  const [url, setUrl] = useState<string | null>(service.icon_url || iconFromServiceName(service.name));
+
+  useEffect(() => {
+    setUrl(service.icon_url || iconFromServiceName(service.name));
+  }, [service.icon_url, service.name]);
+
+  return (
+    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-secondary flex items-center justify-center">
+      {url ? (
+        <img src={url} alt="" className="h-5 w-5 object-contain" loading="lazy" onError={() => setUrl(null)} />
+      ) : (
+        <MessageSquare size={14} className="text-muted-foreground" />
+      )}
+    </div>
+  );
+}
+
 const paymentMethods = [
   {
     name: "Tether",
