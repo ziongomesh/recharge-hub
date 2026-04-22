@@ -103,7 +103,6 @@ export default function HistoricoPage() {
       <div className="flex items-baseline justify-between mb-6">
         <div>
           <div className="label-eyebrow">Arquivo</div>
-          <h2 className="font-display text-5xl mt-1">Histórico.</h2>
           <p className="text-xs text-muted-foreground mt-2">Recargas, eSIMs e ativações SMS.</p>
         </div>
         <div className="flex items-center gap-3">
@@ -122,7 +121,7 @@ export default function HistoricoPage() {
             key={key}
             onClick={() => setTab(key)}
             className={`px-4 py-2 text-xs uppercase tracking-widest font-mono border-b-2 -mb-px transition-colors ${
-              tab === key ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+              tab === key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-primary"
             }`}
           >
             {lbl}
@@ -136,7 +135,7 @@ export default function HistoricoPage() {
         list.length === 0 ? (
           <div className="border border-dashed border-border p-10 text-center text-muted-foreground text-sm">Nenhuma recarga ainda.</div>
         ) : (
-          <div className="border-t-2 border-foreground">
+          <div className="border-t-2 border-primary">
             <div className="grid grid-cols-12 gap-4 py-3 label-eyebrow border-b border-border">
               <div className="col-span-1">№</div>
               <div className="col-span-2">Data</div>
@@ -156,7 +155,7 @@ export default function HistoricoPage() {
                 >
                   <div className="col-span-1 font-mono tabular text-muted-foreground">{String(i + 1).padStart(3, "0")}</div>
                   <div className="col-span-2 font-mono tabular">{new Date(r.created_at).toLocaleDateString("pt-BR")}</div>
-                  <div className="col-span-2 font-display text-lg">{r.operadora_name || `#${r.operadora_id}`}</div>
+                  <div className="col-span-2 font-display text-lg text-primary">{r.operadora_name || `#${r.operadora_id}`}</div>
                   <div className="col-span-3 font-mono tabular">{r.phone}</div>
                   <div className="col-span-2 font-mono tabular">R$ {r.amount.toFixed(2)}</div>
                   <div className="col-span-2 text-right">
@@ -171,7 +170,7 @@ export default function HistoricoPage() {
         esimVendas.length === 0 ? (
           <div className="border border-dashed border-border p-10 text-center text-muted-foreground text-sm">Nenhum eSIM comprado ainda.</div>
         ) : (
-          <div className="border-t-2 border-foreground">
+          <div className="border-t-2 border-primary">
             <div className="grid grid-cols-12 gap-4 py-3 label-eyebrow border-b border-border">
               <div className="col-span-1">№</div>
               <div className="col-span-3">Data</div>
@@ -183,7 +182,7 @@ export default function HistoricoPage() {
               <div key={v.id} className="grid grid-cols-12 gap-4 py-4 border-b border-border items-center text-sm hover:bg-paper-2/60">
                 <div className="col-span-1 font-mono tabular text-muted-foreground">{String(i + 1).padStart(3, "0")}</div>
                 <div className="col-span-3 font-mono tabular">{v.created_at ? new Date(v.created_at).toLocaleString("pt-BR") : "—"}</div>
-                <div className="col-span-2 font-display text-lg">{v.operadora}</div>
+                <div className="col-span-2 font-display text-lg text-primary">{v.operadora}</div>
                 <div className="col-span-4">{v.produto_name}</div>
                 <div className="col-span-2 text-right font-mono tabular">R$ {Number(v.amount).toFixed(2)}</div>
               </div>
@@ -194,7 +193,7 @@ export default function HistoricoPage() {
         smsHistory.length === 0 ? (
           <div className="border border-dashed border-border p-10 text-center text-muted-foreground text-sm">Nenhuma ativação SMS ainda.</div>
         ) : (
-          <div className="border-t-2 border-foreground">
+          <div className="border-t-2 border-primary">
             <div className="grid grid-cols-12 gap-4 py-3 label-eyebrow border-b border-border">
               <div className="col-span-1">№</div>
               <div className="col-span-3">Data</div>
