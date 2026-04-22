@@ -475,12 +475,6 @@ export default function HomePage() {
           {/* Coluna direita — hero + bônus */}
           <div className="space-y-6">
             <section className="sms-hero-panel rounded-xl border border-border/60 p-10 sm:p-12 relative overflow-hidden min-h-[420px] flex flex-col justify-center shadow-2xl shadow-primary/10">
-              <img
-                src={cometaBackground}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-16 bottom-4 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:bottom-10 lg:w-72"
-              />
               <div className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1/2 bg-gradient-to-l from-background/55 to-transparent" aria-hidden="true" />
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
                 <div className="relative z-10">
@@ -520,6 +514,12 @@ export default function HomePage() {
 
             {/* Bônus */}
             <section className="sms-bonus-panel rounded-xl text-primary-foreground p-10 sm:p-12 relative overflow-hidden min-h-[280px] flex items-center">
+              <img
+                src={cometaBackground}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-10 bottom-0 z-0 w-56 rotate-12 opacity-45 sm:right-6 sm:w-72 lg:right-12 lg:w-80"
+              />
               <div className="max-w-xl relative z-10">
                 <h2 className="font-display text-3xl sm:text-4xl leading-tight">
                   {t.bonusTitle}
