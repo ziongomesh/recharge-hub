@@ -319,7 +319,7 @@ export default function HomePage() {
       </div>
 
       {/* Header com logo + nav */}
-      <header className="border-b border-border/60 bg-background/95 backdrop-blur">
+      <header className="relative z-10 border-b border-border/60 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-2" aria-label="cometa sms">
             {/* Logo estilo sms.online: bold em duas linhas */}
@@ -348,7 +348,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-6 py-8">
         <div className="grid gap-6 lg:grid-cols-[290px_1fr]">
           {/* Coluna esquerda — abas + serviços */}
           <div className="space-y-6">
@@ -642,7 +642,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="mt-10 border-t border-border/50 bg-background py-10 text-foreground">
+      <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-10 text-foreground backdrop-blur">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 text-sm md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
             <Link to="/" className="block leading-none" aria-label="cometa sms">
