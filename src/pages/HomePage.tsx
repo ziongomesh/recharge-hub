@@ -115,6 +115,63 @@ const liveMessages = [
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
 type FaqItem = { question: string; answer: string };
 
+const paymentMethods = [
+  {
+    name: "Tether",
+    className: "payment-tether",
+    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₮</span>,
+  },
+  {
+    name: "Bitcoin",
+    className: "payment-bitcoin",
+    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₿</span>,
+  },
+  {
+    name: "Ethereum",
+    className: "payment-ethereum",
+    icon: <span className="text-[18px] leading-none">◆</span>,
+  },
+  {
+    name: "Visa",
+    className: "payment-visa",
+    icon: <span className="text-[9px] font-black italic tracking-tighter">VISA</span>,
+  },
+  {
+    name: "Mastercard",
+    className: "payment-mastercard",
+    icon: (
+      <svg viewBox="0 0 32 20" className="h-5 w-8" aria-hidden="true">
+        <circle cx="12" cy="10" r="8" className="mc-red" />
+        <circle cx="20" cy="10" r="8" className="mc-yellow" />
+      </svg>
+    ),
+  },
+  {
+    name: "MIR",
+    className: "payment-mir",
+    icon: <span className="text-[9px] font-black italic tracking-tighter">MIR</span>,
+  },
+  {
+    name: "UPI",
+    className: "payment-upi",
+    icon: <span className="text-[9px] font-black italic tracking-tighter underline decoration-current/50 underline-offset-2">UPI</span>,
+  },
+  {
+    name: "PIX",
+    className: "payment-pix",
+    icon: (
+      <svg viewBox="0 0 28 28" className="h-5 w-5" aria-hidden="true">
+        <path fill="currentColor" d="M14 2.7 25.3 14 14 25.3 2.7 14 14 2.7Zm-4.9 8.6 3.4 3.4a2.1 2.1 0 0 0 3 0l3.4-3.4-1.6-1.6-3.3 3.3-3.3-3.3-1.6 1.6Zm0 5.4 1.6 1.6 3.3-3.3 3.3 3.3 1.6-1.6-3.4-3.4a2.1 2.1 0 0 0-3 0l-3.4 3.4Z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Google Play",
+    className: "payment-triangle",
+    icon: <span className="text-[18px] leading-none">▶</span>,
+  },
+];
+
 const faqItems: FaqItem[] = [
   { question: "O que é um número virtual?", answer: "É um número temporário usado para receber SMS de confirmação sem expor seu telefone pessoal." },
   { question: "Como funciona o CometaSMS?", answer: "Você escolhe o serviço, compra um número disponível e acompanha o SMS recebido em tempo real." },
