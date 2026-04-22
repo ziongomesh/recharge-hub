@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
+import cometaBackground from "@/assets/cometa-background.png";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
 
@@ -269,9 +270,16 @@ export default function HomePage() {
   const requireLogin = () => navigate("/login");
 
   return (
-    <div className="min-h-screen bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
+      <img
+        src={cometaBackground}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none fixed right-[-72px] top-24 z-0 w-[280px] opacity-20 blur-[0.2px] sm:right-[-40px] sm:w-[360px] lg:right-10 lg:top-28 lg:w-[440px]"
+      />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-background/35" aria-hidden="true" />
       {/* Topbar superior fina */}
-      <div className="border-b border-border/60 bg-card/95 text-xs backdrop-blur">
+      <div className="relative z-10 border-b border-border/60 bg-card/95 text-xs backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
           <div className="flex items-center gap-5">
             <a href="#faq" className="hover:text-foreground">FAQ</a>
