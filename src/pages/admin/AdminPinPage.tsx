@@ -5,9 +5,10 @@ import { toast } from "sonner";
 import { Delete, Check, Loader2 } from "lucide-react";
 
 export default function AdminPinPage() {
-  const { user, verifyPin, logout, adminVerified } = useAuth();
+  const { user, verifyPin, setupPin, logout, adminVerified } = useAuth();
   const navigate = useNavigate();
   const [pin, setPin] = useState("");
+  const [firstPin, setFirstPin] = useState("");
   const [loading, setLoading] = useState(false);
   const [shake, setShake] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,8 +22,19 @@ export default function AdminPinPage() {
   const submit = async (value: string) => {
     setLoading(true);
     try {
-      await verifyPin(value);
-      toast.success("Acesso liberado");
+      if (user?.pin_configured === false) {
+        if (!firstPin) {
+          setFirstPin(value);
+          setPin("");
+          toast.info("Confirme o PIN");
+          return;
+        }
+        await setupPin(firstPin, value);
+        toast.success("PIN cadastrado e acesso liberado");
+      } else {
+        await verifyPin(value);
+        toast.success("Acesso liberado");
+      }
     } catch (e: any) {
       const msg = e?.message || "PIN incorreto";
       const friendly = msg.includes("Failed to fetch") || msg.includes("HTML em vez de JSON")
@@ -30,6 +42,7 @@ export default function AdminPinPage() {
         : msg;
       toast.error(friendly);
       setShake(true); setTimeout(() => setShake(false), 400);
+      setFirstPin("");
       setPin("");
     } finally { setLoading(false); }
   };
@@ -61,7 +74,11 @@ export default function AdminPinPage() {
         <div className="text-center mb-8">
           <div className="label-eyebrow mb-2">Painel administrativo</div>
           <h1 className="font-display text-4xl mb-1">PIN de acesso</h1>
-          <p className="text-sm text-muted-foreground">Digite os 4 dígitos para entrar.</p>
+          <p className="text-sm text-muted-foreground">
+            {user?.pin_configured === false
+              ? firstPin ? "Confirme os 4 dígitos do seu PIN." : "Cadastre um PIN de 4 dígitos."
+              : "Digite os 4 dígitos para entrar."}
+          </p>
           {user && <p className="text-xs text-muted-foreground mt-1 font-mono-x">{user.username}</p>}
         </div>
 

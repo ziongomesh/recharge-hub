@@ -9,6 +9,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<User>;
   register: (data: { username: string; email: string; password: string; phone: string; cpf: string }) => Promise<void>;
   verifyPin: (pin: string) => Promise<void>;
+  setupPin: (pin: string, confirmPin: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -77,6 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate("/admin");
   };
 
+  const setupPin = async (pin: string, confirmPin: string) => {
+    const { token, user } = await authApi.setupPin(pin, confirmPin);
+    setToken(token);
+    setUser(normalizeUser(user));
+    setAdminVerified(true);
+    navigate("/admin");
+  };
+
   const logout = () => {
     removeToken();
     setUser(null);
@@ -85,7 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, adminVerified, login, register, verifyPin, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, adminVerified, login, register, verifyPin, setupPin, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

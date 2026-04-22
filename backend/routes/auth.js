@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 const logger = require('../logger');
-const { ensureStaffPinHash, isStaffRole } = require('../lib/admin-pin');
 
 const router = express.Router();
 
@@ -18,6 +17,7 @@ function generateToken(user, adminVerified = false) {
 
 function sanitizeUser(user) {
   const { password, pin_hash, ...safe } = user;
+  safe.pin_configured = !!pin_hash;
   if (safe.balance !== undefined) safe.balance = Number(safe.balance);
   return safe;
 }
@@ -42,10 +42,6 @@ router.post('/register', async (req, res) => {
 
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
     const user = sanitizeUser(rows[0]);
-    if (isStaffRole(user.role)) {
-      await ensureStaffPinHash(db, user.id, user.role);
-      user.pin_hash = user.pin_hash || require('../lib/admin-pin').DEFAULT_ADMIN_PIN_HASH;
-    }
 
     const token = generateToken(user);
 
@@ -115,11 +111,7 @@ router.post('/verify-pin', authMiddleware, async (req, res) => {
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
     if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
     const user = rows[0];
-    if (!user.pin_hash && isStaffRole(user.role)) {
-      await ensureStaffPinHash(db, user.id, user.role);
-      user.pin_hash = require('../lib/admin-pin').DEFAULT_ADMIN_PIN_HASH;
-    }
-    if (!user.pin_hash) return res.status(400).json({ message: 'PIN não configurado. Rode a migration 001_admin_pin.sql' });
+    if (!user.pin_hash) return res.status(428).json({ message: 'PIN ainda não cadastrado', setupRequired: true });
 
     const ok = await bcrypt.compare(String(pin), user.pin_hash);
     if (!ok) {
@@ -134,6 +126,37 @@ router.post('/verify-pin', authMiddleware, async (req, res) => {
     res.json({ token, user: sanitizeUser(user) });
   } catch (err) {
     console.error('Verify PIN error:', err);
+    res.status(500).json({ message: 'Erro interno' });
+  }
+});
+
+// Primeiro acesso admin/mod: cadastra PIN com bcrypt e libera o painel
+router.post('/setup-pin', authMiddleware, async (req, res) => {
+  try {
+    if (req.userRole !== 'admin' && req.userRole !== 'mod') return res.status(403).json({ message: 'Apenas admin/moderador' });
+    const { pin, confirmPin } = req.body || {};
+    if (!pin || !/^\d{4}$/.test(String(pin))) {
+      return res.status(400).json({ message: 'PIN deve ter 4 dígitos' });
+    }
+    if (String(pin) !== String(confirmPin)) {
+      return res.status(400).json({ message: 'Confirmação do PIN não confere' });
+    }
+
+    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
+    const user = rows[0];
+    if (user.pin_hash) return res.status(409).json({ message: 'PIN já cadastrado' });
+
+    const hash = await bcrypt.hash(String(pin), 10);
+    await db.query('UPDATE users SET pin_hash = ? WHERE id = ?', [hash, user.id]);
+    user.pin_hash = hash;
+
+    const token = generateToken(user, true);
+    await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+      [user.id, 'admin_pin_setup', 'Admin cadastrou PIN no primeiro acesso']);
+    res.json({ token, user: sanitizeUser(user) });
+  } catch (err) {
+    console.error('Setup PIN error:', err);
     res.status(500).json({ message: 'Erro interno' });
   }
 });

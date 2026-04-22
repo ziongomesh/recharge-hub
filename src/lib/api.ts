@@ -137,6 +137,11 @@ export const authApi = {
       ...r,
       user: normalizeUser(r.user),
     })),
+  setupPin: (pin: string, confirmPin: string) =>
+    api<{ token: string; user: User }>("/auth/setup-pin", { method: "POST", body: { pin, confirmPin } }).then((r) => ({
+      ...r,
+      user: normalizeUser(r.user),
+    })),
   changePin: (newPin: string) =>
     api<{ message: string }>("/auth/change-pin", { method: "POST", body: { newPin } }),
 };
@@ -526,6 +531,7 @@ export interface User {
   cpf: string;
   role: "user" | "mod" | "admin";
   balance: number;
+  pin_configured?: boolean;
   created_at: string;
   last_login_at?: string | null;
 }
