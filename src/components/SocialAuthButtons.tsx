@@ -3,21 +3,25 @@ const socialMethods = [
     name: "Google",
     className: "social-google",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 social-auth-icon" aria-hidden="true">
-        <path fill="currentColor" d="M21.6 12.23c0-.74-.07-1.45-.19-2.13H12v4.03h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.9-1.75 2.98-4.32 2.98-7.43Z" />
-        <path fill="currentColor" d="M12 22c2.7 0 4.96-.9 6.62-2.34l-3.24-2.51c-.9.6-2.04.95-3.38.95-2.6 0-4.8-1.76-5.59-4.12H3.07v2.6A10 10 0 0 0 12 22Z" opacity="0.82" />
-        <path fill="currentColor" d="M6.41 13.98A6 6 0 0 1 6.1 12c0-.69.11-1.35.31-1.98v-2.6H3.07A10 10 0 0 0 2 12c0 1.61.39 3.13 1.07 4.58l3.34-2.6Z" opacity="0.72" />
-        <path fill="currentColor" d="M12 5.9c1.47 0 2.78.5 3.82 1.5l2.87-2.87A9.63 9.63 0 0 0 12 2a10 10 0 0 0-8.93 5.42l3.34 2.6C7.2 7.66 9.4 5.9 12 5.9Z" opacity="0.9" />
+      <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <path className="google-blue" d="M21.8 12.23c0-.78-.07-1.53-.2-2.23H12v4.25h5.48a4.68 4.68 0 0 1-2.03 3.07v2.55h3.28c1.92-1.77 3.07-4.37 3.07-7.64Z" />
+        <path className="google-green" d="M12 22c2.74 0 5.04-.9 6.72-2.44l-3.28-2.55c-.91.61-2.08.97-3.44.97-2.65 0-4.89-1.79-5.69-4.19H2.93v2.63A10 10 0 0 0 12 22Z" />
+        <path className="google-yellow" d="M6.31 13.79A6.01 6.01 0 0 1 6 12c0-.62.11-1.22.31-1.79V7.58H2.93A10 10 0 0 0 2 12c0 1.59.38 3.09.93 4.42l3.38-2.63Z" />
+        <path className="google-red" d="M12 6.02c1.49 0 2.83.51 3.88 1.52l2.91-2.91A9.76 9.76 0 0 0 12 2 10 10 0 0 0 2.93 7.58l3.38 2.63C7.11 7.81 9.35 6.02 12 6.02Z" />
       </svg>
     ),
   },
-  { name: "X", className: "social-x", icon: <span className="social-auth-icon text-sm font-black leading-none">𝕏</span> },
   {
-    name: "Discord",
-    className: "social-discord",
+    name: "Yandex",
+    className: "social-yandex",
+    icon: <span className="social-auth-icon text-xl font-black leading-none">Я</span>,
+  },
+  {
+    name: "X",
+    className: "social-x",
     icon: (
-      <svg viewBox="0 0 24 24" className="h-4 w-4 social-auth-icon" aria-hidden="true">
-        <path fill="currentColor" d="M19.55 5.06A18.7 18.7 0 0 0 14.86 3.6l-.23.46c1.69.4 2.48.97 2.48.97a15.6 15.6 0 0 0-10.2 0s.8-.57 2.49-.97l-.23-.46c-1.65.3-3.22.8-4.69 1.46C1.53 9.45.73 13.73 1.13 17.94a18.9 18.9 0 0 0 5.75 2.89l.7-.96a12 12 0 0 1-1.1-.52l.26-.2c2.12 1 4.42 1 5.27 1s3.15 0 5.27-1l.26.2c-.35.2-.72.37-1.1.52l.7.96a18.86 18.86 0 0 0 5.75-2.9c.47-4.86-.8-9.1-3.34-12.87ZM8.45 15.38c-1.12 0-2.04-1.03-2.04-2.3 0-1.26.9-2.29 2.04-2.29 1.15 0 2.06 1.04 2.04 2.3 0 1.26-.9 2.29-2.04 2.29Zm7.1 0c-1.12 0-2.04-1.03-2.04-2.3 0-1.26.9-2.29 2.04-2.29 1.15 0 2.06 1.04 2.04 2.3 0 1.26-.9 2.29-2.04 2.29Z" />
+      <svg viewBox="0 0 24 24" className="h-4.5 w-4.5 social-auth-icon" aria-hidden="true">
+        <path fill="currentColor" d="M18.9 2h3.25l-7.1 8.12L23.4 22h-6.54l-5.12-6.7L5.88 22H2.62l7.6-8.69L2.2 2h6.7l4.63 6.12L18.9 2Zm-1.14 17.9h1.8L7.92 4H5.98l11.78 15.9Z" />
       </svg>
     ),
   },
@@ -43,7 +47,7 @@ export function SocialAuthButtons({ labelPrefix }: SocialAuthButtonsProps) {
         <button
           key={method.name}
           type="button"
-          className={`${method.className} inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-border/60 bg-background/35 px-2 text-xs font-semibold text-muted-foreground backdrop-blur transition-colors hover:border-primary/60 hover:text-primary`}
+          className={`${method.className} inline-flex h-11 items-center justify-center gap-2 rounded-full border border-border/70 bg-card px-3 text-xs font-semibold text-foreground shadow-sm shadow-primary/5 transition-all hover:-translate-y-0.5 hover:border-primary/45 hover:bg-secondary/70 hover:shadow-md hover:shadow-primary/10`}
           aria-label={`${labelPrefix} com ${method.name} indisponível`}
         >
           {method.icon}
