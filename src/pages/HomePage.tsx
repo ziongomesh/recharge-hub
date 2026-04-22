@@ -152,6 +152,17 @@ function HomeSmsServiceIcon({ service }: { service: SmsService }) {
   );
 }
 
+function BrazilFlagIcon() {
+  return (
+    <svg viewBox="0 0 36 24" className="h-5 w-7 overflow-hidden rounded-sm shadow-sm" aria-hidden="true">
+      <rect width="36" height="24" rx="2" fill="#229E45" />
+      <path d="M18 3 32 12 18 21 4 12 18 3Z" fill="#F8E034" />
+      <circle cx="18" cy="12" r="5.1" fill="#2B49A3" />
+      <path d="M13.2 10.9c3.5-.6 6.7.1 9.7 2" stroke="#fff" strokeWidth="1.1" fill="none" />
+    </svg>
+  );
+}
+
 const paymentMethods = [
   {
     name: "Visa",
@@ -216,6 +227,8 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("sms");
   const [services, setServices] = useState<SmsService[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(false);
   const [search, setSearch] = useState("");
   const messageIndexRef = useRef(2);
   const [visibleMessages, setVisibleMessages] = useState<LiveNotification[]>(
@@ -234,8 +247,9 @@ export default function HomePage() {
   useEffect(() => {
     smsApi
       .services(BRAZIL_COUNTRY_ID)
-      .then((r) => setServices(r.services))
-      .catch(() => setServices([]));
+      .then((r) => { setServices(r.services); setServicesError(false); })
+      .catch(() => { setServices([]); setServicesError(true); })
+      .finally(() => setServicesLoading(false));
   }, []);
 
   useEffect(() => {
@@ -262,6 +276,7 @@ export default function HomePage() {
   }, [services, search]);
 
   const requireLogin = () => navigate("/login");
+  const totalSmsNumbers = services.reduce((acc, s) => acc + s.stock, 0);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
