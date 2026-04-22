@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
@@ -112,6 +112,8 @@ const liveMessages = [
   { app: "Uber", text: "Uber code: 6812" },
 ];
 
+type LiveNotification = (typeof liveMessages)[number] & { id: string };
+
 const faqItems = [
   "O que é um número virtual?",
   "Como funciona o CometaSMS?",
@@ -126,7 +128,10 @@ export default function HomePage() {
   const [tab, setTab] = useState<Tab>("sms");
   const [services, setServices] = useState<SmsService[]>([]);
   const [search, setSearch] = useState("");
-  const [messageStart, setMessageStart] = useState(0);
+  const messageIndexRef = useRef(2);
+  const [visibleMessages, setVisibleMessages] = useState<LiveNotification[]>(
+    liveMessages.slice(0, 3).map((message, index) => ({ ...message, id: `${message.app}-${index}` })),
+  );
   const [language, setLanguage] = useState<Language>("pt");
   const [theme, setTheme] = useState<Theme>("light");
 
@@ -146,7 +151,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setMessageStart((current) => (current + 1) % liveMessages.length);
+      messageIndexRef.current = (messageIndexRef.current + 1) % liveMessages.length;
+      const next = liveMessages[messageIndexRef.current];
+      setVisibleMessages((current) => [
+        ...current.slice(1),
+        { ...next, id: `${next.app}-${Date.now()}` },
+      ]);
     }, 2400);
 
     return () => window.clearInterval(timer);
@@ -161,11 +171,6 @@ export default function HomePage() {
       : services;
     return list.slice(0, 7);
   }, [services, search]);
-
-  const visibleMessages = useMemo(
-    () => Array.from({ length: 3 }, (_, index) => liveMessages[(messageStart + index) % liveMessages.length]),
-    [messageStart],
-  );
 
   const requireLogin = () => navigate("/login");
 
@@ -380,7 +385,7 @@ export default function HomePage() {
                 {/* Mock de SMS recebidos */}
                 <div className="space-y-3 overflow-hidden">
                   {visibleMessages.map((m, index) => (
-                    <div key={`${m.app}-${messageStart}`} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-fade-up shadow-lg shadow-background/10">
+                    <div key={m.id} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-notification-up shadow-lg shadow-background/10">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 font-semibold">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />

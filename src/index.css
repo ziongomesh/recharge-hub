@@ -207,6 +207,15 @@
 
   /* Big number ticker */
   .ticker { @apply font-mono-x tabular text-foreground; }
+
+  @keyframes notification-up {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-notification-up {
+    animation: notification-up 0.45s ease-out both;
+  }
 }
 
 @layer utilities {
