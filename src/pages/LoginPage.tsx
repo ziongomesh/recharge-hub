@@ -58,7 +58,7 @@ export default function LoginPage() {
         <h1 className="font-display text-4xl leading-none tracking-tight">Login</h1>
         <p className="mt-4 text-sm text-muted-foreground">Digite seu e-mail e senha para acessar o sistema.</p>
 
-        <section className="mt-7 grid max-w-4xl gap-6 rounded-xl border border-border/50 bg-card/55 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl md:grid-cols-[1fr_1.25fr]">
+        <section className="mt-7 grid max-w-4xl gap-6 rounded-3xl border border-primary/15 bg-gradient-to-br from-card via-card to-secondary/60 p-6 shadow-2xl shadow-primary/10 backdrop-blur-xl md:grid-cols-[1fr_1.25fr]">
           <form onSubmit={submit} className="space-y-5 md:border-r md:border-border/60 md:pr-6">
             <SocialAuthButtons labelPrefix="Login" />
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-background/35 p-4 text-sm text-muted-foreground backdrop-blur">
+            <div className="rounded-2xl border border-primary/15 bg-secondary/55 p-4 text-sm text-muted-foreground backdrop-blur">
               Verificando...
             </div>
 
@@ -96,11 +96,11 @@ export default function LoginPage() {
           </form>
 
           <div className="grid content-start gap-3">
-            <Link to="/register" className="rounded-xl border border-border/60 bg-background/35 p-4 backdrop-blur hover:border-primary/60 transition-colors">
+            <Link to="/register" className="rounded-2xl border border-primary/15 bg-background/50 p-4 shadow-sm shadow-primary/5 backdrop-blur hover:border-primary/50 hover:text-primary transition-colors">
               <div className="font-semibold">Cadastro</div>
               <div className="text-sm text-muted-foreground">crie uma conta no sistema</div>
             </Link>
-            <Link to="/login" className="rounded-xl border border-border/60 bg-background/35 p-4 backdrop-blur hover:border-primary/60 transition-colors">
+            <Link to="/login" className="rounded-2xl border border-primary/15 bg-background/50 p-4 shadow-sm shadow-primary/5 backdrop-blur hover:border-primary/50 hover:text-primary transition-colors">
               <div className="font-semibold">Redefinir senha</div>
               <div className="text-sm text-muted-foreground">redefina sua senha no sistema</div>
             </Link>
