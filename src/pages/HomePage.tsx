@@ -453,8 +453,15 @@ export default function HomePage() {
           {/* Coluna direita — hero + bônus */}
           <div className="space-y-6">
             <section className="sms-hero-panel rounded-xl border border-border/60 p-10 sm:p-12 relative overflow-hidden min-h-[420px] flex flex-col justify-center shadow-2xl shadow-primary/10">
+              <img
+                src={cometaBackground}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-16 -top-8 z-0 w-52 rotate-12 opacity-75 sm:-right-10 sm:w-64 lg:right-8 lg:top-8 lg:w-72"
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-0 w-1/2 bg-gradient-to-l from-background/55 to-transparent" aria-hidden="true" />
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
-                <div>
+                <div className="relative z-10">
                   <h1 className="font-display text-4xl sm:text-5xl leading-[1.05] tracking-tight">
                     {t.heroTitle}
                   </h1>
@@ -472,7 +479,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Mock de SMS recebidos */}
-                <div className="space-y-3 overflow-hidden">
+                <div className="relative z-10 space-y-3 overflow-hidden">
                   {visibleMessages.map((m, index) => (
                     <div key={m.id} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-notification-up shadow-lg shadow-background/10">
                       <div className="flex items-center justify-between text-xs">
