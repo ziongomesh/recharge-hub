@@ -88,9 +88,9 @@ export default function RegisterPage() {
 
         <section className="mt-7 grid max-w-4xl gap-6 rounded-xl border border-border/60 bg-card p-6 shadow-xl shadow-primary/5 md:grid-cols-[1fr_1.25fr]">
           <form onSubmit={submit} className="space-y-4 md:border-r md:border-border/60 md:pr-6">
-            <div className="grid grid-cols-4 gap-3">
-              {['G', 'Я', '𝕏', 'GH'].map((item) => (
-                <button key={item} type="button" className="h-9 rounded-xl border border-border bg-background text-sm font-semibold text-muted-foreground" aria-label="Cadastro social indisponível">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {['Google', 'X', 'Discord', 'GitHub'].map((item) => (
+                <button key={item} type="button" className="h-9 rounded-xl border border-border bg-background px-2 text-xs font-semibold text-muted-foreground hover:border-primary/60 hover:text-primary" aria-label={`Cadastro com ${item} indisponível`}>
                   {item}
                 </button>
               ))}
