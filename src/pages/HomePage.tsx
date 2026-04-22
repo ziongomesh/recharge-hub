@@ -642,9 +642,9 @@ export default function HomePage() {
               <div className="font-mono-x text-[11px] text-foreground tracking-[0.45em] -mt-0.5">sms</div>
             </Link>
             <p className="mt-5 max-w-sm text-xs leading-relaxed text-foreground/75">
-              © {new Date().getFullYear()} sms.online<br />
-              Zamon LTD. No 16446260. 71–75, Shelton Street, Covent Garden, London,<br />
-              WC2H 9JQ, UNITED KINGDOM
+              Trabalhamos com número virtual, recargas e SMS para seu app ou site.<br />
+              CometaSMS — ativações rápidas, saldo por PIX e comunicação sem complicação.<br />
+              © {new Date().getFullYear()} CometaSMS. Seu código chega mais rápido.
             </p>
           </div>
 
