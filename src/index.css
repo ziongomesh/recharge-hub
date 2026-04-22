@@ -68,6 +68,11 @@
     --pay-upi: 23 100% 50%;
     --pay-pix: 174 75% 36%;
     --pay-triangle: 207 10% 40%;
+
+    --social-google: 217 89% 61%;
+    --social-x: 220 25% 10%;
+    --social-discord: 235 86% 65%;
+    --social-github: 220 13% 18%;
   }
 
   .dark {
@@ -252,6 +257,12 @@
   .payment-icon .mc-yellow { fill: currentColor; transition: fill 160ms ease; }
   .payment-mastercard:hover .mc-red { fill: hsl(var(--pay-mastercard-red)); }
   .payment-mastercard:hover .mc-yellow { fill: hsl(var(--pay-mastercard-yellow)); }
+
+  .social-auth-icon { color: hsl(var(--muted-foreground)); transition: color 160ms ease; }
+  .social-google:hover .social-auth-icon { color: hsl(var(--social-google)); }
+  .social-x:hover .social-auth-icon { color: hsl(var(--social-x)); }
+  .social-discord:hover .social-auth-icon { color: hsl(var(--social-discord)); }
+  .social-github:hover .social-auth-icon { color: hsl(var(--social-github)); }
 }
 
 @layer utilities {
