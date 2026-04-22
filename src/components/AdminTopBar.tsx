@@ -40,12 +40,12 @@ export default function AdminTopBar() {
   if (!isAdmin || !onAdminRoute) return null;
 
   return (
-    <div className="border-b border-border/50 bg-background/80 px-10 py-2 flex items-center justify-end gap-4 text-[11px] font-mono-x uppercase tracking-widest backdrop-blur">
+    <div className="border-b border-primary/15 bg-background/80 px-10 py-2 flex items-center justify-end gap-4 text-[11px] font-mono-x uppercase tracking-widest backdrop-blur">
       <span className="text-muted-foreground">Saldo</span>
-      <span className={`tabular ${errorMsg ? "text-destructive" : "text-foreground"}`}>
+      <span className={`tabular ${errorMsg ? "text-destructive" : "text-primary"}`}>
         {loading ? "···" : balance !== null ? `R$ ${balance.toFixed(2)}` : errorMsg ?? "—"}
       </span>
-      <button onClick={load} className="text-muted-foreground hover:text-foreground" title="Atualizar">
+      <button onClick={load} className="text-muted-foreground hover:text-primary" title="Atualizar">
         <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
       </button>
     </div>
