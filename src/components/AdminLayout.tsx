@@ -59,11 +59,14 @@ export default function AdminLayout() {
   if (!adminVerified) return <Navigate to="/admin/pin" replace state={{ from: location.pathname }} />;
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <aside className="w-64 shrink-0 bg-paper border-r border-border flex flex-col fixed left-0 top-0 h-screen">
+    <div className="min-h-screen bg-background text-foreground flex noise">
+      <aside className="w-64 shrink-0 bg-card border-r border-border/60 flex flex-col fixed left-0 top-0 h-screen">
         <div className="px-6 pt-6 pb-4">
           <div className="label-eyebrow text-foreground">{user.role === "admin" ? "Admin" : "Moderador"}</div>
-          <Link to="/admin" className="font-display text-lg block">CometaSMS</Link>
+          <Link to="/admin" className="block leading-none mt-1" aria-label="cometa sms admin">
+            <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
+            <div className="font-mono-x text-[10px] text-primary tracking-[0.4em] -mt-0.5">sms</div>
+          </Link>
           <div className="text-xs text-muted-foreground mt-0.5">{user.role === "admin" ? "Painel de controle" : "Atendimento"}</div>
         </div>
         <div className="rule mx-6" />
@@ -91,8 +94,8 @@ export default function AdminLayout() {
                           to={l.to}
                           end={l.end}
                           className={({ isActive }) =>
-                            `flex items-center gap-3 px-3 py-2 text-sm rounded transition-colors ${
-                              isActive ? "bg-foreground text-background font-medium" : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                            `flex items-center gap-3 px-3 py-2 text-sm rounded-full transition-colors ${
+                              isActive ? "bg-primary text-primary-foreground font-semibold" : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
                             }`
                           }
                         >
@@ -111,7 +114,7 @@ export default function AdminLayout() {
 
           <Link
             to="/recargas"
-            className="flex items-center gap-3 px-3 py-2 text-sm rounded text-ink-soft hover:bg-paper-2 hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2 text-sm rounded-full text-ink-soft hover:bg-secondary/60 hover:text-foreground transition-colors"
           >
             <ArrowLeftRight size={15} />
             Ir para área de cliente
@@ -129,7 +132,7 @@ export default function AdminLayout() {
 
       <main className="flex-1 ml-64">
         <AdminTopBar />
-        <div className="px-10 py-8 max-w-7xl">
+        <div className="px-10 py-8 max-w-7xl [&_.border-border]:border-border/60 [&_.bg-paper]:bg-card [&_.bg-paper-2]:bg-secondary/60 [&_.bg-card]:bg-card [&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_button]:transition-all">
           <Outlet />
         </div>
       </main>
