@@ -7,11 +7,22 @@ const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
 
 type Tab = "sms" | "recargas";
 
+const liveMessages = [
+  { app: "Amazon", text: "Amazon code: 1234567890" },
+  { app: "Twitter", text: "191919 is your Twitter code" },
+  { app: "Instagram", text: "Use 191919 to verify your Instagram account" },
+  { app: "WhatsApp", text: "Seu código WhatsApp é 482-910" },
+  { app: "Telegram", text: "Telegram code: 73418" },
+  { app: "iFood", text: "Código de verificação iFood: 225604" },
+  { app: "Uber", text: "Uber code: 6812" },
+];
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("sms");
   const [services, setServices] = useState<SmsService[]>([]);
   const [search, setSearch] = useState("");
+  const [messageStart, setMessageStart] = useState(0);
 
   // Tema padrão branco; usuário escolhe escuro manualmente.
 
@@ -23,6 +34,14 @@ export default function HomePage() {
       .catch(() => setServices([]));
   }, []);
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setMessageStart((current) => (current + 1) % liveMessages.length);
+    }, 2400);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
     const list = q
@@ -32,6 +51,11 @@ export default function HomePage() {
       : services;
     return list.slice(0, 7);
   }, [services, search]);
+
+  const visibleMessages = useMemo(
+    () => Array.from({ length: 3 }, (_, index) => liveMessages[(messageStart + index) % liveMessages.length]),
+    [messageStart],
+  );
 
   const requireLogin = () => navigate("/login");
 
@@ -219,19 +243,15 @@ export default function HomePage() {
                 </div>
 
                 {/* Mock de SMS recebidos */}
-                <div className="space-y-3">
-                  {[
-                    { app: "Amazon", time: "há 36 seg.", text: "Amazon code: 1234567890" },
-                    { app: "Twitter", time: "há 1 min.", text: "191919 is your Twitter code" },
-                    { app: "Instagram", time: "há 1 min.", text: "Use 191919 to verify your Instagram account" },
-                  ].map((m) => (
-                    <div key={m.app} className="rounded-2xl bg-secondary/60 border border-border/40 p-4">
+                <div className="space-y-3 overflow-hidden">
+                  {visibleMessages.map((m, index) => (
+                    <div key={`${m.app}-${messageStart}`} className="rounded-2xl bg-secondary/60 border border-border/40 p-4 animate-fade-up">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 font-semibold">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
                           {m.app}
                         </div>
-                        <span className="text-muted-foreground">{m.time}</span>
+                        <span className="text-muted-foreground">{index === 0 ? "novo" : `há ${index} min.`}</span>
                       </div>
                       <div className="mt-2 text-sm">{m.text}</div>
                     </div>
