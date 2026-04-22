@@ -161,7 +161,7 @@ export default function HomePage() {
   const requireLogin = () => navigate("/login");
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
       {/* Topbar superior fina */}
       <div className="border-b border-border/50 text-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-muted-foreground">
@@ -230,7 +230,7 @@ export default function HomePage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        <div className="grid gap-6 lg:grid-cols-[380px_1fr]">
+        <div className="grid gap-6 lg:grid-cols-[290px_1fr]">
           {/* Coluna esquerda — abas + serviços */}
           <div className="space-y-6">
             {/* Tabs */}
@@ -254,7 +254,7 @@ export default function HomePage() {
             </div>
 
             {/* Card de serviços */}
-            <div className="rounded-3xl border border-border/60 bg-card p-5">
+            <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
               <div className="text-sm font-semibold mb-3">{t.selectService}</div>
               <div className="relative mb-3">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -277,9 +277,9 @@ export default function HomePage() {
                     <button
                       key={s.code}
                       onClick={requireLogin}
-                      className="w-full flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
+                      className="w-full flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
                     >
-                      <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                      <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                         {s.icon_url ? (
                           <img src={s.icon_url} alt="" className="h-5 w-5 object-contain" />
                         ) : (
@@ -292,7 +292,7 @@ export default function HomePage() {
                           {s.stock.toLocaleString("pt-BR")} {t.numbers}
                         </div>
                       </div>
-                      <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1 whitespace-nowrap">
+                      <span className="rounded-full bg-primary text-primary-foreground text-[11px] font-semibold px-3 py-1 whitespace-nowrap">
                         {t.from} R$ {s.price.toFixed(2).replace(".", ",")}
                       </span>
                     </button>
@@ -306,11 +306,11 @@ export default function HomePage() {
                         onClick={requireLogin}
                         className="w-full flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-secondary/50 transition-colors text-left"
                       >
-                        <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                        <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                           <Smartphone size={14} className="text-muted-foreground" />
                         </div>
                         <div className="flex-1 text-sm font-medium">{op}</div>
-                        <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1">
+                        <span className="rounded-full bg-primary text-primary-foreground text-[11px] font-semibold px-3 py-1">
                           {t.recharge.toLowerCase()}
                         </span>
                       </button>
@@ -328,10 +328,10 @@ export default function HomePage() {
             </div>
 
             {/* Card país — somente Brasil */}
-            <div className="rounded-3xl border border-border/60 bg-card p-5">
+            <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
               <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
               <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
-                <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center text-lg">
+                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-lg">
                   🇧🇷
                 </div>
                 <div className="flex-1">
@@ -346,13 +346,13 @@ export default function HomePage() {
 
           {/* Coluna direita — hero + bônus */}
           <div className="space-y-6">
-            <section className="rounded-3xl bg-card border border-border/60 p-10 sm:p-12 relative overflow-hidden min-h-[420px] flex flex-col justify-center">
+            <section className="sms-hero-panel rounded-xl border border-border/60 p-10 sm:p-12 relative overflow-hidden min-h-[420px] flex flex-col justify-center shadow-2xl shadow-primary/10">
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
                 <div>
                   <h1 className="font-display text-4xl sm:text-5xl leading-[1.05] tracking-tight">
                     {t.heroTitle}
                   </h1>
-                  <p className="mt-5 text-ink-soft max-w-md">
+                    <p className="mt-5 text-ink-soft max-w-md text-lg leading-relaxed">
                     {t.heroText}
                   </p>
                   <div className="mt-7 flex flex-wrap gap-3">
@@ -368,7 +368,7 @@ export default function HomePage() {
                 {/* Mock de SMS recebidos */}
                 <div className="space-y-3 overflow-hidden">
                   {visibleMessages.map((m, index) => (
-                    <div key={`${m.app}-${messageStart}`} className="rounded-2xl bg-secondary/60 border border-border/40 p-4 animate-fade-up">
+                    <div key={`${m.app}-${messageStart}`} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-fade-up shadow-lg shadow-background/10">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 font-semibold">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
@@ -384,7 +384,7 @@ export default function HomePage() {
             </section>
 
             {/* Bônus */}
-            <section className="rounded-3xl bg-gradient-to-br from-primary to-accent text-primary-foreground p-10 sm:p-12 relative overflow-hidden">
+            <section className="sms-bonus-panel rounded-xl text-primary-foreground p-10 sm:p-12 relative overflow-hidden min-h-[280px] flex items-center">
               <div className="max-w-xl relative z-10">
                 <h2 className="font-display text-3xl sm:text-4xl leading-tight">
                   {t.bonusTitle}
@@ -399,7 +399,9 @@ export default function HomePage() {
                   <Wallet size={16} /> {t.recharge}
                 </button>
               </div>
-              <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-primary-foreground/10 blur-3xl" />
+              <div className="absolute right-10 bottom-8 hidden h-36 w-36 items-center justify-center rounded-full bg-background/20 text-7xl shadow-2xl shadow-background/30 lg:flex">
+                💰
+              </div>
             </section>
 
             <section>
