@@ -68,6 +68,10 @@
     --pay-solana: 269 86% 62%;
 
     --social-google: 217 89% 61%;
+    --social-google-red: 5 81% 56%;
+    --social-google-yellow: 45 97% 50%;
+    --social-google-green: 136 53% 43%;
+    --social-yandex: 5 87% 51%;
     --social-x: 220 25% 10%;
     --social-discord: 235 86% 65%;
     --social-github: 220 13% 18%;
@@ -256,6 +260,11 @@
 
   .social-auth-icon { color: hsl(var(--muted-foreground)); transition: color 160ms ease; }
   .social-google:hover .social-auth-icon { color: hsl(var(--social-google)); }
+  .google-blue { fill: hsl(var(--social-google)); }
+  .google-red { fill: hsl(var(--social-google-red)); }
+  .google-yellow { fill: hsl(var(--social-google-yellow)); }
+  .google-green { fill: hsl(var(--social-google-green)); }
+  .social-yandex:hover .social-auth-icon { color: hsl(var(--social-yandex)); }
   .social-x:hover .social-auth-icon { color: hsl(var(--social-x)); }
   .social-discord:hover .social-auth-icon { color: hsl(var(--social-discord)); }
   .social-github:hover .social-auth-icon { color: hsl(var(--social-github)); }
