@@ -379,12 +379,13 @@ export default function HomePage() {
                     {t.loading}
                   </div>
                 )}
-                {tab === "sms" &&
-                  filtered.map((s) => (
+                {tab === "sms" && filtered.length > 0 && (
+                  <div className="max-h-[430px] space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:hsl(var(--primary)/0.45)_transparent]">
+                    {filtered.map((s) => (
                     <button
                       key={s.code}
                       onClick={requireLogin}
-                      className="w-full flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
+                      className="w-full flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-secondary/50 transition-colors text-left"
                     >
                       <HomeSmsServiceIcon service={s} />
                       <div className="flex-1 min-w-0">
@@ -397,7 +398,9 @@ export default function HomePage() {
                         {t.from} R$ {s.price.toFixed(2).replace(".", ",")}
                       </span>
                     </button>
-                  ))}
+                    ))}
+                  </div>
+                )}
 
                 {tab === "recargas" && (
                   <div className="space-y-1.5">
