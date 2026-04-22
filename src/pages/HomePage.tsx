@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Moon, Search, MessageSquare, Smartphone, Sun, Wallet } from "lucide-react";
+import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
@@ -110,6 +110,15 @@ const liveMessages = [
   { app: "Telegram", text: "Telegram code: 73418" },
   { app: "iFood", text: "Código de verificação iFood: 225604" },
   { app: "Uber", text: "Uber code: 6812" },
+];
+
+const faqItems = [
+  "O que é um número virtual?",
+  "Como funciona o CometaSMS?",
+  "A segurança é garantida após o término do aluguel do número?",
+  "O que fazer se o SMS não chegar?",
+  "Onde posso usar o número comprado?",
+  "Como pagar por um número virtual?",
 ];
 
 export default function HomePage() {
