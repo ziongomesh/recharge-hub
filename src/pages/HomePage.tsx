@@ -411,10 +411,33 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="border-t border-border/50 mt-10 py-8">
-        <div className="mx-auto max-w-7xl px-6 flex items-center justify-between text-sm text-muted-foreground">
-          <div>© {new Date().getFullYear()} CometaSMS</div>
-          <Link to="/termos" className="hover:text-foreground">Termos</Link>
+      <footer className="mt-10 border-t border-border/50 bg-card/40 py-10">
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 text-sm text-muted-foreground md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <Link to="/" className="block leading-none" aria-label="cometa sms">
+              <div className="font-display text-3xl text-primary tracking-tight">cometa</div>
+              <div className="font-mono-x text-[11px] text-primary tracking-[0.45em] -mt-0.5">sms</div>
+            </Link>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed">{t.footerText}</p>
+          </div>
+
+          <div>
+            <div className="font-mono-x text-[11px] uppercase tracking-widest text-foreground">Menu</div>
+            <div className="mt-3 grid gap-2">
+              <button onClick={requireLogin} className="text-left hover:text-foreground">SMS</button>
+              <button onClick={requireLogin} className="text-left hover:text-foreground">Recargas</button>
+              <Link to="/termos" className="hover:text-foreground">{t.terms}</Link>
+            </div>
+          </div>
+
+          <div>
+            <div className="font-mono-x text-[11px] uppercase tracking-widest text-foreground">CometaSMS</div>
+            <div className="mt-3 grid gap-2">
+              <span>© {new Date().getFullYear()} CometaSMS</span>
+              <span>{t.rights}</span>
+              <Link to="/login" className="hover:text-foreground">{t.support}</Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
