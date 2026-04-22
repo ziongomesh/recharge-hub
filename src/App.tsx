@@ -36,8 +36,14 @@ import NotFound from "@/pages/NotFound";
 const queryClient = new QueryClient();
 
 function HomeRedirect() {
-  // Sempre exibe a Home pública, mesmo logado.
-  return <HomePage />;
+  const { user, loading, adminVerified } = useAuth();
+
+  if (loading) return null;
+  if (!user) return <HomePage />;
+  if (user.role === "admin" || user.role === "mod") {
+    return <Navigate to={adminVerified ? "/admin" : "/admin/pin"} replace />;
+  }
+  return <Navigate to="/recargas" replace />;
 }
 
 const App = () => (
