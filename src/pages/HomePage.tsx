@@ -128,7 +128,10 @@ export default function HomePage() {
   const [tab, setTab] = useState<Tab>("sms");
   const [services, setServices] = useState<SmsService[]>([]);
   const [search, setSearch] = useState("");
-  const [messageStart, setMessageStart] = useState(0);
+  const messageIndexRef = useRef(2);
+  const [visibleMessages, setVisibleMessages] = useState<LiveNotification[]>(
+    liveMessages.slice(0, 3).map((message, index) => ({ ...message, id: `${message.app}-${index}` })),
+  );
   const [language, setLanguage] = useState<Language>("pt");
   const [theme, setTheme] = useState<Theme>("light");
 
@@ -148,7 +151,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setMessageStart((current) => (current + 1) % liveMessages.length);
+      messageIndexRef.current = (messageIndexRef.current + 1) % liveMessages.length;
+      const next = liveMessages[messageIndexRef.current];
+      setVisibleMessages((current) => [
+        ...current.slice(1),
+        { ...next, id: `${next.app}-${Date.now()}` },
+      ]);
     }, 2400);
 
     return () => window.clearInterval(timer);
@@ -163,11 +171,6 @@ export default function HomePage() {
       : services;
     return list.slice(0, 7);
   }, [services, search]);
-
-  const visibleMessages = useMemo(
-    () => Array.from({ length: 3 }, (_, index) => liveMessages[(messageStart + index) % liveMessages.length]),
-    [messageStart],
-  );
 
   const requireLogin = () => navigate("/login");
 
