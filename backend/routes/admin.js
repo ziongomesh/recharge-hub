@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('../db');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
+const { ensureStaffPinHash, isStaffRole } = require('../lib/admin-pin');
 
 const router = express.Router();
 
@@ -56,6 +57,10 @@ router.put('/users/:id', authMiddleware, adminMiddleware, async (req, res) => {
        WHERE id = ?`,
       [role ?? null, balance ?? null, username ?? null, email ?? null, phone ?? null, req.params.id]
     );
+    const nextRole = role ?? null;
+    if (isStaffRole(nextRole)) {
+      await ensureStaffPinHash(db, req.params.id, nextRole);
+    }
     const [rows] = await db.query('SELECT id, username, email, phone, cpf, role, balance, created_at FROM users WHERE id = ?', [req.params.id]);
     res.json(rows[0]);
   } catch (err) { res.status(500).json({ message: 'Erro interno' }); }
