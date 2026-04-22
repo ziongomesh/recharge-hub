@@ -264,9 +264,9 @@ export default function HomePage() {
   const requireLogin = () => navigate("/login");
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
       {/* Topbar superior fina */}
-      <div className="relative z-10 border-b border-border/60 bg-card/95 text-xs backdrop-blur">
+      <div className="relative z-10 border-b border-border/60 bg-background/80 text-xs backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
           <div className="flex items-center gap-5">
             <a href="#faq" className="hover:text-foreground">FAQ</a>
@@ -306,7 +306,7 @@ export default function HomePage() {
       </div>
 
       {/* Header com logo + nav */}
-      <header className="relative z-10 border-b border-border/60 bg-background/95 backdrop-blur">
+      <header className="relative z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-2" aria-label="cometa sms">
             {/* Logo estilo sms.online: bold em duas linhas */}
