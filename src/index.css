@@ -49,6 +49,7 @@
     --ring: 262 83% 58%;
 
     --radius: 0.25rem;
+    --button-radius: 9999px;
 
     --sidebar-width: 240px;
 
@@ -112,6 +113,9 @@
     @apply bg-background text-foreground antialiased;
     font-family: "Inter", system-ui, sans-serif;
     font-feature-settings: "ss01", "cv11", "tnum";
+  }
+  button {
+    border-radius: var(--button-radius);
   }
   /* Tabular numerals everywhere numbers matter */
   .tabular { font-variant-numeric: tabular-nums; }
