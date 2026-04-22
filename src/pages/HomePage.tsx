@@ -115,12 +115,12 @@ const liveMessages = [
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
 
 const faqItems = [
-  "O que é um número virtual?",
-  "Como funciona o CometaSMS?",
-  "A segurança é garantida após o término do aluguel do número?",
-  "O que fazer se o SMS não chegar?",
-  "Onde posso usar o número comprado?",
-  "Como pagar por um número virtual?",
+  ["O que é um número virtual?", "É um número temporário usado para receber SMS de confirmação sem expor seu telefone pessoal."],
+  ["Como funciona o CometaSMS?", "Você escolhe o serviço, compra um número disponível e acompanha o SMS recebido em tempo real."],
+  ["A segurança é garantida após o término do aluguel do número?", "Sim. O número é descartável e usado apenas durante o período da ativação."],
+  ["O que fazer se o SMS não chegar?", "Aguarde alguns minutos, tente outro número disponível ou fale com o suporte pelos contatos públicos."],
+  ["Onde posso usar o número comprado?", "Em serviços compatíveis com verificação por SMS, conforme disponibilidade do catálogo."],
+  ["Como pagar por um número virtual?", "Após criar conta, você adiciona saldo e usa para comprar números ou recargas."],
 ];
 
 export default function HomePage() {
