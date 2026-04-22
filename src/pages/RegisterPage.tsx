@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
+import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 
 function formatCPF(v: string) {
   const d = v.replace(/\D/g, "").slice(0, 11);
@@ -88,13 +89,7 @@ export default function RegisterPage() {
 
         <section className="mt-7 grid max-w-4xl gap-6 rounded-xl border border-border/50 bg-card/55 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl md:grid-cols-[1fr_1.25fr]">
           <form onSubmit={submit} className="space-y-4 md:border-r md:border-border/60 md:pr-6">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {['Google', 'X', 'Discord', 'GitHub'].map((item) => (
-                <button key={item} type="button" className="h-9 rounded-xl border border-border/60 bg-background/35 px-2 text-xs font-semibold text-muted-foreground backdrop-blur hover:border-primary/60 hover:text-primary" aria-label={`Cadastro com ${item} indisponível`}>
-                  {item}
-                </button>
-              ))}
-            </div>
+            <SocialAuthButtons labelPrefix="Cadastro" />
 
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Seu email</label>
