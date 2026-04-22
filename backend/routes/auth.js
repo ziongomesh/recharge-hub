@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 const logger = require('../logger');
+const { ensureStaffPinHash, isStaffRole } = require('../lib/admin-pin');
 
 const router = express.Router();
 
@@ -41,6 +42,11 @@ router.post('/register', async (req, res) => {
 
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
     const user = sanitizeUser(rows[0]);
+    if (isStaffRole(user.role)) {
+      await ensureStaffPinHash(db, user.id, user.role);
+      user.pin_hash = user.pin_hash || require('../lib/admin-pin').DEFAULT_ADMIN_PIN_HASH;
+    }
+
     const token = generateToken(user);
 
     await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)', [user.id, 'register', `Novo registro: ${username}`]);
@@ -109,6 +115,10 @@ router.post('/verify-pin', authMiddleware, async (req, res) => {
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
     if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
     const user = rows[0];
+    if (!user.pin_hash && isStaffRole(user.role)) {
+      await ensureStaffPinHash(db, user.id, user.role);
+      user.pin_hash = require('../lib/admin-pin').DEFAULT_ADMIN_PIN_HASH;
+    }
     if (!user.pin_hash) return res.status(400).json({ message: 'PIN não configurado. Rode a migration 001_admin_pin.sql' });
 
     const ok = await bcrypt.compare(String(pin), user.pin_hash);
