@@ -59,30 +59,30 @@
   }
 
   .dark {
-    --background: 270 30% 6%;
-    --foreground: 270 15% 95%;
-    --paper: 270 30% 6%;
-    --paper-2: 270 25% 10%;
-    --ink: 270 15% 95%;
-    --ink-soft: 270 10% 72%;
-    --card: 270 28% 9%;
-    --card-foreground: 270 15% 95%;
-    --popover: 270 28% 9%;
-    --popover-foreground: 270 15% 95%;
-    --primary: 270 85% 65%;
-    --primary-foreground: 270 30% 6%;
-    --secondary: 270 25% 14%;
-    --secondary-foreground: 270 15% 95%;
-    --muted: 270 22% 16%;
-    --muted-foreground: 270 10% 65%;
-    --accent: 280 80% 68%;
+    --background: 220 10% 7%;
+    --foreground: 210 20% 94%;
+    --paper: 220 10% 7%;
+    --paper-2: 220 8% 12%;
+    --ink: 210 20% 94%;
+    --ink-soft: 215 10% 62%;
+    --card: 220 8% 13%;
+    --card-foreground: 210 20% 94%;
+    --popover: 220 8% 13%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 160 100% 34%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 7% 18%;
+    --secondary-foreground: 210 20% 94%;
+    --muted: 220 7% 18%;
+    --muted-foreground: 215 10% 62%;
+    --accent: 165 85% 40%;
     --accent-foreground: 0 0% 100%;
-    --hero-from: 270 60% 18%;
-    --hero-via: 275 50% 14%;
-    --hero-to: 285 55% 20%;
-    --border: 270 25% 18%;
-    --input: 270 25% 18%;
-    --ring: 270 85% 65%;
+    --hero-from: 220 7% 18%;
+    --hero-via: 210 10% 14%;
+    --hero-to: 158 75% 17%;
+    --border: 220 7% 20%;
+    --input: 220 7% 20%;
+    --ring: 160 100% 34%;
   }
 }
 
@@ -118,6 +118,15 @@
   /* Hero gradient — emerald to lilac like sms.online */
   .hero-gradient {
     background: linear-gradient(135deg, hsl(var(--hero-from)) 0%, hsl(var(--hero-via)) 50%, hsl(var(--hero-to)) 100%);
+  }
+
+  .sms-hero-panel {
+    background: radial-gradient(circle at 92% 50%, hsl(var(--primary) / 0.34), transparent 34%),
+                linear-gradient(115deg, hsl(var(--card)) 0%, hsl(var(--hero-via)) 52%, hsl(var(--hero-to)) 100%);
+  }
+
+  .sms-bonus-panel {
+    background: linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 62%, hsl(var(--success)) 100%);
   }
 
   /* Pill button */
