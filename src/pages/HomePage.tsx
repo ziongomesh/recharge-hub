@@ -258,7 +258,7 @@ export default function HomePage() {
           (s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)
         )
       : services;
-    return list.filter((service) => service.stock > 0);
+    return list;
   }, [services, search]);
 
   const requireLogin = () => navigate("/login");
@@ -422,7 +422,7 @@ export default function HomePage() {
                   onClick={requireLogin}
                   className="w-full text-center text-sm text-muted-foreground hover:text-foreground py-3 mt-2 border-t border-border/40"
                 >
-                  {t.showAll} {tab === "sms" ? services.filter((service) => service.stock > 0).length : 3}
+                  {t.showAll} {tab === "sms" ? services.length : 3}
                 </button>
               </div>
             </div>
