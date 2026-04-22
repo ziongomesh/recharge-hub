@@ -18,7 +18,7 @@ const copy = {
     dark: "Escuro",
     prices: "Lista de preços",
     help: "Ajuda ▾",
-    login: "Entrar",
+    login: "Área do cliente",
     selectService: "Selecione o serviço",
     search: "Buscar",
     loading: "Carregando serviços…",
@@ -48,7 +48,7 @@ const copy = {
     dark: "Dark",
     prices: "Price list",
     help: "Help ▾",
-    login: "Login",
+    login: "Client area",
     selectService: "Select service",
     search: "Search",
     loading: "Loading services…",
@@ -78,7 +78,7 @@ const copy = {
     dark: "Oscuro",
     prices: "Lista de precios",
     help: "Ayuda ▾",
-    login: "Entrar",
+    login: "Área de cliente",
     selectService: "Selecciona el servicio",
     search: "Buscar",
     loading: "Cargando servicios…",
@@ -354,7 +354,7 @@ export default function HomePage() {
 
           <button
             onClick={requireLogin}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:opacity-95"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-card px-5 py-2.5 text-sm font-semibold text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08),0_12px_28px_-14px_hsl(var(--primary))] transition-all hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground"
             aria-label={t.login}
           >
             <Smartphone size={16} />
