@@ -514,10 +514,13 @@ export default function HomePage() {
               <h2 className="font-display text-3xl tracking-tight">Respostas para perguntas frequentes</h2>
               <div className="rounded-xl border border-border/60 bg-card divide-y divide-border/60">
                 {faqItems.map((item) => (
-                  <button key={item} onClick={requireLogin} className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-secondary/50">
-                    {item}
-                    <ChevronRight size={15} className="text-muted-foreground" />
-                  </button>
+                  <details key={item.question} className="group">
+                    <summary className="flex w-full cursor-pointer list-none items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-secondary/50">
+                      {item.question}
+                      <ChevronRight size={15} className="text-muted-foreground transition-transform group-open:rotate-90" />
+                    </summary>
+                    <p className="px-5 pb-4 text-sm leading-6 text-muted-foreground">{item.answer}</p>
+                  </details>
                 ))}
               </div>
             </section>
