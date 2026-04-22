@@ -327,10 +327,11 @@ export default function HomePage() {
 
           <button
             onClick={requireLogin}
-            className="h-10 w-10 rounded-full border border-border flex items-center justify-center hover:border-primary transition-colors"
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:opacity-95"
             aria-label={t.login}
           >
             <Smartphone size={16} />
+            {t.login}
           </button>
         </div>
       </header>
