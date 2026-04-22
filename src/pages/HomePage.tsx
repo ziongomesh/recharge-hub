@@ -576,7 +576,7 @@ export default function HomePage() {
               <h2 className="font-display text-3xl tracking-tight">Por que escolher CometaSMS</h2>
               <div className="grid rounded-xl border border-border/60 bg-card md:grid-cols-3">
                 {[
-                  ["180+", "suporte a diversos países"],
+                  ["BR", "atendimento somente no Brasil, em todos os estados"],
                   ["1500+", "serviços e aplicativos"],
                   ["35%", "economia para usuários frequentes"],
                 ].map(([value, label]) => (
