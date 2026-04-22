@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { esimApi, pagamentosApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
+import { esimApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload, Package, X, Pencil } from "lucide-react";
-import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 function EstoqueThumb({ id, onRemove }: { id: number; onRemove: () => void }) {
   const [src, setSrc] = useState<string | null>(null);
@@ -116,21 +115,6 @@ export default function AdminEsimPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <AdminBalanceHero
-          label="VizzionPay · eSIM"
-          fetcher={async () => {
-            const r = await pagamentosApi.adminBalance("esim");
-            return {
-              balance: r.balance,
-              extra: [
-                r.blocked != null ? `bloqueado R$ ${Number(r.blocked).toFixed(2)}` : null,
-                r.usingFallback ? "usando chave global" : null,
-              ].filter(Boolean).join(" · ") || null,
-            };
-          }}
-        />
-      </div>
       <div className="flex items-end justify-between mb-8">
         <div>
           <div className="label-eyebrow">Catálogo</div>
