@@ -271,13 +271,6 @@ export default function HomePage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
-      <img
-        src={cometaBackground}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none fixed right-[-72px] top-24 z-0 w-[280px] opacity-20 blur-[0.2px] sm:right-[-40px] sm:w-[360px] lg:right-10 lg:top-28 lg:w-[440px]"
-      />
-      <div className="pointer-events-none fixed inset-0 z-0 bg-background/35" aria-hidden="true" />
       {/* Topbar superior fina */}
       <div className="relative z-10 border-b border-border/60 bg-card/95 text-xs backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
