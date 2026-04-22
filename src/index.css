@@ -56,6 +56,18 @@
     --status-confirmed: 145 50% 32%;
     --status-canceled: 8 75% 48%;
     --status-expired: 30 8% 50%;
+
+    --pay-muted: 0 0% 56%;
+    --pay-tether: 168 73% 34%;
+    --pay-bitcoin: 36 100% 50%;
+    --pay-ethereum: 224 9% 28%;
+    --pay-visa: 231 100% 31%;
+    --pay-mastercard-red: 4 82% 52%;
+    --pay-mastercard-yellow: 38 98% 52%;
+    --pay-mir: 152 64% 35%;
+    --pay-upi: 23 100% 50%;
+    --pay-pix: 174 75% 36%;
+    --pay-triangle: 207 10% 40%;
   }
 
   .dark {
@@ -216,6 +228,30 @@
   .animate-notification-up {
     animation: notification-up 0.45s ease-out both;
   }
+
+  .payment-icon {
+    color: hsl(var(--pay-muted));
+    filter: grayscale(1);
+    opacity: 0.72;
+    transition: color 160ms ease, filter 160ms ease, opacity 160ms ease, transform 160ms ease;
+  }
+  .payment-icon:hover {
+    filter: grayscale(0);
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+  .payment-tether:hover { color: hsl(var(--pay-tether)); }
+  .payment-bitcoin:hover { color: hsl(var(--pay-bitcoin)); }
+  .payment-ethereum:hover { color: hsl(var(--pay-ethereum)); }
+  .payment-visa:hover { color: hsl(var(--pay-visa)); }
+  .payment-mir:hover { color: hsl(var(--pay-mir)); }
+  .payment-upi:hover { color: hsl(var(--pay-upi)); }
+  .payment-pix:hover { color: hsl(var(--pay-pix)); }
+  .payment-triangle:hover { color: hsl(var(--pay-triangle)); }
+  .payment-icon .mc-red,
+  .payment-icon .mc-yellow { fill: currentColor; transition: fill 160ms ease; }
+  .payment-mastercard:hover .mc-red { fill: hsl(var(--pay-mastercard-red)); }
+  .payment-mastercard:hover .mc-yellow { fill: hsl(var(--pay-mastercard-yellow)); }
 }
 
 @layer utilities {
