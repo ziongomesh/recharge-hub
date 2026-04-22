@@ -1,6 +1,6 @@
 // Mapa code (hero-sms) → domínio oficial.
 // Usado pra puxar favicon oficial via Google Favicons sz=128.
-// Quando code não está no mapa, deriva do nome (1ª palavra → .com).
+// Quando code não está no mapa, retorna null para o admin subir manualmente.
 
 const MAP = {
   // Mensagem / Social
@@ -182,15 +182,7 @@ const MAP = {
 };
 
 function deriveDomain(name) {
-  if (!name) return null;
-  // Pega 1ª "palavra real" alfanumérica
-  const clean = String(name).trim()
-    .replace(/[\u00A0]/g, ' ')
-    .split(/[\s,/+|·•\-—–]/)[0]
-    .replace(/[^\w]/g, '')
-    .toLowerCase();
-  if (!clean || clean.length < 2) return null;
-  return `${clean}.com`;
+  return null;
 }
 
 function iconUrlFor(code, name) {
@@ -199,4 +191,12 @@ function iconUrlFor(code, name) {
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
 }
 
-module.exports = { iconUrlFor, MAP, deriveDomain };
+function isManualIconUrl(url) {
+  return !!url && !String(url).includes('google.com/s2/favicons');
+}
+
+function effectiveIconUrl(code, name, storedUrl) {
+  return isManualIconUrl(storedUrl) ? storedUrl : iconUrlFor(code, name);
+}
+
+module.exports = { iconUrlFor, MAP, deriveDomain, effectiveIconUrl, isManualIconUrl };
