@@ -391,7 +391,7 @@ export default function HomePage() {
               <div className="space-y-1.5">
                 {tab === "sms" && filtered.length === 0 && (
                   <div className="text-xs text-muted-foreground py-6 text-center">
-                    {t.loading}
+                    {servicesLoading ? t.loading : servicesError ? "Não foi possível carregar da API" : "Nenhum serviço ativo"}
                   </div>
                 )}
                 {tab === "sms" && filtered.length > 0 && (
@@ -450,13 +450,13 @@ export default function HomePage() {
             <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
               <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
               <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
-                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center text-lg">
-                  🇧🇷
+                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
+                  <BrazilFlagIcon />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">{t.brazil}</div>
                   <div className="text-[11px] text-muted-foreground">
-                    {services.reduce((acc, s) => acc + s.stock, 0).toLocaleString("pt-BR")} {t.available}
+                    {servicesLoading ? t.loading : servicesError ? "API indisponível" : `${totalSmsNumbers.toLocaleString("pt-BR")} ${t.available}`}
                   </div>
                 </div>
               </div>
