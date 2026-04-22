@@ -118,8 +118,14 @@ export default function HomePage() {
   const [services, setServices] = useState<SmsService[]>([]);
   const [search, setSearch] = useState("");
   const [messageStart, setMessageStart] = useState(0);
+  const [language, setLanguage] = useState<Language>("pt");
+  const [theme, setTheme] = useState<Theme>("light");
 
-  // Tema padrão branco; usuário escolhe escuro manualmente.
+  const t = copy[language];
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
 
   // Carrega serviços de SMS do Brasil
   useEffect(() => {
@@ -161,12 +167,34 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-muted-foreground">
           <div className="flex items-center gap-5">
             <a href="#faq" className="hover:text-foreground">FAQ</a>
-            <a href="#api" className="hover:text-foreground">API</a>
+            <button onClick={requireLogin} className="hover:text-foreground">SMS</button>
           </div>
-          <div className="flex items-center gap-5">
-            <Link to="/login" className="hover:text-foreground">Suporte</Link>
-            <span>Português (Brasil)</span>
-            <span className="text-primary">● Escuro</span>
+          <div className="flex items-center gap-3 sm:gap-5">
+            <Link to="/login" className="hover:text-foreground">{t.support}</Link>
+            <select
+              value={language}
+              onChange={(event) => setLanguage(event.target.value as Language)}
+              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none"
+              aria-label="Idioma"
+            >
+              <option value="pt">Português</option>
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+            <div className="inline-grid grid-cols-2 rounded-full border border-border/60 bg-card p-0.5">
+              <button
+                onClick={() => setTheme("light")}
+                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 transition-colors ${theme === "light" ? "bg-primary text-primary-foreground" : "hover:text-foreground"}`}
+              >
+                <Sun size={12} /> {t.light}
+              </button>
+              <button
+                onClick={() => setTheme("dark")}
+                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 transition-colors ${theme === "dark" ? "bg-primary text-primary-foreground" : "hover:text-foreground"}`}
+              >
+                <Moon size={12} /> {t.dark}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -187,14 +215,14 @@ export default function HomePage() {
           <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
             <button onClick={requireLogin} className="hover:text-primary transition-colors">SMS</button>
             <button onClick={requireLogin} className="hover:text-primary transition-colors">Recargas</button>
-            <button onClick={requireLogin} className="hover:text-primary transition-colors">Lista de preços</button>
-            <button onClick={requireLogin} className="hover:text-primary transition-colors">Ajuda ▾</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.prices}</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.help}</button>
           </nav>
 
           <button
             onClick={requireLogin}
             className="h-10 w-10 rounded-full border border-border flex items-center justify-center hover:border-primary transition-colors"
-            aria-label="Entrar"
+            aria-label={t.login}
           >
             <Smartphone size={16} />
           </button>
