@@ -506,9 +506,6 @@ export default function HomePage() {
                   <Wallet size={16} /> {t.recharge}
                 </button>
               </div>
-              <div className="absolute right-10 bottom-8 hidden h-36 w-36 items-center justify-center rounded-full bg-background/20 text-7xl shadow-2xl shadow-background/30 lg:flex">
-                💰
-              </div>
             </section>
 
             <section>
