@@ -163,6 +163,15 @@ function BrazilFlagIcon() {
   );
 }
 
+function OperatorIcon({ name }: { name: string }) {
+  const normalized = name.toLowerCase();
+  return (
+    <div className={`operator-icon operator-${normalized}`} aria-hidden="true">
+      {normalized === "claro" ? "claro" : normalized === "tim" ? "TIM" : "Vivo"}
+    </div>
+  );
+}
+
 const paymentMethods = [
   {
     name: "Visa",
@@ -377,7 +386,7 @@ export default function HomePage() {
 
             {/* Card de serviços */}
             <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
-              <div className="text-sm font-semibold mb-3">{t.selectService}</div>
+              <div className="text-sm font-semibold mb-3">{tab === "recargas" ? "Operadoras" : t.selectService}</div>
               <div className="relative mb-3">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -425,8 +434,8 @@ export default function HomePage() {
                         onClick={requireLogin}
                         className="w-full flex items-center gap-3 rounded-xl px-2 py-2.5 hover:bg-secondary/50 transition-colors text-left"
                       >
-                        <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                          <Smartphone size={14} className="text-muted-foreground" />
+                        <div className="h-9 w-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                          <OperatorIcon name={op} />
                         </div>
                         <div className="flex-1 text-sm font-medium">{op}</div>
                         <span className="rounded-full bg-primary text-primary-foreground text-[11px] font-semibold px-3 py-1">
