@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
@@ -111,6 +111,8 @@ const liveMessages = [
   { app: "iFood", text: "Código de verificação iFood: 225604" },
   { app: "Uber", text: "Uber code: 6812" },
 ];
+
+type LiveNotification = (typeof liveMessages)[number] & { id: string };
 
 const faqItems = [
   "O que é um número virtual?",
