@@ -263,7 +263,7 @@ export default function HomePage() {
           (s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)
         )
       : services;
-    return list.slice(0, 7);
+    return list.filter((service) => service.stock > 0);
   }, [services, search]);
 
   const requireLogin = () => navigate("/login");
@@ -390,13 +390,7 @@ export default function HomePage() {
                       onClick={requireLogin}
                       className="w-full flex items-center gap-2 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
                     >
-                      <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center overflow-hidden shrink-0">
-                        {s.icon_url ? (
-                          <img src={s.icon_url} alt="" className="h-5 w-5 object-contain" />
-                        ) : (
-                          <MessageSquare size={14} className="text-muted-foreground" />
-                        )}
-                      </div>
+                      <HomeSmsServiceIcon service={s} />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">{s.name}</div>
                         <div className="text-[11px] text-muted-foreground">
@@ -433,7 +427,7 @@ export default function HomePage() {
                   onClick={requireLogin}
                   className="w-full text-center text-sm text-muted-foreground hover:text-foreground py-3 mt-2 border-t border-border/40"
                 >
-                  {t.showAll} {tab === "sms" ? services.length : 3}
+                  {t.showAll} {tab === "sms" ? services.filter((service) => service.stock > 0).length : 3}
                 </button>
               </div>
             </div>
