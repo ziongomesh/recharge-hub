@@ -58,16 +58,14 @@
     --status-expired: 30 8% 50%;
 
     --pay-muted: 0 0% 56%;
-    --pay-tether: 168 73% 34%;
     --pay-bitcoin: 36 100% 50%;
-    --pay-ethereum: 224 9% 28%;
+    --pay-ethereum: 260 55% 58%;
     --pay-visa: 231 100% 31%;
     --pay-mastercard-red: 4 82% 52%;
     --pay-mastercard-yellow: 38 98% 52%;
-    --pay-mir: 152 64% 35%;
-    --pay-upi: 23 100% 50%;
     --pay-pix: 174 75% 36%;
-    --pay-triangle: 207 10% 40%;
+    --pay-crypto: 168 73% 34%;
+    --pay-solana: 269 86% 62%;
 
     --social-google: 217 89% 61%;
     --social-x: 220 25% 10%;
@@ -245,14 +243,12 @@
     opacity: 1;
     transform: translateY(-1px);
   }
-  .payment-tether:hover { color: hsl(var(--pay-tether)); }
+  .payment-crypto:hover { color: hsl(var(--pay-crypto)); }
   .payment-bitcoin:hover { color: hsl(var(--pay-bitcoin)); }
   .payment-ethereum:hover { color: hsl(var(--pay-ethereum)); }
   .payment-visa:hover { color: hsl(var(--pay-visa)); }
-  .payment-mir:hover { color: hsl(var(--pay-mir)); }
-  .payment-upi:hover { color: hsl(var(--pay-upi)); }
   .payment-pix:hover { color: hsl(var(--pay-pix)); }
-  .payment-triangle:hover { color: hsl(var(--pay-triangle)); }
+  .payment-solana:hover { color: hsl(var(--pay-solana)); }
   .payment-icon .mc-red,
   .payment-icon .mc-yellow { fill: currentColor; transition: fill 160ms ease; }
   .payment-mastercard:hover .mc-red { fill: hsl(var(--pay-mastercard-red)); }

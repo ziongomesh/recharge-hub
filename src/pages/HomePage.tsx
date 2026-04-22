@@ -154,21 +154,6 @@ function HomeSmsServiceIcon({ service }: { service: SmsService }) {
 
 const paymentMethods = [
   {
-    name: "Tether",
-    className: "payment-tether",
-    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₮</span>,
-  },
-  {
-    name: "Bitcoin",
-    className: "payment-bitcoin",
-    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₿</span>,
-  },
-  {
-    name: "Ethereum",
-    className: "payment-ethereum",
-    icon: <span className="text-[18px] leading-none">◆</span>,
-  },
-  {
     name: "Visa",
     className: "payment-visa",
     icon: <span className="text-[9px] font-black italic tracking-tighter">VISA</span>,
@@ -184,16 +169,6 @@ const paymentMethods = [
     ),
   },
   {
-    name: "MIR",
-    className: "payment-mir",
-    icon: <span className="text-[9px] font-black italic tracking-tighter">MIR</span>,
-  },
-  {
-    name: "UPI",
-    className: "payment-upi",
-    icon: <span className="text-[9px] font-black italic tracking-tighter underline decoration-current/50 underline-offset-2">UPI</span>,
-  },
-  {
     name: "PIX",
     className: "payment-pix",
     icon: (
@@ -203,9 +178,28 @@ const paymentMethods = [
     ),
   },
   {
-    name: "Google Play",
-    className: "payment-triangle",
-    icon: <span className="text-[18px] leading-none">▶</span>,
+    name: "Crypto",
+    className: "payment-crypto",
+    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full border border-current text-[10px] font-black">₿</span>,
+  },
+  {
+    name: "Bitcoin",
+    className: "payment-bitcoin",
+    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₿</span>,
+  },
+  {
+    name: "Solana",
+    className: "payment-solana",
+    icon: (
+      <svg viewBox="0 0 32 22" className="h-5 w-7" aria-hidden="true">
+        <path fill="currentColor" d="M7 2h21l-4 4H3l4-4Zm0 7h21l-4 4H3l4-4Zm0 7h21l-4 4H3l4-4Z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Ethereum",
+    className: "payment-ethereum",
+    icon: <span className="text-[18px] leading-none">◆</span>,
   },
 ];
 
