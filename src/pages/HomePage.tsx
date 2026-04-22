@@ -129,9 +129,11 @@ const serviceIconDomains: Record<string, string> = {
 function iconFromServiceName(name: string) {
   const normalized = name.toLowerCase().trim().replace(/\s+/g, " ");
   const domain = serviceIconDomains[normalized] || serviceIconDomains[normalized.split(/[\s,/+|·•\-—–]/)[0]];
-  const fallback = normalized.replace(/[^a-z0-9]/g, "");
-  const target = domain || (fallback.length >= 2 ? `${fallback}.com` : null);
-  return target ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(target)}&sz=128` : null;
+  return domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : null;
+}
+
+function serviceHasIcon(service: SmsService) {
+  return Boolean(service.icon_url || iconFromServiceName(service.name));
 }
 
 function HomeSmsServiceIcon({ service }: { service: SmsService }) {
@@ -276,11 +278,12 @@ export default function HomePage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
+    const withIcons = services.filter(serviceHasIcon);
     const list = q
-      ? services.filter(
+      ? withIcons.filter(
           (s) => s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q)
         )
-      : services;
+      : withIcons;
     return list;
   }, [services, search]);
 

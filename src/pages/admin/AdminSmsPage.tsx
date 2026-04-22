@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { smsApi, pagamentosApi, type SmsAdminService, type SmsCountry, type SmsActivation, type SmsCountryPriceItem } from "@/lib/api";
 import { toast } from "sonner";
-import { Loader2, RefreshCw, Search } from "lucide-react";
+import { ImageOff, Loader2, RefreshCw, Search, Upload } from "lucide-react";
 import AdminBalanceHero from "@/components/AdminBalanceHero";
 
 type Tab = "services" | "countries" | "brprices" | "activations" | "config";
@@ -117,6 +117,14 @@ export default function AdminSmsPage() {
     try { await smsApi.adminUpdateService(code, patch); }
     catch (e: any) { toast.error(e.message); loadAll(); }
   };
+  const uploadServiceIcon = async (code: string, file?: File | null) => {
+    if (!file) return;
+    try {
+      const r = await smsApi.adminUploadServiceIcon(code, file);
+      setServices((arr) => arr.map((s) => (s.code === code ? { ...s, icon_url: r.icon_url } : s)));
+      toast.success("Ícone salvo");
+    } catch (e: any) { toast.error(e.message); }
+  };
   const updateCountry = async (id: number, enabled: boolean) => {
     setCountries((arr) => arr.map((c) => (c.id === id ? { ...c, enabled } : c)));
     try { await smsApi.adminUpdateCountry(id, { enabled }); }
@@ -133,6 +141,7 @@ export default function AdminSmsPage() {
   const filteredCountries = countries.filter((c) =>
     !search || c.name.toLowerCase().includes(search.toLowerCase())
   );
+  const servicesWithoutIcon = services.filter((s) => !s.icon_url);
 
   return (
     <div className="max-w-6xl">
@@ -219,6 +228,18 @@ export default function AdminSmsPage() {
             Nenhum serviço sincronizado. Clique em "Sincronizar API".
           </div>
         ) : (
+          <>
+          <div className="mb-4 rounded-xl border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 text-sm font-semibold"><ImageOff size={16} /> Serviços sem ícone: {servicesWithoutIcon.length}</div>
+                <div className="mt-1 text-xs text-muted-foreground">Eles ficam ocultos na home até receberem um ícone.</div>
+              </div>
+              <div className="max-w-2xl text-xs text-muted-foreground">
+                {servicesWithoutIcon.length ? servicesWithoutIcon.map((s) => `${s.name} (${s.code})`).join(", ") : "Todos os serviços possuem ícone."}
+              </div>
+            </div>
+          </div>
           <div className="border border-border bg-card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-paper-2 text-xs text-muted-foreground">
@@ -226,6 +247,7 @@ export default function AdminSmsPage() {
                   <th className="text-left p-3"></th>
                   <th className="text-left p-3">Código</th>
                   <th className="text-left p-3">Nome</th>
+                  <th className="text-left p-3">Ícone</th>
                   <th className="text-center p-3">Ativo</th>
                 </tr>
               </thead>
@@ -237,6 +259,12 @@ export default function AdminSmsPage() {
                     </td>
                     <td className="p-3 font-mono-x text-xs">{s.code}</td>
                     <td className="p-3">{s.name}</td>
+                    <td className="p-3">
+                      <label className="inline-flex cursor-pointer items-center gap-2 rounded border border-border px-3 py-1.5 text-xs hover:bg-secondary/60">
+                        <Upload size={13} /> Enviar
+                        <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={(e) => uploadServiceIcon(s.code, e.target.files?.[0])} />
+                      </label>
+                    </td>
                     <td className="p-3 text-center">
                       <input
                         type="checkbox"
@@ -249,6 +277,7 @@ export default function AdminSmsPage() {
               </tbody>
             </table>
           </div>
+          </>
         )
       ) : tab === "countries" ? (
         <>

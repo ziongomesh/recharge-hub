@@ -115,6 +115,21 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
   return responseData as T;
 }
 
+async function apiForm<T = unknown>(path: string, formData: FormData): Promise<T> {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+  const data = await res.json().catch(() => null);
+  if (!res.ok) throw new Error(data?.message || `Erro ${res.status}`);
+  return data as T;
+}
+
 // Auth
 export const authApi = {
   login: (data: { email: string; password: string }) =>
@@ -378,6 +393,11 @@ export const smsApi = {
   adminServices: () => api<{ services: SmsAdminService[] }>("/sms/admin/services"),
   adminUpdateService: (code: string, data: Partial<SmsAdminService>) =>
     api(`/sms/admin/services/${code}`, { method: "PUT", body: data }),
+  adminUploadServiceIcon: (code: string, file: File) => {
+    const formData = new FormData();
+    formData.append("icon", file);
+    return apiForm<{ ok: true; icon_url: string }>(`/sms/admin/services/${code}/icon`, formData);
+  },
   adminCountries: () => api<{ countries: SmsCountry[] }>("/sms/admin/countries"),
   adminUpdateCountry: (id: number, data: { enabled: boolean }) =>
     api(`/sms/admin/countries/${id}`, { method: "PUT", body: data }),
