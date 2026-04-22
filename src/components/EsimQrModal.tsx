@@ -27,21 +27,21 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 p-4">
-      <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto border border-border bg-paper shadow-2xl">
-        <button onClick={onClose} className="absolute right-4 top-4 z-10 text-muted-foreground hover:text-foreground" aria-label="Fechar entrega do eSIM">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary/25 p-4 backdrop-blur-sm">
+      <div className="relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-primary/20 bg-paper shadow-2xl shadow-primary/20">
+        <button onClick={onClose} className="absolute right-4 top-4 z-10 rounded-full bg-primary/10 p-2 text-primary transition hover:bg-primary hover:text-primary-foreground" aria-label="Fechar entrega do eSIM">
           <X size={18} />
         </button>
 
         <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
-          <div className="border-b border-border bg-card p-6 md:border-b-0 md:border-r md:p-8">
+          <div className="border-b border-primary/15 bg-card p-6 md:border-b-0 md:border-r md:p-8">
             <div className="label-eyebrow">Entrega imediata</div>
             <h2 className="font-display mt-2 text-3xl leading-tight">Seu eSIM está pronto</h2>
             <div className="mt-2 text-sm text-muted-foreground">
               {venda.produto_name} · {venda.operadora} · R$ {venda.amount.toFixed(2)}
             </div>
 
-            <div className="mt-6 rounded-lg border border-success/35 bg-success/10 p-4 text-sm text-foreground">
+            <div className="mt-6 rounded-2xl border border-primary/25 bg-primary/10 p-4 text-sm text-foreground">
               <div className="flex items-center gap-2 font-semibold text-success">
                 <CheckCircle2 size={16} /> Compra confirmada
               </div>
@@ -51,11 +51,11 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
             </div>
 
             {qr ? (
-              <div className="mt-6 border border-border bg-background p-4">
-                <img src={qr} alt="QR Code do eSIM" className="mx-auto h-auto max-w-full" />
+              <div className="mt-6 rounded-2xl border border-primary/20 bg-background p-4">
+                <img src={qr} alt="QR Code do eSIM" className="mx-auto h-auto max-w-full rounded-xl" />
               </div>
             ) : (
-              <div className="mt-6 border border-border p-8 text-center text-sm text-muted-foreground">
+              <div className="mt-6 rounded-2xl border border-primary/20 p-8 text-center text-sm text-muted-foreground">
                 QR Code indisponível
               </div>
             )}
@@ -63,7 +63,7 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
             {qr && (
               <button
                 onClick={download}
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 bg-foreground py-3 text-sm text-background hover:opacity-90"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-primary/90"
               >
                 <Download size={14} /> Baixar QR Code
               </button>
@@ -78,7 +78,7 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
                 [Smartphone, "Escaneie o QR Code", "Use a câmera do próprio aparelho. Não reutilize em outro dispositivo."],
                 [ShieldAlert, "Ative com atenção", "Depois de ativado, o eSIM fica vinculado ao aparelho."],
               ].map(([Icon, title, text]) => (
-                <div key={String(title)} className="flex gap-3 rounded-lg border border-border bg-card p-4">
+                <div key={String(title)} className="flex gap-3 rounded-2xl border border-primary/15 bg-card p-4">
                   <Icon className="mt-0.5 shrink-0 text-primary" size={18} />
                   <div>
                     <div className="text-sm font-semibold">{String(title)}</div>
@@ -96,7 +96,7 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
                     <Copy size={13} /> Copiar
                   </button>
                 </div>
-                <div className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-lg border border-border bg-card p-3 text-sm text-foreground">
+                <div className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-2xl border border-primary/15 bg-card p-3 text-sm text-foreground">
                   {venda.observacao}
                 </div>
               </div>
