@@ -255,13 +255,13 @@ export default function HomePage() {
 
             {/* Card de serviços */}
             <div className="rounded-3xl border border-border/60 bg-card p-5">
-              <div className="text-sm font-semibold mb-3">Selecione o serviço</div>
+              <div className="text-sm font-semibold mb-3">{t.selectService}</div>
               <div className="relative mb-3">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar"
+                  placeholder={t.search}
                   className="w-full rounded-xl bg-secondary/60 border border-border/40 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-primary/50"
                 />
               </div>
@@ -269,7 +269,7 @@ export default function HomePage() {
               <div className="space-y-1.5">
                 {tab === "sms" && filtered.length === 0 && (
                   <div className="text-xs text-muted-foreground py-6 text-center">
-                    Carregando serviços…
+                    {t.loading}
                   </div>
                 )}
                 {tab === "sms" &&
@@ -289,11 +289,11 @@ export default function HomePage() {
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">{s.name}</div>
                         <div className="text-[11px] text-muted-foreground">
-                          {s.stock.toLocaleString("pt-BR")} número{s.stock === 1 ? "" : "s"}
+                          {s.stock.toLocaleString("pt-BR")} {t.numbers}
                         </div>
                       </div>
                       <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1 whitespace-nowrap">
-                        a partir de R$ {s.price.toFixed(2).replace(".", ",")}
+                        {t.from} R$ {s.price.toFixed(2).replace(".", ",")}
                       </span>
                     </button>
                   ))}
@@ -311,7 +311,7 @@ export default function HomePage() {
                         </div>
                         <div className="flex-1 text-sm font-medium">{op}</div>
                         <span className="rounded-full bg-primary/15 text-primary text-[11px] font-semibold px-3 py-1">
-                          recarregar
+                          {t.recharge.toLowerCase()}
                         </span>
                       </button>
                     ))}
@@ -322,22 +322,22 @@ export default function HomePage() {
                   onClick={requireLogin}
                   className="w-full text-center text-sm text-muted-foreground hover:text-foreground py-3 mt-2 border-t border-border/40"
                 >
-                  Mostrar todos {tab === "sms" ? services.length : 3}
+                  {t.showAll} {tab === "sms" ? services.length : 3}
                 </button>
               </div>
             </div>
 
             {/* Card país — somente Brasil */}
             <div className="rounded-3xl border border-border/60 bg-card p-5">
-              <div className="text-sm font-semibold mb-3">Selecione o país</div>
+              <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
               <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
                 <div className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center text-lg">
                   🇧🇷
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-medium">Brasil</div>
+                  <div className="text-sm font-medium">{t.brazil}</div>
                   <div className="text-[11px] text-muted-foreground">
-                    {services.reduce((acc, s) => acc + s.stock, 0).toLocaleString("pt-BR")} números disponíveis
+                    {services.reduce((acc, s) => acc + s.stock, 0).toLocaleString("pt-BR")} {t.available}
                   </div>
                 </div>
               </div>
@@ -350,17 +350,17 @@ export default function HomePage() {
               <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] items-center">
                 <div>
                   <h1 className="font-display text-4xl sm:text-5xl leading-[1.05] tracking-tight">
-                    Receba SMS rapidamente em números virtuais em todo o mundo
+                    {t.heroTitle}
                   </h1>
                   <p className="mt-5 text-ink-soft max-w-md">
-                    Compre um número virtual e receba SMS sem limites. Para qualquer site ou aplicativo.
+                    {t.heroText}
                   </p>
                   <div className="mt-7 flex flex-wrap gap-3">
                     <button onClick={requireLogin} className="btn-pill">
-                      Comprar número <ArrowRight size={16} />
+                      {t.buyNumber} <ArrowRight size={16} />
                     </button>
                     <button onClick={requireLogin} className="btn-pill-outline">
-                      Recarregar
+                      {t.recharge}
                     </button>
                   </div>
                 </div>
@@ -374,7 +374,7 @@ export default function HomePage() {
                           <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
                           {m.app}
                         </div>
-                        <span className="text-muted-foreground">{index === 0 ? "novo" : `há ${index} min.`}</span>
+                        <span className="text-muted-foreground">{index === 0 ? t.new : language === "en" ? `${index} ${t.ago}` : `${t.ago} ${index} min.`}</span>
                       </div>
                       <div className="mt-2 text-sm">{m.text}</div>
                     </div>
@@ -387,17 +387,16 @@ export default function HomePage() {
             <section className="rounded-3xl bg-gradient-to-br from-primary to-accent text-primary-foreground p-10 sm:p-12 relative overflow-hidden">
               <div className="max-w-xl relative z-10">
                 <h2 className="font-display text-3xl sm:text-4xl leading-tight">
-                  15% de bônus no primeiro depósito
+                  {t.bonusTitle}
                 </h2>
                 <p className="mt-4 text-sm opacity-90 max-w-lg">
-                  Bônus de 15% no primeiro depósito (creditado uma vez após a confirmação do pagamento) — válido para
-                  valores de R$ 10 a R$ 500; ao depositar acima de R$ 500, o bônus permanece em R$ 75.
+                  {t.bonusText}
                 </p>
                 <button
                   onClick={requireLogin}
                   className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold hover:bg-background/90"
                 >
-                  <Wallet size={16} /> Recarregar
+                  <Wallet size={16} /> {t.recharge}
                 </button>
               </div>
               <div className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-primary-foreground/10 blur-3xl" />
@@ -405,7 +404,7 @@ export default function HomePage() {
 
             <section>
               <h3 className="font-display text-2xl sm:text-3xl tracking-tight">
-                Compre um número virtual para registro e recebimento de SMS
+                {t.closing}
               </h3>
             </section>
           </div>
