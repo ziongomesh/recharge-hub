@@ -4,7 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const db = require('../db');
 const { authMiddleware, adminMiddleware } = require('../middleware/auth');
-const { iconUrlFor } = require('../lib/sms-service-domains');
+const { iconUrlFor, effectiveIconUrl } = require('../lib/sms-service-domains');
 
 const router = express.Router();
 const iconDir = path.join(__dirname, '..', 'uploads', 'sms-icons');
@@ -90,7 +90,7 @@ router.get('/services', async (req, res) => {
         return {
           code: r.code,
           name: r.name,
-          icon_url: r.icon_url,
+          icon_url: effectiveIconUrl(r.code, r.name, r.icon_url),
           stock: r.count || 0,
           price,
         };
@@ -360,7 +360,7 @@ router.post('/admin/sync-all', authMiddleware, adminMiddleware, async (req, res)
         if (!code) continue;
         await db.query(
           `INSERT INTO sms_services (code, name, icon_url) VALUES (?, ?, ?)
-           ON DUPLICATE KEY UPDATE name=VALUES(name), icon_url=COALESCE(sms_services.icon_url, VALUES(icon_url))`,
+           ON DUPLICATE KEY UPDATE name=VALUES(name), icon_url=IF(sms_services.icon_url IS NOT NULL AND sms_services.icon_url NOT LIKE '%google.com/s2/favicons%', sms_services.icon_url, VALUES(icon_url))`,
           [code, name, icon]
         );
         services++;
@@ -416,7 +416,7 @@ router.post('/admin/sync-all', authMiddleware, adminMiddleware, async (req, res)
 // Lista admin de serviços
 router.get('/admin/services', authMiddleware, adminMiddleware, async (req, res) => {
   const [rows] = await db.query('SELECT * FROM sms_services ORDER BY name');
-  res.json({ services: rows });
+  res.json({ services: rows.map((s) => ({ ...s, icon_url: effectiveIconUrl(s.code, s.name, s.icon_url) })) });
 });
 
 router.put('/admin/services/:code', authMiddleware, adminMiddleware, async (req, res) => {
