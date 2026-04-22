@@ -34,21 +34,21 @@ export default function ConfiguracoesPage() {
       {/* Dados */}
       <section className="md:col-span-2">
         <div className="label-eyebrow mb-3">Perfil</div>
-        <dl className="border-y border-foreground divide-y divide-border">
+        <dl className="border-y border-primary/45 divide-y divide-border">
           {rows.map(([k, v]) => (
             <div key={k} className="flex items-baseline justify-between py-4">
               <dt className="label-eyebrow">{k}</dt>
-              <dd className="font-mono tabular text-sm text-foreground text-right">{v}</dd>
+              <dd className="font-mono tabular text-sm text-primary text-right">{v}</dd>
             </div>
           ))}
         </dl>
 
-        <div className="mt-10 border border-foreground p-6 flex items-center justify-between gap-6">
+        <div className="mt-10 rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/10 via-card to-secondary/70 p-7 shadow-xl shadow-primary/10 flex items-center justify-between gap-6">
           <div>
             <div className="label-eyebrow">Saldo atual</div>
-            <div className="font-display text-5xl mt-1 tabular">R$ {(user?.balance ?? 0).toFixed(2)}</div>
+            <div className="font-display text-5xl mt-1 tabular text-primary">R$ {(user?.balance ?? 0).toFixed(2)}</div>
           </div>
-          <a href="/pagamentos" className="text-sm underline underline-offset-4 hover:text-foreground/70">Depositar →</a>
+          <a href="/pagamentos" className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90">Depositar →</a>
         </div>
       </section>
     </div>
