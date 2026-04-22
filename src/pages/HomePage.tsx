@@ -641,14 +641,15 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="mx-auto mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-6 text-muted-foreground">
-          {['₮', '₿', 'Ξ', 'VISA', '●●', 'MIR', 'UPI', '▶'].map((item) => (
+        <div className="mx-auto mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-6">
+          {paymentMethods.map((method) => (
             <span
-              key={item}
-              className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-2 text-[9px] font-bold leading-none text-muted-foreground"
-              aria-label={`Meio de pagamento ${item}`}
+              key={method.name}
+              className={`payment-icon ${method.className} inline-flex h-7 min-w-7 items-center justify-center px-1`}
+              aria-label={`Meio de pagamento ${method.name}`}
+              title={method.name}
             >
-              {item}
+              {method.icon}
             </span>
           ))}
         </div>
