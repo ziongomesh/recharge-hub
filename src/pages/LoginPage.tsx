@@ -20,8 +20,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="border-b border-border/60 bg-card/95 text-xs">
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/35 to-background text-foreground">
+      <div className="border-b border-border/60 bg-background/80 text-xs backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
           <div className="flex items-center gap-5">
             <Link to="/" className="hover:text-foreground">FAQ</Link>
@@ -36,7 +36,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <header className="border-b border-border/60 bg-background/95">
+      <header className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/" className="leading-none" aria-label="cometa sms">
             <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
