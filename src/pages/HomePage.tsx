@@ -557,8 +557,8 @@ export default function HomePage() {
 
           <div>
             <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
-              <button onClick={requireLogin} className="text-left hover:text-primary">Feedback</button>
-              <Link to="/login" className="hover:text-primary">Contatos</Link>
+              <a href="#feedbacks" className="hover:text-primary">Feedback</a>
+              <a href="#contatos" className="hover:text-primary">Contatos</a>
               <a href="#faq" className="hover:text-primary">FAQ</a>
             </div>
             <div className="mt-9 flex flex-wrap gap-2">
