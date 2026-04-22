@@ -57,11 +57,11 @@ export default function LoginPage() {
         <h1 className="font-display text-4xl leading-none tracking-tight">Login</h1>
         <p className="mt-4 text-sm text-muted-foreground">Digite seu e-mail e senha para acessar o sistema.</p>
 
-        <section className="mt-7 grid max-w-4xl gap-6 rounded-xl border border-border/60 bg-card p-6 shadow-xl shadow-primary/5 md:grid-cols-[1fr_1.25fr]">
+        <section className="mt-7 grid max-w-4xl gap-6 rounded-xl border border-border/50 bg-card/55 p-6 shadow-xl shadow-primary/5 backdrop-blur-xl md:grid-cols-[1fr_1.25fr]">
           <form onSubmit={submit} className="space-y-5 md:border-r md:border-border/60 md:pr-6">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {['Google', 'X', 'Discord', 'GitHub'].map((item) => (
-                <button key={item} type="button" className="h-9 rounded-xl border border-border bg-background px-2 text-xs font-semibold text-muted-foreground hover:border-primary/60 hover:text-primary" aria-label={`Login com ${item} indisponível`}>
+                <button key={item} type="button" className="h-9 rounded-xl border border-border/60 bg-background/35 px-2 text-xs font-semibold text-muted-foreground backdrop-blur hover:border-primary/60 hover:text-primary" aria-label={`Login com ${item} indisponível`}>
                   {item}
                 </button>
               ))}
@@ -70,7 +70,7 @@ export default function LoginPage() {
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Seu email</label>
               <input
-                className="w-full rounded-xl border border-border bg-secondary/50 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
+                className="w-full rounded-xl border border-border/60 bg-background/35 px-4 py-2.5 text-sm backdrop-blur focus:outline-none focus:border-primary transition-colors"
                 type="email" required value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -79,7 +79,7 @@ export default function LoginPage() {
               <label className="mb-2 block text-sm text-muted-foreground">Sua senha</label>
               <div className="relative">
                 <input
-                  className="w-full rounded-xl border border-border bg-secondary/50 px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-primary transition-colors"
+                  className="w-full rounded-xl border border-border/60 bg-background/35 px-4 py-2.5 pr-10 text-sm backdrop-blur focus:outline-none focus:border-primary transition-colors"
                   type="password" required value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -87,7 +87,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
+            <div className="rounded-xl border border-border/60 bg-background/35 p-4 text-sm text-muted-foreground backdrop-blur">
               Verificando...
             </div>
 
@@ -101,11 +101,11 @@ export default function LoginPage() {
           </form>
 
           <div className="grid content-start gap-3">
-            <Link to="/register" className="rounded-xl border border-border bg-background p-4 hover:border-primary/60 transition-colors">
+            <Link to="/register" className="rounded-xl border border-border/60 bg-background/35 p-4 backdrop-blur hover:border-primary/60 transition-colors">
               <div className="font-semibold">Cadastro</div>
               <div className="text-sm text-muted-foreground">crie uma conta no sistema</div>
             </Link>
-            <Link to="/login" className="rounded-xl border border-border bg-background p-4 hover:border-primary/60 transition-colors">
+            <Link to="/login" className="rounded-xl border border-border/60 bg-background/35 p-4 backdrop-blur hover:border-primary/60 transition-colors">
               <div className="font-semibold">Redefinir senha</div>
               <div className="text-sm text-muted-foreground">redefina sua senha no sistema</div>
             </Link>
