@@ -40,7 +40,7 @@ export default function AdminTopBar() {
   if (!isAdmin || !onAdminRoute) return null;
 
   return (
-    <div className="border-b border-border px-10 py-2 flex items-center justify-end gap-4 text-[11px] font-mono-x uppercase tracking-widest">
+    <div className="border-b border-border/50 bg-background/80 px-10 py-2 flex items-center justify-end gap-4 text-[11px] font-mono-x uppercase tracking-widest backdrop-blur">
       <span className="text-muted-foreground">Saldo API</span>
       <span className={`tabular ${errorMsg ? "text-destructive" : "text-foreground"}`}>
         {loading ? "···" : balance !== null ? `R$ ${balance.toFixed(2)}` : errorMsg ?? "—"}

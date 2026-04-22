@@ -20,12 +20,15 @@ export default function AppSidebar() {
 
   return (
     <aside
-      className="fixed left-0 top-0 h-screen flex flex-col bg-paper border-r border-border"
+      className="fixed left-0 top-0 h-screen flex flex-col bg-card border-r border-border/60"
       style={{ width: "var(--sidebar-width)" }}
     >
       <div className="px-6 pt-7 pb-5">
-        <Link to="/" className="font-display text-base tracking-tight">CometaSMS</Link>
-        <div className="text-xs text-muted-foreground mt-0.5">Recargas via PIX</div>
+        <Link to="/" className="block leading-none" aria-label="cometa sms">
+          <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
+          <div className="font-mono-x text-[10px] text-primary tracking-[0.4em] -mt-0.5">sms</div>
+        </Link>
+        <div className="text-xs text-muted-foreground mt-2">Recargas via PIX</div>
       </div>
 
       <div className="rule mx-6" />
@@ -50,8 +53,8 @@ export default function AppSidebar() {
                 to={l.to}
                 className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
                   pathname === l.to
-                    ? "bg-foreground text-background font-medium"
-                    : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
                 }`}
               >
                 {l.label}
@@ -68,8 +71,8 @@ export default function AppSidebar() {
                 to={l.to}
                 className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
                   pathname === l.to
-                    ? "bg-foreground text-background font-medium"
-                    : "text-ink-soft hover:bg-paper-2 hover:text-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold"
+                    : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
                 }`}
               >
                 {l.label}
@@ -83,7 +86,7 @@ export default function AppSidebar() {
             <div className="rule my-4" />
             <Link
               to="/admin"
-              className="block py-2 px-3 -mx-3 text-sm rounded text-ink-soft hover:bg-paper-2 hover:text-foreground transition-colors"
+              className="block py-2 px-3 -mx-3 text-sm rounded-full text-ink-soft hover:bg-secondary/60 hover:text-foreground transition-colors"
             >
               → Painel administrativo
             </Link>
