@@ -385,7 +385,7 @@ export default function HomePage() {
                 {/* Mock de SMS recebidos */}
                 <div className="space-y-3 overflow-hidden">
                   {visibleMessages.map((m, index) => (
-                    <div key={`${m.app}-${messageStart}`} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-fade-up shadow-lg shadow-background/10">
+                    <div key={m.id} className="rounded-xl bg-secondary/80 border border-border/60 p-4 animate-notification-up shadow-lg shadow-background/10">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 font-semibold">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary inline-block" />
