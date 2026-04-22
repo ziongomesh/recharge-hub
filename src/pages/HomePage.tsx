@@ -411,31 +411,48 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="mt-10 border-t border-border/50 bg-card/40 py-10">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 text-sm text-muted-foreground md:grid-cols-[1.4fr_1fr_1fr]">
+      <footer className="mt-10 border-t border-border/50 bg-ink py-14 text-primary-foreground dark:bg-card dark:text-foreground">
+        <div className="mx-auto grid max-w-7xl gap-10 px-6 text-sm md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
             <Link to="/" className="block leading-none" aria-label="cometa sms">
               <div className="font-display text-3xl text-primary tracking-tight">cometa</div>
               <div className="font-mono-x text-[11px] text-primary tracking-[0.45em] -mt-0.5">sms</div>
             </Link>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed">{t.footerText}</p>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-primary-foreground/70 dark:text-muted-foreground">
+              © {new Date().getFullYear()} CometaSMS.<br />
+              {t.footerText}
+            </p>
+          </div>
+
+          <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+            <button onClick={requireLogin} className="text-left hover:text-primary">Ativação</button>
+            <button onClick={requireLogin} className="text-left hover:text-primary">Alugar número</button>
+            <button onClick={requireLogin} className="text-left hover:text-primary">{t.prices}</button>
+            <button onClick={requireLogin} className="text-left hover:text-primary">Serviços</button>
+          </div>
+
+          <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+            <button onClick={requireLogin} className="text-left hover:text-primary">Programa de referência</button>
+            <button onClick={requireLogin} className="text-left hover:text-primary">Programa de fidelidade</button>
+            <button onClick={requireLogin} className="text-left hover:text-primary">Regras do projeto</button>
+            <Link to="/termos" className="hover:text-primary">{t.terms}</Link>
           </div>
 
           <div>
-            <div className="font-mono-x text-[11px] uppercase tracking-widest text-foreground">Menu</div>
-            <div className="mt-3 grid gap-2">
-              <button onClick={requireLogin} className="text-left hover:text-foreground">SMS</button>
-              <button onClick={requireLogin} className="text-left hover:text-foreground">Recargas</button>
-              <Link to="/termos" className="hover:text-foreground">{t.terms}</Link>
+            <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+              <button onClick={requireLogin} className="text-left hover:text-primary">Feedback</button>
+              <Link to="/login" className="hover:text-primary">Contatos</Link>
+              <a href="#faq" className="hover:text-primary">FAQ</a>
             </div>
-          </div>
-
-          <div>
-            <div className="font-mono-x text-[11px] uppercase tracking-widest text-foreground">CometaSMS</div>
-            <div className="mt-3 grid gap-2">
-              <span>© {new Date().getFullYear()} CometaSMS</span>
-              <span>{t.rights}</span>
-              <Link to="/login" className="hover:text-foreground">{t.support}</Link>
+            <div className="mt-9 flex flex-wrap gap-2">
+              {['₮', '₿', 'Ξ', 'VISA', '●', 'MIR', 'UPI', '▶'].map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-primary-foreground/10 px-2 text-[10px] font-semibold text-primary-foreground/65 dark:bg-secondary dark:text-muted-foreground"
+                >
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
         </div>
