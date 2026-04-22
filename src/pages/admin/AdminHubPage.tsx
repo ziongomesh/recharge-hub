@@ -111,7 +111,7 @@ export default function AdminHubPage() {
       </div>
 
       {isAdmin && (
-        <div className="border-2 border-foreground bg-paper-2 p-6">
+        <div className="rounded-3xl border-2 border-primary/35 bg-paper-2 p-6 shadow-lg shadow-primary/10">
           <div className="flex items-center gap-2 label-eyebrow mb-4">
             <AlertTriangle size={12} />
             Manutenção dos módulos
@@ -124,7 +124,7 @@ export default function AdminHubPage() {
               <div
                 key={mod}
                 className={`border p-4 flex items-center justify-between ${
-                  maint[mod] ? "border-destructive bg-destructive/5" : "border-border bg-paper"
+                  maint[mod] ? "border-destructive bg-destructive/5" : "border-primary/15 bg-paper"
                 }`}
               >
                 <div>
@@ -145,7 +145,7 @@ export default function AdminHubPage() {
       )}
 
       {isAdmin && (
-        <div className="border border-border bg-paper p-6">
+        <div className="rounded-3xl border border-primary/20 bg-paper p-6 shadow-sm shadow-primary/5">
           <div className="flex items-center gap-2 label-eyebrow mb-4">
             <Send size={12} />
             Contato Telegram (rodapé)
@@ -154,18 +154,18 @@ export default function AdminHubPage() {
             Aparece no rodapé como link clicável (https://t.me/&lt;usuário&gt;).
           </p>
           <div className="flex items-center gap-2 max-w-md">
-            <span className="px-3 py-2 border border-border bg-paper-2 font-mono text-sm">@</span>
+            <span className="rounded-full border border-primary/20 bg-secondary px-3 py-2 font-mono text-sm text-primary">@</span>
             <input
               type="text"
               value={tgHandle}
               onChange={(e) => setTgHandle(e.target.value)}
               placeholder="cometasms"
-              className="flex-1 px-3 py-2 border border-border bg-paper font-mono text-sm focus:outline-none focus:border-foreground"
+              className="flex-1 rounded-full border border-primary/20 bg-paper px-3 py-2 font-mono text-sm focus:outline-none focus:border-primary"
             />
             <button
               onClick={saveTelegram}
               disabled={tgSaving}
-              className="px-4 py-2 bg-foreground text-background text-xs uppercase tracking-widest font-mono hover:opacity-90 disabled:opacity-50"
+              className="rounded-full bg-primary px-4 py-2 font-mono text-xs uppercase tracking-widest text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90 disabled:opacity-50"
             >
               {tgSaving ? "Salvando…" : "Salvar"}
             </button>
@@ -180,13 +180,13 @@ export default function AdminHubPage() {
             <Link
               key={m.to}
               to={m.to}
-              className="group border border-border bg-paper p-6 flex flex-col gap-4 hover:border-foreground transition-colors"
+              className="group rounded-3xl border border-primary/15 bg-paper p-6 flex flex-col gap-4 shadow-sm shadow-primary/5 hover:border-primary/45 hover:shadow-lg hover:shadow-primary/10 transition-colors"
             >
               <div className="flex items-center justify-between">
-                <div className="w-10 h-10 bg-foreground text-background flex items-center justify-center">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
                   <Icon size={18} />
                 </div>
-                <ArrowRight size={16} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-1 transition" />
+                <ArrowRight size={16} className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition" />
               </div>
               <div>
                 <div className="font-display text-xl">{m.title}</div>
@@ -212,7 +212,7 @@ export default function AdminHubPage() {
               <Link
                 key={c.to}
                 to={c.to}
-                className="border border-border bg-paper p-4 flex items-center gap-2 text-sm hover:border-foreground hover:bg-paper-2 transition"
+                className="rounded-2xl border border-primary/15 bg-paper p-4 flex items-center gap-2 text-sm hover:border-primary/45 hover:bg-secondary/70 hover:text-primary transition"
               >
                 <Icon size={14} />
                 {c.title}
