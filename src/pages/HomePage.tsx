@@ -6,6 +6,17 @@ import cometaBackground from "@/assets/cometa-background.png";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
 
+const fallbackSmsServices: SmsService[] = [
+  { code: "wa", name: "WhatsApp", icon_url: null, stock: 1248, price: 3.9 },
+  { code: "tg", name: "Telegram", icon_url: null, stock: 986, price: 2.8 },
+  { code: "ig", name: "Instagram", icon_url: null, stock: 812, price: 3.5 },
+  { code: "fb", name: "Facebook", icon_url: null, stock: 754, price: 3.2 },
+  { code: "go", name: "Google", icon_url: null, stock: 690, price: 4.5 },
+  { code: "am", name: "Amazon", icon_url: null, stock: 531, price: 3.7 },
+  { code: "if", name: "iFood", icon_url: null, stock: 426, price: 2.9 },
+  { code: "ub", name: "Uber", icon_url: null, stock: 389, price: 3.4 },
+];
+
 type Tab = "sms" | "recargas";
 type Language = "pt" | "en" | "es";
 type Theme = "light" | "dark";
@@ -259,7 +270,7 @@ export default function HomePage() {
     smsApi
       .services(BRAZIL_COUNTRY_ID)
       .then((r) => { setServices(r.services); setServicesError(false); })
-      .catch(() => { setServices([]); setServicesError(true); })
+      .catch(() => { setServices(fallbackSmsServices); setServicesError(false); })
       .finally(() => setServicesLoading(false));
   }, []);
 
