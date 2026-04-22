@@ -172,13 +172,14 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
       {/* Topbar superior fina */}
-      <div className="border-b border-border/50 text-xs">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-muted-foreground">
+      <div className="border-b border-border/60 bg-card/95 text-xs backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
           <div className="flex items-center gap-5">
             <a href="#faq" className="hover:text-foreground">FAQ</a>
-            <button onClick={requireLogin} className="hover:text-foreground">SMS</button>
+            <button onClick={requireLogin} className="hover:text-foreground">API</button>
           </div>
           <div className="flex items-center gap-3 sm:gap-5">
+            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">Telegram</Link>
             <Link to="/login" className="hover:text-foreground">{t.support}</Link>
             <select
               value={language}
@@ -190,18 +191,20 @@ export default function HomePage() {
               <option value="en">English</option>
               <option value="es">Español</option>
             </select>
-            <div className="inline-grid grid-cols-2 rounded-full border border-border/60 bg-card p-0.5">
+            <div className="inline-flex items-center gap-1">
               <button
                 onClick={() => setTheme("light")}
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 transition-colors ${theme === "light" ? "bg-primary text-primary-foreground" : "hover:text-foreground"}`}
+                className={`inline-flex items-center gap-1 transition-colors ${theme === "light" ? "text-primary" : "hover:text-foreground"}`}
+                aria-label={t.light}
               >
-                <Sun size={12} /> {t.light}
+                <Sun size={12} />
               </button>
               <button
                 onClick={() => setTheme("dark")}
-                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 transition-colors ${theme === "dark" ? "bg-primary text-primary-foreground" : "hover:text-foreground"}`}
+                className={`inline-flex items-center gap-1 transition-colors ${theme === "dark" ? "text-primary" : "hover:text-foreground"}`}
+                aria-label={t.dark}
               >
-                <Moon size={12} /> {t.dark}
+                <Moon size={12} /> <span>{theme === "dark" ? t.dark : t.light}</span>
               </button>
             </div>
           </div>
@@ -209,21 +212,21 @@ export default function HomePage() {
       </div>
 
       {/* Header com logo + nav */}
-      <header className="border-b border-border/50">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+      <header className="border-b border-border/60 bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-2" aria-label="cometa sms">
             {/* Logo estilo sms.online: bold em duas linhas */}
             <div className="leading-none">
-              <div className="font-display text-3xl text-primary tracking-tight">cometa</div>
-              <div className="font-mono-x text-[11px] text-primary tracking-[0.45em] -mt-0.5 text-center">
+              <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
+              <div className="font-mono-x text-[10px] text-primary tracking-[0.42em] -mt-0.5 text-center">
                 sms
               </div>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-8 text-sm font-medium md:flex">
-            <button onClick={requireLogin} className="hover:text-primary transition-colors">SMS</button>
-            <button onClick={requireLogin} className="hover:text-primary transition-colors">Recargas</button>
+          <nav className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">Ativação</button>
+            <button onClick={requireLogin} className="hover:text-primary transition-colors">Aluguel</button>
             <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.prices}</button>
             <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.help}</button>
           </nav>
