@@ -128,6 +128,8 @@ type LiveNotification = (typeof liveMessages)[number] & { id: string };
 type FaqItem = { question: string; answer: string };
 
 const serviceIconDomains: Record<string, string> = {
+  "99app": "99app.com", "99": "99app.com", adobe: "adobe.com", agibank: "agibank.com.br",
+  aliexpress: "aliexpress.com", aliexpresscom: "aliexpress.com", ahlan: "ahlan.live",
   google: "google.com", gmail: "google.com", youtube: "youtube.com",
   whatsapp: "whatsapp.com", telegram: "telegram.org", instagram: "instagram.com",
   facebook: "facebook.com", twitter: "x.com", x: "x.com", discord: "discord.com",
@@ -139,7 +141,9 @@ const serviceIconDomains: Record<string, string> = {
 
 function iconFromServiceName(name: string) {
   const normalized = name.toLowerCase().trim().replace(/\s+/g, " ");
-  const domain = serviceIconDomains[normalized] || serviceIconDomains[normalized.split(/[\s,/+|·•\-—–]/)[0]];
+  const compact = normalized.replace(/[^a-z0-9]/g, "");
+  const domain = serviceIconDomains[normalized] || serviceIconDomains[compact] || serviceIconDomains[normalized.split(/[\s,/+|·•\-—–]/)[0]];
+  if (!domain && compact.length >= 2 && compact.length <= 24) return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(compact + ".com")}&sz=128`;
   return domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : null;
 }
 
@@ -149,17 +153,33 @@ function serviceHasIcon(service: SmsService) {
 
 function HomeSmsServiceIcon({ service }: { service: SmsService }) {
   const [url, setUrl] = useState<string | null>(service.icon_url || iconFromServiceName(service.name));
+  const [fallbackTried, setFallbackTried] = useState(false);
 
   useEffect(() => {
     setUrl(service.icon_url || iconFromServiceName(service.name));
+    setFallbackTried(false);
   }, [service.icon_url, service.name]);
 
   return (
     <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg bg-secondary flex items-center justify-center">
       {url ? (
-        <img src={url} alt="" className="h-5 w-5 object-contain" loading="lazy" onError={() => setUrl(null)} />
+        <img
+          src={url}
+          alt=""
+          className="h-5 w-5 object-contain"
+          loading="lazy"
+          onError={() => {
+            const derived = iconFromServiceName(service.name);
+            if (!fallbackTried && derived && derived !== url) {
+              setFallbackTried(true);
+              setUrl(derived);
+              return;
+            }
+            setUrl(null);
+          }}
+        />
       ) : (
-        <MessageSquare size={14} className="text-muted-foreground" />
+        <span className="text-xs font-bold text-primary">{service.name[0]?.toUpperCase() || "S"}</span>
       )}
     </div>
   );
