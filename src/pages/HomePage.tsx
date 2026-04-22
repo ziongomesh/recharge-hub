@@ -547,27 +547,28 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="mt-10 border-t border-border/50 bg-ink py-14 text-primary-foreground dark:bg-card dark:text-foreground">
+      <footer className="mt-10 border-t border-border/50 bg-background py-10 text-foreground">
         <div className="mx-auto grid max-w-7xl gap-10 px-6 text-sm md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
             <Link to="/" className="block leading-none" aria-label="cometa sms">
-              <div className="font-display text-3xl text-primary tracking-tight">cometa</div>
-              <div className="font-mono-x text-[11px] text-primary tracking-[0.45em] -mt-0.5">sms</div>
+              <div className="font-display text-3xl text-foreground tracking-tight">cometa</div>
+              <div className="font-mono-x text-[11px] text-foreground tracking-[0.45em] -mt-0.5">sms</div>
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-primary-foreground/70 dark:text-muted-foreground">
-              © {new Date().getFullYear()} CometaSMS.<br />
-              {t.footerText}
+            <p className="mt-5 max-w-sm text-xs leading-relaxed text-foreground/75">
+              © {new Date().getFullYear()} sms.online<br />
+              Zamon LTD. No 16446260. 71–75, Shelton Street, Covent Garden, London,<br />
+              WC2H 9JQ, UNITED KINGDOM
             </p>
           </div>
 
-          <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+          <div className="grid gap-3 text-foreground">
             <button onClick={requireLogin} className="text-left hover:text-primary">Ativação</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">Alugar número</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">{t.prices}</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">Serviços</button>
           </div>
 
-          <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+          <div className="grid gap-3 text-foreground">
             <button onClick={requireLogin} className="text-left hover:text-primary">Programa de referência</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">Programa de fidelidade</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">Regras do projeto</button>
@@ -575,22 +576,24 @@ export default function HomePage() {
           </div>
 
           <div>
-            <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
+            <div className="grid gap-3 text-foreground">
               <a href="#feedbacks" className="hover:text-primary">Feedback</a>
               <a href="#contatos" className="hover:text-primary">Contatos</a>
+              <button onClick={requireLogin} className="text-left hover:text-primary">API</button>
               <a href="#faq" className="hover:text-primary">FAQ</a>
             </div>
-            <div className="mt-9 flex flex-wrap gap-2">
-              {['₮', '₿', 'Ξ', 'VISA', '●', 'MIR', 'UPI', '▶'].map((item) => (
-                <span
-                  key={item}
-                  className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-primary-foreground/10 px-2 text-[10px] font-semibold text-primary-foreground/65 dark:bg-secondary dark:text-muted-foreground"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
           </div>
+        </div>
+        <div className="mx-auto mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-6 text-muted-foreground">
+          {['₮', '₿', 'Ξ', 'VISA', '●●', 'MIR', 'UPI', '▶'].map((item) => (
+            <span
+              key={item}
+              className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-muted px-2 text-[9px] font-bold leading-none text-muted-foreground"
+              aria-label={`Meio de pagamento ${item}`}
+            >
+              {item}
+            </span>
+          ))}
         </div>
       </footer>
     </div>
