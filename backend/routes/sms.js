@@ -50,9 +50,9 @@ router.get('/countries', authMiddleware, async (req, res) => {
   }
 });
 
-// Lista serviços com preço final (custo+markup) para um país
+// Lista serviços públicos ativos com preço final (custo+markup) para um país
 // Query: ?country=73
-router.get('/services', authMiddleware, async (req, res) => {
+router.get('/services', async (req, res) => {
   try {
     const country = parseInt(req.query.country ?? '0', 10);
     const rate = await rubToBrl();
