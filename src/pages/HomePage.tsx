@@ -113,14 +113,15 @@ const liveMessages = [
 ];
 
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
+type FaqItem = { question: string; answer: string };
 
-const faqItems = [
-  "O que é um número virtual?",
-  "Como funciona o CometaSMS?",
-  "A segurança é garantida após o término do aluguel do número?",
-  "O que fazer se o SMS não chegar?",
-  "Onde posso usar o número comprado?",
-  "Como pagar por um número virtual?",
+const faqItems: FaqItem[] = [
+  { question: "O que é um número virtual?", answer: "É um número temporário usado para receber SMS de confirmação sem expor seu telefone pessoal." },
+  { question: "Como funciona o CometaSMS?", answer: "Você escolhe o serviço, compra um número disponível e acompanha o SMS recebido em tempo real." },
+  { question: "A segurança é garantida após o término do aluguel do número?", answer: "Sim. O número é descartável e usado apenas durante o período da ativação." },
+  { question: "O que fazer se o SMS não chegar?", answer: "Aguarde alguns minutos, tente outro número disponível ou fale com o suporte pelos contatos públicos." },
+  { question: "Onde posso usar o número comprado?", answer: "Em serviços compatíveis com verificação por SMS, conforme disponibilidade do catálogo." },
+  { question: "Como pagar por um número virtual?", answer: "Após criar conta, você adiciona saldo e usa para comprar números ou recargas." },
 ];
 
 export default function HomePage() {
@@ -509,14 +510,36 @@ export default function HomePage() {
               </div>
             </section>
 
+            <section id="feedbacks" className="grid gap-4 py-8 md:grid-cols-3">
+              {["Rápido e simples para receber código.", "Consegui ativar sem usar meu número pessoal.", "Suporte respondeu quando precisei trocar o serviço."].map((text, index) => (
+                <div key={text} className="rounded-xl border border-border/60 bg-card p-6">
+                  <div className="text-primary">★★★★★</div>
+                  <p className="mt-4 text-sm leading-6 text-muted-foreground">{text}</p>
+                  <div className="mt-5 text-sm font-semibold">Cliente {index + 1}</div>
+                </div>
+              ))}
+            </section>
+
+            <section id="contatos" className="rounded-xl border border-border/60 bg-card p-7">
+              <h2 className="font-display text-3xl tracking-tight">Contatos</h2>
+              <div className="mt-5 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
+                <a href="mailto:suporte@cometasms.com" className="hover:text-primary">suporte@cometasms.com</a>
+                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">Telegram</a>
+                <span>Atendimento todos os dias</span>
+              </div>
+            </section>
+
             <section id="faq" className="space-y-6 py-8">
               <h2 className="font-display text-3xl tracking-tight">Respostas para perguntas frequentes</h2>
               <div className="rounded-xl border border-border/60 bg-card divide-y divide-border/60">
                 {faqItems.map((item) => (
-                  <button key={item} onClick={requireLogin} className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-secondary/50">
-                    {item}
-                    <ChevronRight size={15} className="text-muted-foreground" />
-                  </button>
+                  <details key={item.question} className="group">
+                    <summary className="flex w-full cursor-pointer list-none items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-secondary/50">
+                      {item.question}
+                      <ChevronRight size={15} className="text-muted-foreground transition-transform group-open:rotate-90" />
+                    </summary>
+                    <p className="px-5 pb-4 text-sm leading-6 text-muted-foreground">{item.answer}</p>
+                  </details>
                 ))}
               </div>
             </section>
@@ -553,8 +576,8 @@ export default function HomePage() {
 
           <div>
             <div className="grid gap-3 text-primary-foreground/70 dark:text-muted-foreground">
-              <button onClick={requireLogin} className="text-left hover:text-primary">Feedback</button>
-              <Link to="/login" className="hover:text-primary">Contatos</Link>
+              <a href="#feedbacks" className="hover:text-primary">Feedback</a>
+              <a href="#contatos" className="hover:text-primary">Contatos</a>
               <a href="#faq" className="hover:text-primary">FAQ</a>
             </div>
             <div className="mt-9 flex flex-wrap gap-2">
