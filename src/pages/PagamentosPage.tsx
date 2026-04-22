@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { pagamentosApi, type Pagamento } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, Copy, ArrowUpRight } from "lucide-react";
+import { Loader2, Copy, ArrowUpRight, TrendingUp } from "lucide-react";
 
 export default function PagamentosPage() {
   const { refreshUser } = useAuth();
@@ -14,7 +14,7 @@ export default function PagamentosPage() {
   const pollRef = useRef<ReturnType<typeof setInterval>>();
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
 
-  useEffect(() => { if (tab === "historico") pagamentosApi.list().then((r) => setPagamentos(r.pagamentos)).catch(() => {}); }, [tab]);
+  useEffect(() => { if (tab === "historico") pagamentosApi.list("limit=1000").then((r) => setPagamentos(r.pagamentos)).catch(() => {}); }, [tab]);
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
   const deposit = async () => {
@@ -39,6 +39,16 @@ export default function PagamentosPage() {
 
   const copy = () => { if (pix) { navigator.clipboard.writeText(pix.pixCopiaECola); toast.success("Código PIX copiado!"); } };
   const reset = () => { setPix(null); setConfirmed(false); setAmount(""); if (pollRef.current) clearInterval(pollRef.current); };
+  const formatMoney = (value: number) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const balanceTimeline = pagamentos
+    .slice()
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .reduce<Array<Pagamento & { balanceBefore: number; balanceAfter: number }>>((items, pagamento) => {
+      const balanceBefore = items.at(-1)?.balanceAfter ?? 0;
+      const balanceAfter = pagamento.status === "paid" ? balanceBefore + pagamento.amount : balanceBefore;
+      items.push({ ...pagamento, balanceBefore, balanceAfter });
+      return items;
+    }, []);
 
   const TabBtn = ({ k, label }: { k: typeof tab; label: string }) => (
     <button onClick={() => setTab(k)}
@@ -118,22 +128,32 @@ export default function PagamentosPage() {
       )}
 
       {tab === "historico" && (
-        <div className="border-t-2 border-foreground">
-          <div className="grid grid-cols-12 gap-4 py-3 label-eyebrow border-b border-border">
-            <div className="col-span-2">№</div>
-            <div className="col-span-4">Data</div>
-            <div className="col-span-3">Valor</div>
-            <div className="col-span-3 text-right">Status</div>
+        <div className="space-y-5">
+          <div className="flex items-end justify-between gap-4 border-b border-border pb-5">
+            <div>
+              <div className="label-eyebrow">Linha do tempo · saldo</div>
+              <h2 className="font-display text-4xl mt-2">Histórico acumulado.</h2>
+            </div>
+            <div className="hidden items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-mono tabular text-muted-foreground sm:flex">
+              <TrendingUp size={15} className="text-primary" />
+              {formatMoney(balanceTimeline.at(-1)?.balanceAfter ?? 0)}
+            </div>
           </div>
           {pagamentos.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground text-sm">Nenhum pagamento registrado.</div>
-          ) : pagamentos.map((p, i) => (
-            <div key={p.id} className="grid grid-cols-12 gap-4 py-4 border-b border-border items-center text-sm">
-              <div className="col-span-2 font-mono tabular text-muted-foreground">{String(i + 1).padStart(3, "0")}</div>
-              <div className="col-span-4 font-mono tabular">{new Date(p.created_at).toLocaleDateString("pt-BR")}</div>
-              <div className="col-span-3 font-mono tabular">R$ {p.amount.toFixed(2)}</div>
-              <div className="col-span-3 text-right">
-                <span className={`pill status-${p.status}`}>{p.status === "paid" ? "Pago" : p.status === "pending" ? "Pendente" : "Falhou"}</span>
+          ) : balanceTimeline.map((p, i) => (
+            <div key={p.id} className="grid gap-3 border-b border-border py-5 text-sm sm:grid-cols-[56px_1fr_140px_140px_110px] sm:items-center">
+              <div className="font-mono tabular text-muted-foreground">{String(i + 1).padStart(3, "0")}</div>
+              <div>
+                <div className="font-semibold">{p.status === "paid" ? "Saldo creditado" : p.status === "pending" ? "Aguardando pagamento" : "Pagamento falhou"}</div>
+                <div className="mt-1 font-mono text-xs tabular text-muted-foreground">
+                  {new Date(p.created_at).toLocaleString("pt-BR")}
+                </div>
+              </div>
+              <div className="font-mono tabular text-muted-foreground">{formatMoney(p.balanceBefore)}</div>
+              <div className="font-mono tabular font-semibold text-foreground">{formatMoney(p.balanceAfter)}</div>
+              <div className="sm:text-right">
+                <span className={`pill status-${p.status}`}>{p.status === "paid" ? `+ ${formatMoney(p.amount)}` : p.status === "pending" ? "Pendente" : "Falhou"}</span>
               </div>
             </div>
           ))}
