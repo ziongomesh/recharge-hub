@@ -652,6 +652,7 @@ export default function HomePage() {
             <p className="mt-5 max-w-sm text-xs leading-relaxed text-foreground/75">
               Trabalhamos com número virtual, recargas e SMS para seu app ou site.<br />
               CometaSMS — ativações rápidas, saldo por PIX e comunicação sem complicação.<br />
+              Recebemos pagamentos em PIX; em breve também em crypto.<br />
               © {new Date().getFullYear()} CometaSMS. Seu código chega mais rápido.
             </p>
           </div>
