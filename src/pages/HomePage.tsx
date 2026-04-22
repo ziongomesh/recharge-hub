@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Moon, Search, MessageSquare, Smartphone, Sun, Wallet } from "lucide-react";
+import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
@@ -110,6 +110,15 @@ const liveMessages = [
   { app: "Telegram", text: "Telegram code: 73418" },
   { app: "iFood", text: "Código de verificação iFood: 225604" },
   { app: "Uber", text: "Uber code: 6812" },
+];
+
+const faqItems = [
+  "O que é um número virtual?",
+  "Como funciona o CometaSMS?",
+  "A segurança é garantida após o término do aluguel do número?",
+  "O que fazer se o SMS não chegar?",
+  "Onde posso usar o número comprado?",
+  "Como pagar por um número virtual?",
 ];
 
 export default function HomePage() {
@@ -408,6 +417,100 @@ export default function HomePage() {
               <h3 className="font-display text-2xl sm:text-3xl tracking-tight">
                 {t.closing}
               </h3>
+            </section>
+
+            <section className="space-y-8 py-8">
+              <h2 className="font-display text-3xl sm:text-4xl tracking-tight max-w-xl">
+                Como receber SMS em um número virtual CometaSMS?
+              </h2>
+              <div className="divide-y divide-border/60">
+                {[
+                  ["01", "Registro", "Crie sua conta na plataforma CometaSMS."],
+                  ["02", "Recarregar saldo", "Escolha PIX e confirme o pagamento para liberar o saldo."],
+                  ["03", "Compra do número", "Selecione país e serviço, receba a mensagem direto na conta em tempo real."],
+                ].map(([num, title, text]) => (
+                  <div key={num} className="grid gap-4 py-8 sm:grid-cols-[80px_1fr]">
+                    <div className="font-display text-4xl text-primary">{num}</div>
+                    <div>
+                      <div className="font-semibold">{title}</div>
+                      <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">{text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={requireLogin} className="btn-pill w-full justify-center">
+                <Grid2X2 size={16} /> {t.buyNumber}
+              </button>
+            </section>
+
+            <section className="rounded-xl border border-border/60 bg-card p-8 sm:p-10">
+              <h2 className="font-display text-3xl tracking-tight">Guia do site CometaSMS e seus serviços</h2>
+              <p className="mt-5 max-w-4xl text-sm leading-7 text-muted-foreground">
+                O CometaSMS é um serviço prático para quem precisa de números virtuais para receber SMS online.
+                Escolha um serviço, compre um número descartável e acompanhe a mensagem em tempo real com privacidade.
+              </p>
+            </section>
+
+            <section className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl border border-border/60 bg-card p-7 flex items-center justify-between">
+                <div>
+                  <h3 className="font-display text-2xl">Países</h3>
+                  <p className="mt-1 text-muted-foreground">Ver a lista completa de países disponíveis</p>
+                </div>
+                <Globe2 className="text-primary" />
+              </div>
+              <div className="rounded-xl border border-border/60 bg-card p-7 flex items-center justify-between">
+                <div>
+                  <h3 className="font-display text-2xl">Serviços</h3>
+                  <p className="mt-1 text-muted-foreground">Todos os serviços com suporte à ativação</p>
+                </div>
+                <ChevronRight className="text-primary" />
+              </div>
+            </section>
+
+            <section className="space-y-6 py-8">
+              <h2 className="font-display text-3xl tracking-tight">Por que escolher CometaSMS</h2>
+              <div className="grid rounded-xl border border-border/60 bg-card md:grid-cols-3">
+                {[
+                  ["180+", "suporte a diversos países"],
+                  ["1500+", "serviços e aplicativos"],
+                  ["35%", "economia para usuários frequentes"],
+                ].map(([value, label]) => (
+                  <div key={value} className="p-8 border-b border-border/60 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 md:border-border/60">
+                    <div className="font-display text-4xl text-primary">{value}</div>
+                    <p className="mt-3 text-muted-foreground">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-6">
+              <h2 className="font-display text-3xl tracking-tight">Por que usar um número virtual descartável?</h2>
+              <div className="grid gap-4 md:grid-cols-3">
+                {[
+                  [ShieldCheck, "Superando restrições regionais", "Use números virtuais para ativação em serviços compatíveis."],
+                  [Lock, "Preservando a privacidade", "Evite expor seu telefone pessoal em cadastros e testes."],
+                  [Headphones, "Envios em massa", "Ideal para operações que precisam organizar múltiplas ativações."],
+                ].map(([Icon, title, text]) => (
+                  <div key={String(title)} className="rounded-xl border border-border/60 bg-card p-7 min-h-[180px]">
+                    <Icon className="text-primary" size={28} />
+                    <h3 className="mt-7 font-display text-xl">{String(title)}</h3>
+                    <p className="mt-3 text-sm leading-6 text-muted-foreground">{String(text)}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section id="faq" className="space-y-6 py-8">
+              <h2 className="font-display text-3xl tracking-tight">Respostas para perguntas frequentes</h2>
+              <div className="rounded-xl border border-border/60 bg-card divide-y divide-border/60">
+                {faqItems.map((item) => (
+                  <button key={item} onClick={requireLogin} className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold hover:bg-secondary/50">
+                    {item}
+                    <ChevronRight size={15} className="text-muted-foreground" />
+                  </button>
+                ))}
+              </div>
             </section>
           </div>
         </div>
