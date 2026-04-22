@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
 import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 
@@ -15,7 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try { await login(email, password); }
-    catch (err: any) { toast.error(err.message || "Erro ao fazer login"); }
+    catch { /* mantém a tela sem notificação lateral */ }
     finally { setLoading(false); }
   };
 
