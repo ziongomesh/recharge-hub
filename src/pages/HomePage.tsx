@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { smsApi, type SmsService } from "@/lib/api";
+import { smsApi, esimApi, type SmsService, type EsimProduto } from "@/lib/api";
 import moneyBag from "@/assets/money-bag.webp";
 import opClaro from "@/assets/op-claro.png";
 import opTim from "@/assets/op-tim.png";
@@ -21,7 +21,7 @@ const fallbackSmsServices: SmsService[] = [
   { code: "ub", name: "Uber", icon_url: null, stock: 389, price: 3.4 },
 ];
 
-type Tab = "sms" | "recargas";
+type Tab = "sms" | "recargas" | "esim";
 type Language = "pt" | "en" | "es" | "pt-PT" | "ru" | "uk" | "de" | "tr" | "az" | "uz" | "zh" | "hi" | "bn";
 type Theme = "light" | "dark";
 
