@@ -407,7 +407,7 @@ export default function HomePage() {
             <Popover open={langOpen} onOpenChange={setLangOpen}>
               <PopoverTrigger asChild>
                 <button className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors" aria-label="Idioma">
-                  <span className="text-base leading-none">{currentLang.flag}</span>
+                  <img src={`https://flagcdn.com/24x18/${currentLang.iso}.png`} alt={currentLang.iso} className="w-5 h-auto rounded-[2px]" />
                   <span>{currentLang.localized}</span>
                   <ChevronDown size={12} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
                 </button>
