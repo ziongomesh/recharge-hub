@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { smsApi, type SmsService } from "@/lib/api";
 import moneyBag from "@/assets/money-bag.webp";
 
@@ -18,8 +19,53 @@ const fallbackSmsServices: SmsService[] = [
 ];
 
 type Tab = "sms" | "recargas";
-type Language = "pt" | "en" | "es";
+type Language = "pt" | "en" | "es" | "pt-PT" | "ru" | "uk" | "de" | "tr" | "az" | "uz" | "zh" | "hi" | "bn";
 type Theme = "light" | "dark";
+
+type LangOption = { code: Language; native: string; localized: string; flag: string };
+type LangGroup = { region: string; items: LangOption[] };
+
+const languageGroups: LangGroup[] = [
+  {
+    region: "Recomendados",
+    items: [
+      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷" },
+      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧" },
+    ],
+  },
+  {
+    region: "Europa",
+    items: [
+      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺" },
+      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦" },
+      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪" },
+      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸" },
+      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹" },
+    ],
+  },
+  {
+    region: "Oriente Médio",
+    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷" }],
+  },
+  {
+    region: "Ásia Central",
+    items: [
+      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿" },
+      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿" },
+    ],
+  },
+  {
+    region: "Ásia",
+    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳" }],
+  },
+  {
+    region: "Ásia do Sul",
+    items: [
+      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳" },
+      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩" },
+    ],
+  },
+];
 
 const copy = {
   pt: {
@@ -291,7 +337,9 @@ export default function HomePage() {
   const [language, setLanguage] = useState<Language>("pt");
   const [theme, setTheme] = useState<Theme>("light");
 
-  const t = copy[language];
+  const t = copy[language as "pt" | "en" | "es"] ?? copy.pt;
+  const [langOpen, setLangOpen] = useState(false);
+  const currentLang = languageGroups.flatMap((g) => g.items).find((l) => l.code === language) ?? languageGroups[0].items[0];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -353,19 +401,41 @@ export default function HomePage() {
               <Headphones size={13} className="text-primary" />
               <span>{t.support}</span>
             </a>
-            <div className="inline-flex items-center gap-1.5">
-              <Globe2 size={13} className="text-primary" />
-              <select
-                value={language}
-                onChange={(event) => setLanguage(event.target.value as Language)}
-                className="bg-transparent text-muted-foreground hover:text-primary focus:outline-none cursor-pointer"
-                aria-label="Idioma"
-              >
-                <option value="pt">Português (Brasil)</option>
-                <option value="en">English</option>
-                <option value="es">Español</option>
-              </select>
-            </div>
+            <Popover open={langOpen} onOpenChange={setLangOpen}>
+              <PopoverTrigger asChild>
+                <button className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors" aria-label="Idioma">
+                  <span className="text-base leading-none">{currentLang.flag}</span>
+                  <span>{currentLang.localized}</span>
+                  <ChevronDown size={12} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-[640px] max-w-[90vw] max-h-[70vh] overflow-y-auto p-6 rounded-xl">
+                <div className="space-y-5">
+                  {languageGroups.map((group) => (
+                    <div key={group.region}>
+                      <div className="text-sm font-semibold text-foreground mb-3">{group.region}</div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2">
+                        {group.items.map((opt) => (
+                          <button
+                            key={opt.code}
+                            onClick={() => { setLanguage(opt.code); setLangOpen(false); }}
+                            className={`flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-secondary/60 transition ${language === opt.code ? "bg-secondary/40" : ""}`}
+                          >
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-lg leading-none">
+                              {opt.flag}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-medium text-foreground truncate">{opt.native}</span>
+                              <span className="block text-xs text-muted-foreground truncate">{opt.localized}</span>
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
             <div className="inline-flex items-center gap-1.5">
               {theme === "light" ? (
                 <button onClick={() => setTheme("dark")} className="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition" aria-label={t.dark}>
