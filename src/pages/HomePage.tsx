@@ -523,7 +523,7 @@ export default function HomePage() {
 
             {/* Card de serviços */}
             <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
-              <div className="text-sm font-semibold mb-3">{tab === "recargas" ? "Operadoras" : t.selectService}</div>
+              <div className="text-sm font-semibold mb-3">{tab === "recargas" ? "Operadoras" : tab === "esim" ? "Planos eSIM" : t.selectService}</div>
               <div className="relative mb-3">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -583,11 +583,44 @@ export default function HomePage() {
                   </div>
                 )}
 
+                {tab === "esim" && (
+                  esimLoading ? (
+                    <div className="text-xs text-muted-foreground py-6 text-center">{t.loading}</div>
+                  ) : esimProdutos.length === 0 ? (
+                    <div className="text-xs text-muted-foreground py-6 text-center">Nenhum eSIM disponível no momento.</div>
+                  ) : (
+                    <div className="max-h-[430px] space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:thin] [scrollbar-color:hsl(var(--primary)/0.45)_transparent]">
+                      {esimProdutos
+                        .filter((p) => !search || p.name.toLowerCase().includes(search.toLowerCase()))
+                        .map((p) => (
+                          <button
+                            key={p.id}
+                            onClick={requireLogin}
+                            className="w-full flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
+                          >
+                            <div className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center shrink-0">
+                              <Smartphone size={16} className="text-primary" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium truncate">{p.name}</div>
+                              <div className="text-[11px] text-muted-foreground">
+                                {p.stock.toLocaleString("pt-BR")} disponíveis
+                              </div>
+                            </div>
+                            <span className="rounded-full bg-primary text-primary-foreground text-[11px] font-semibold px-3 py-1 whitespace-nowrap">
+                              R$ {p.amount.toFixed(2).replace(".", ",")}
+                            </span>
+                          </button>
+                        ))}
+                    </div>
+                  )
+                )}
+
                 <button
                   onClick={requireLogin}
                   className="w-full text-center text-sm text-muted-foreground hover:text-foreground py-3 mt-2 border-t border-border/40"
                 >
-                  {t.showAll} {tab === "sms" ? services.length : 3}
+                  {t.showAll} {tab === "sms" ? services.length : tab === "esim" ? esimProdutos.length : 3}
                 </button>
               </div>
             </div>
