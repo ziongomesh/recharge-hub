@@ -526,17 +526,18 @@ export default function SmsPage() {
     </li>
   );
 
-  // Módulo em manutenção quando não há nenhum país habilitado no backend
   if (!loadingC && countries.length === 0) {
     return (
-      <div className="max-w-6xl">
-        <div className="label-eyebrow">Recebimento</div>
-        <h1 className="font-display text-5xl mt-2 mb-8">SMS.</h1>
-        <div className="border border-border bg-card p-12 flex flex-col items-center justify-center text-center min-h-[50vh]">
-          <div className="w-14 h-14 rounded-full bg-paper-2 border border-border flex items-center justify-center mb-4">
+      <div className="space-y-6">
+        <div>
+          <div className="inline-flex items-center gap-2 stat-chip mb-3"><Phone size={12} /> Recebimento de SMS</div>
+          <h1 className="font-display text-4xl">SMS <span className="gradient-text">virtual</span>.</h1>
+        </div>
+        <div className="glass-card p-12 flex flex-col items-center justify-center text-center min-h-[50vh]">
+          <div className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center mb-4">
             <Phone size={22} className="text-muted-foreground" />
           </div>
-          <div className="label-eyebrow mb-2">Indisponível</div>
+          <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Indisponível</div>
           <h2 className="font-display text-3xl mb-2">Em manutenção.</h2>
           <p className="text-sm text-muted-foreground max-w-sm">
             O módulo SMS está temporariamente indisponível. Volte em instantes.
@@ -547,9 +548,14 @@ export default function SmsPage() {
   }
 
   return (
-    <div className="max-w-7xl">
-      <div className="label-eyebrow">Recebimento</div>
-      <h1 className="font-display text-5xl mt-2 mb-8">SMS.</h1>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-2 stat-chip mb-3"><Phone size={12} /> Recebimento de SMS</div>
+          <h1 className="font-display text-4xl">SMS <span className="gradient-text">virtual</span>.</h1>
+          <p className="text-sm text-muted-foreground mt-1">Receba códigos de verificação de mais de 200 serviços.</p>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
         {/* Sidebar — serviço + país (cards arredondados, estilo sms.online) */}
