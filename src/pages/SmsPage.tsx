@@ -120,6 +120,40 @@ function flagUrl(iso?: string | null) {
   return `https://flagcdn.com/24x18/${iso.toLowerCase()}.png`;
 }
 
+// Bandeira em emoji a partir do ISO-2 (renderiza nativamente, sem depender de CDN)
+function isoToEmoji(iso?: string | null): string | null {
+  if (!iso || iso.length !== 2) return null;
+  const cps = iso.toUpperCase().split("").map((c) => 0x1f1e6 + (c.charCodeAt(0) - 65));
+  return String.fromCodePoint(...cps);
+}
+
+function Flag({ iso, size = 20 }: { iso?: string | null; size?: number }) {
+  const [failed, setFailed] = useState(false);
+  const emoji = isoToEmoji(iso);
+  if (!iso) {
+    return <span className="inline-block bg-muted rounded-sm" style={{ width: size, height: size * 0.7 }} />;
+  }
+  if (failed && emoji) {
+    return <span style={{ fontSize: size }} className="leading-none">{emoji}</span>;
+  }
+  if (failed) {
+    return (
+      <span className="inline-flex items-center justify-center bg-muted text-[9px] font-mono uppercase rounded-sm" style={{ width: size, height: size * 0.7 }}>
+        {iso}
+      </span>
+    );
+  }
+  return (
+    <img
+      src={flagUrl(iso)!}
+      alt={iso}
+      style={{ width: size, height: "auto" }}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 // Detecta serviços "genéricos" (Any other, Outros, Other, etc.)
 function isGenericService(name: string): boolean {
   const n = (name || "").toLowerCase().trim();
