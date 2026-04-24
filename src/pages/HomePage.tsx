@@ -25,47 +25,47 @@ type Tab = "sms" | "recargas";
 type Language = "pt" | "en" | "es" | "pt-PT" | "ru" | "uk" | "de" | "tr" | "az" | "uz" | "zh" | "hi" | "bn";
 type Theme = "light" | "dark";
 
-type LangOption = { code: Language; native: string; localized: string; flag: string };
+type LangOption = { code: Language; native: string; localized: string; flag: string; iso: string };
 type LangGroup = { region: string; items: LangOption[] };
 
 const languageGroups: LangGroup[] = [
   {
     region: "Recomendados",
     items: [
-      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷" },
-      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧" },
+      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷", iso: "br" },
+      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧", iso: "gb" },
     ],
   },
   {
     region: "Europa",
     items: [
-      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺" },
-      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦" },
-      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪" },
-      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸" },
-      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹" },
+      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺", iso: "ru" },
+      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦", iso: "ua" },
+      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪", iso: "de" },
+      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸", iso: "es" },
+      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹", iso: "pt" },
     ],
   },
   {
     region: "Oriente Médio",
-    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷" }],
+    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷", iso: "tr" }],
   },
   {
     region: "Ásia Central",
     items: [
-      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿" },
-      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿" },
+      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿", iso: "az" },
+      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿", iso: "uz" },
     ],
   },
   {
     region: "Ásia",
-    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳" }],
+    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳", iso: "cn" }],
   },
   {
     region: "Ásia do Sul",
     items: [
-      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳" },
-      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩" },
+      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳", iso: "in" },
+      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩", iso: "bd" },
     ],
   },
 ];
