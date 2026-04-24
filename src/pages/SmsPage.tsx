@@ -643,7 +643,7 @@ export default function SmsPage() {
                         }`}
                       >
                         {c.iso ? (
-                          <img src={flagUrl(c.iso)!} alt="" className="w-5 h-auto" loading="lazy" />
+                          <Flag iso={c.iso} size={20} />
                         ) : (
                           <div className="w-5 h-3.5 bg-muted rounded-sm" />
                         )}
