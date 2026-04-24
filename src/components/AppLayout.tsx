@@ -1,56 +1,27 @@
-import { Outlet, Navigate, useLocation } from "react-router-dom";
-import AppSidebar from "./AppSidebar";
+import { Outlet, Navigate } from "react-router-dom";
+import AppTopNav from "./AppTopNav";
 import SupportBubble from "./SupportBubble";
 import { useAuth } from "@/contexts/AuthContext";
 
-const routeMeta: Record<string, { num: string; label: string }> = {
-  "/recargas":      { num: "01", label: "Recargas" },
-  "/historico":     { num: "02", label: "Histórico" },
-  "/pagamentos":    { num: "03", label: "Pagamentos" },
-  "/configuracoes": { num: "04", label: "Conta" },
-};
-
 export default function AppLayout() {
   const { user, loading } = useAuth();
-  const { pathname } = useLocation();
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="font-display text-2xl animate-pulse">carregando…</div>
+      <div className="flex min-h-screen items-center justify-center aurora-bg">
+        <div className="font-display text-2xl gradient-text animate-pulse">carregando…</div>
       </div>
     );
   }
   if (!user) return <Navigate to="/login" replace />;
 
-  const meta = routeMeta[pathname] ?? { num: "—", label: "" };
-
   return (
-    <div className="min-h-screen bg-background text-foreground noise">
-        <AppSidebar />
-        <main
-          className="transition-all pt-14 lg:pt-0"
-          style={{ marginLeft: "0" }}
-        >
-          {/* Margem esquerda só em desktop, via classe inline-style fallback */}
-          <div className="lg:ml-[var(--sidebar-width)]">
-            <header className="border-b border-border/50 bg-background/80 px-5 lg:px-10 pt-6 lg:pt-8 pb-5 flex items-end justify-between gap-6 backdrop-blur">
-              <div>
-                <div className="label-eyebrow flex items-center gap-3">
-                  <span>{meta.num}</span>
-                  <span className="w-8 border-t border-foreground/40" />
-                  <span>Seção</span>
-                </div>
-                <h1 className="font-display text-3xl lg:text-5xl leading-none mt-2 text-primary">{meta.label}</h1>
-              </div>
-            </header>
-
-            <div className="px-5 lg:px-10 py-6 lg:py-10 max-w-6xl [&_.border-border]:border-border/60 [&_.bg-paper]:bg-card [&_.bg-paper-2]:bg-secondary/60 [&_.bg-card]:bg-card [&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_button]:transition-all">
-              <Outlet />
-            </div>
-          </div>
-        </main>
-        <SupportBubble />
-      </div>
+    <div className="min-h-screen aurora-bg text-foreground">
+      <AppTopNav />
+      <main className="mx-auto max-w-7xl px-4 lg:px-8 py-6 lg:py-10">
+        <Outlet />
+      </main>
+      <SupportBubble />
+    </div>
   );
 }
