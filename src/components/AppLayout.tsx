@@ -28,22 +28,27 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background text-foreground noise">
         <AppSidebar />
-        <main className="transition-all" style={{ marginLeft: "var(--sidebar-width)" }}>
-          <header className="border-b border-border/50 bg-background/80 px-10 pt-8 pb-5 flex items-end justify-between gap-6 backdrop-blur">
-            <div>
-              <div className="label-eyebrow flex items-center gap-3">
-                <span>{meta.num}</span>
-                <span className="w-8 border-t border-foreground/40" />
-                <span>Seção</span>
+        <main
+          className="transition-all pt-14 lg:pt-0"
+          style={{ marginLeft: "0" }}
+        >
+          {/* Margem esquerda só em desktop, via classe inline-style fallback */}
+          <div className="lg:ml-[var(--sidebar-width)]">
+            <header className="border-b border-border/50 bg-background/80 px-5 lg:px-10 pt-6 lg:pt-8 pb-5 flex items-end justify-between gap-6 backdrop-blur">
+              <div>
+                <div className="label-eyebrow flex items-center gap-3">
+                  <span>{meta.num}</span>
+                  <span className="w-8 border-t border-foreground/40" />
+                  <span>Seção</span>
+                </div>
+                <h1 className="font-display text-3xl lg:text-5xl leading-none mt-2 text-primary">{meta.label}</h1>
               </div>
-              <h1 className="font-display text-5xl leading-none mt-2 text-primary">{meta.label}</h1>
+            </header>
+
+            <div className="px-5 lg:px-10 py-6 lg:py-10 max-w-6xl [&_.border-border]:border-border/60 [&_.bg-paper]:bg-card [&_.bg-paper-2]:bg-secondary/60 [&_.bg-card]:bg-card [&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_button]:transition-all">
+              <Outlet />
             </div>
-          </header>
-
-          <div className="px-10 py-10 max-w-6xl [&_.border-border]:border-border/60 [&_.bg-paper]:bg-card [&_.bg-paper-2]:bg-secondary/60 [&_.bg-card]:bg-card [&_input]:rounded-xl [&_select]:rounded-xl [&_textarea]:rounded-xl [&_button]:transition-all">
-            <Outlet />
           </div>
-
         </main>
         <SupportBubble />
       </div>
