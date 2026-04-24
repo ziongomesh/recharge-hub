@@ -339,8 +339,6 @@ export default function HomePage() {
       <div className="relative z-10 border-b border-border/60 bg-background/80 text-[11px] sm:text-xs backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-1.5 text-muted-foreground gap-2">
           <div className="flex items-center gap-3 sm:gap-5">
-            <a href="#faq" className="hover:text-foreground">FAQ</a>
-            <button onClick={requireLogin} className="hover:text-foreground">API</button>
           </div>
           <div className="flex items-center gap-2 sm:gap-5">
             <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">Telegram</a>
