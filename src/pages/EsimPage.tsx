@@ -149,7 +149,7 @@ export default function EsimPage() {
           onClick={() => setTermsOpen(false)}
         >
           <div
-            className="bg-paper border border-border max-w-lg w-full max-h-[85vh] overflow-y-auto relative"
+            className="bg-card rounded-2xl ring-1 ring-border max-w-lg w-full max-h-[85vh] overflow-y-auto relative shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
