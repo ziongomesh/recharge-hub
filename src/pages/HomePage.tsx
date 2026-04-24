@@ -4,6 +4,9 @@ import { ArrowRight, ChevronDown, ChevronRight, Globe2, Grid2X2, Headphones, Loc
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { smsApi, type SmsService } from "@/lib/api";
 import moneyBag from "@/assets/money-bag.webp";
+import opClaro from "@/assets/op-claro.png";
+import opTim from "@/assets/op-tim.png";
+import opVivo from "@/assets/op-vivo.png";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
 
@@ -243,9 +246,9 @@ function BrazilFlagIcon() {
 }
 
 const operatorLogos: Record<string, string> = {
-  claro: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Claro_Logo.svg/512px-Claro_Logo.svg.png",
-  tim: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/TIM_logo_2016.svg/512px-TIM_logo_2016.svg.png",
-  vivo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Logo_Vivo.svg/512px-Logo_Vivo.svg.png",
+  claro: opClaro,
+  tim: opTim,
+  vivo: opVivo,
 };
 
 function OperatorIcon({ name }: { name: string }) {
