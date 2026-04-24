@@ -546,7 +546,7 @@ export default function SmsPage() {
                 className="w-full pl-9 pr-3 py-2 text-sm bg-paper-2 border border-transparent rounded-xl outline-none focus:border-primary focus:bg-card transition"
               />
             </div>
-            <div className="max-h-[340px] overflow-y-auto -mx-1 px-1">
+            <div className="h-[calc(100vh-360px)] min-h-[520px] overflow-y-auto -mx-1 px-1">
               {loadingS ? (
                 <div className="p-6 text-center text-sm text-muted-foreground">
                   <Loader2 className="animate-spin inline" size={14} /> Carregando…
