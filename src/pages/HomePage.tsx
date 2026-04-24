@@ -788,10 +788,14 @@ export default function HomePage() {
               <div className="font-mono-x text-[11px] text-foreground tracking-[0.45em] -mt-0.5">sms</div>
             </Link>
             <p className="mt-5 max-w-sm text-xs leading-relaxed text-foreground/75">
-              Trabalhamos com número virtual, recargas e SMS para seu app ou site.<br />
-              CometaSMS — ativações rápidas, saldo por PIX e comunicação sem complicação.<br />
-              Recebemos pagamentos em PIX; em breve também em crypto.<br />
-              © {new Date().getFullYear()} CometaSMS. Seu código chega mais rápido.
+              Números virtuais, recargas e SMS para seu app ou site.
+              Ativações rápidas, saldo via PIX e comunicação sem complicação.
+            </p>
+            <p className="mt-3 max-w-sm text-xs leading-relaxed text-foreground/60">
+              Pagamentos em PIX — em breve também em crypto.
+            </p>
+            <p className="mt-4 text-[11px] text-foreground/50">
+              © {new Date().getFullYear()} CometaSMS · Seu código chega mais rápido.
             </p>
           </div>
 
