@@ -334,7 +334,14 @@ export default function HomePage() {
   const totalSmsNumbers = services.reduce((acc, s) => acc + s.stock, 0);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      {/* Blobs decorativos de fundo (efeito translúcido) */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute -top-32 -left-24 h-[420px] w-[420px] rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute top-1/3 -right-32 h-[480px] w-[480px] rounded-full bg-[hsl(320_80%_75%)]/25 blur-3xl" />
+        <div className="absolute top-[55%] left-1/4 h-[360px] w-[360px] rounded-full bg-[hsl(280_85%_70%)]/20 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-[400px] w-[400px] rounded-full bg-[hsl(340_85%_80%)]/20 blur-3xl" />
+      </div>
       {/* Topbar superior fina */}
       <div className="relative z-10 text-[11px] sm:text-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-end px-3 sm:px-6 py-2 text-muted-foreground gap-4 sm:gap-6">
