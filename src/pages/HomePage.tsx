@@ -331,8 +331,8 @@ export default function HomePage() {
             <button onClick={requireLogin} className="hover:text-foreground">API</button>
           </div>
           <div className="flex items-center gap-2 sm:gap-5">
-            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">Telegram</Link>
-            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">{t.support}</Link>
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">Telegram</a>
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">{t.support}</a>
             <select
               value={language}
               onChange={(event) => setLanguage(event.target.value as Language)}
@@ -635,7 +635,7 @@ export default function HomePage() {
               <h2 className="font-display text-3xl tracking-tight">Contatos</h2>
               <div className="mt-5 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
                 <a href="mailto:suporte@cometasms.com" className="hover:text-primary">suporte@cometasms.com</a>
-                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">Telegram</a>
+                <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hover:text-primary">Telegram</a>
                 <span>Atendimento todos os dias</span>
               </div>
             </section>
