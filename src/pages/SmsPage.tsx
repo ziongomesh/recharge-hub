@@ -627,68 +627,12 @@ export default function SmsPage() {
         {/* Painel principal */}
         <div className="space-y-6">
           {!active ? (
-            <>
-              {/* HERO roxo */}
-              <div className="relative rounded-3xl overflow-hidden p-8 md:p-10 bg-gradient-to-br from-primary via-primary to-[hsl(280_85%_65%)] text-primary-foreground shadow-lg">
-                <div
-                  className="absolute inset-0 opacity-30 pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(600px circle at 90% 10%, hsl(0 0% 100% / 0.4), transparent 50%)",
-                  }}
-                />
-                <div className="relative grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                  <div>
-                    <h2 className="font-display text-3xl md:text-4xl leading-tight tracking-tight">
-                      Receba SMS rapidamente em números virtuais do mundo todo
-                    </h2>
-                    <p className="mt-3 text-sm text-primary-foreground/85 leading-relaxed">
-                      Compre um número virtual e receba SMS sem limites. Para qualquer site ou aplicativo.
-                    </p>
-                  </div>
-
-                  {/* Mockups de SMS */}
-                  <div className="space-y-2">
-                    {[
-                      { brand: "Discord", code: "Your Discord security code is: 191919", time: "há 1 min." },
-                      { brand: "Telegram", code: "Telegram code: 87434", time: "há 1 min." },
-                      { brand: "Google", code: "G-319515 is your code.", time: "há 36 seg." },
-                    ].map((m) => (
-                      <div key={m.brand} className="bg-card text-foreground rounded-xl px-3 py-2.5 shadow-md">
-                        <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-                          <span className="font-medium text-foreground">{m.brand}</span>
-                          <span className="flex items-center gap-1.5">
-                            {m.time}
-                            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                          </span>
-                        </div>
-                        <div className="text-sm mt-0.5 truncate">{m.code}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Banner saldo */}
-              <div className="rounded-2xl bg-card ring-1 ring-border p-6">
-                <div className="text-xs text-muted-foreground uppercase tracking-wider">Seu saldo</div>
-                <div className="mt-1 flex items-end justify-between gap-4 flex-wrap">
-                  <div className="font-display text-3xl tabular">
-                    R$ {(user?.balance ?? 0).toFixed(2)}
-                  </div>
-                  <button
-                    onClick={() => navigate("/pagamentos")}
-                    className="px-4 py-2 text-sm rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-90 transition"
-                  >
-                    Recarregar
-                  </button>
-                </div>
-                <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
-                  Selecione um serviço à esquerda para comprar um número. O SMS chega em segundos.
-                  Cancele em até 2 min sem cobrança e receba estorno automático se nada chegar.
-                </p>
-              </div>
-            </>
+            <div className="rounded-2xl bg-card ring-1 ring-border p-6">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Selecione um serviço à esquerda para comprar um número. O SMS chega em segundos.
+                Cancele em até 2 min sem cobrança e receba estorno automático se nada chegar.
+              </p>
+            </div>
           ) : (
             <div className="rounded-2xl bg-card ring-1 ring-border p-6 space-y-5">
               <div className="flex items-start justify-between">
