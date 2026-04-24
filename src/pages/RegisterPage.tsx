@@ -125,9 +125,6 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-primary/15 bg-secondary/55 p-4 text-sm text-muted-foreground backdrop-blur">
-              Verificando...
-            </div>
 
             <button type="submit" disabled={loading} className="btn-pill w-full justify-center disabled:opacity-50">
               {loading ? "Registrando…" : "Registrar"}
