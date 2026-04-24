@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -106,7 +107,7 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <button onClick={() => window.location.assign('/')} className="btn-pill mt-7 w-full justify-center">
+        <button onClick={() => navigate("/")} className="btn-pill mt-7 w-full justify-center">
           <Grid2X2 size={16} /> Comprar número
         </button>
       </main>

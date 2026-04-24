@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
@@ -21,6 +21,7 @@ function formatPhone(v: string) {
 }
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -149,7 +150,7 @@ export default function RegisterPage() {
           </div>
         </section>
 
-        <button onClick={() => window.location.assign('/')} className="btn-pill mt-7 w-full justify-center">
+        <button onClick={() => navigate("/")} className="btn-pill mt-7 w-full justify-center">
           <Grid2X2 size={16} /> Comprar número
         </button>
       </main>
