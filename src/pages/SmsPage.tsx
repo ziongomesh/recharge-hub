@@ -643,12 +643,11 @@ export default function SmsPage() {
                         }`}
                       >
                         {c.iso ? (
-                          <Flag iso={c.iso} size={20} />
+                          <Flag iso={c.iso} size={22} />
                         ) : (
-                          <div className="w-5 h-3.5 bg-muted rounded-sm" />
+                          <div className="w-[22px] h-4 bg-muted rounded-sm" />
                         )}
                         <span className="flex-1 truncate">{c.name}</span>
-                        {c.iso && <span className="text-[10px] font-mono-x text-muted-foreground uppercase">{c.iso}</span>}
                       </button>
                     ))}
                   </div>
