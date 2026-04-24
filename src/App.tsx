@@ -35,13 +35,8 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function getRouterBasename() {
-  if (typeof window === "undefined") return undefined;
-  const firstSegment = window.location.pathname.split("/").filter(Boolean)[0];
-  return firstSegment === "painel" ? "/painel" : undefined;
-}
-
-const routerBasename = getRouterBasename();
+// App roda na raiz do domínio (cometasms.com)
+const routerBasename = undefined;
 
 function HomeRedirect() {
   const { user, loading, adminVerified } = useAuth();
