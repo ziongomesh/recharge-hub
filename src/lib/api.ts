@@ -1,21 +1,29 @@
+function normalizeApiBaseUrl(value?: string): string | null {
+  if (!value) return null;
+  const trimmed = value.trim().replace(/\/+$/, "");
+  if (!trimmed) return null;
+  return /\/api$/i.test(trimmed) ? trimmed : `${trimmed}/api`;
+}
+
 function resolveApiBaseUrl(): string {
-  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  const envUrl = normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL);
   if (typeof window !== "undefined") {
-    const { hostname, protocol } = window.location;
+    const { hostname, origin } = window.location;
     const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
     const envPointsToLocalhost = typeof envUrl === "string" && /localhost|127\.0\.0\.1/.test(envUrl);
     if (envUrl && (isLocalHost || !envPointsToLocalhost)) return envUrl;
-    // Em localhost mantém localhost; em qualquer outro host usa o mesmo IP/domínio na porta 4000
+
     if (isLocalHost) {
       return "http://localhost:4000/api";
     }
-    return `${protocol}//${hostname}:4000/api`;
+
+    return `${origin}/api`;
   }
   if (envUrl) return envUrl;
   return "http://localhost:4000/api";
 }
 
-const API_BASE_URL = resolveApiBaseUrl();
+export const API_BASE_URL = resolveApiBaseUrl();
 
 interface RequestOptions {
   method?: string;
@@ -323,8 +331,7 @@ export const esimApi = {
     const fd = new FormData();
     files.forEach((f) => fd.append("files", f));
     const token = localStorage.getItem("token");
-    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
-    const res = await fetch(`${base}/esim/admin/produtos/${id}/estoque`, {
+    const res = await fetch(`${API_BASE_URL}/esim/admin/produtos/${id}/estoque`, {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: fd,
