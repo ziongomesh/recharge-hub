@@ -143,6 +143,78 @@
     background: linear-gradient(135deg, hsl(var(--hero-from)) 0%, hsl(var(--hero-via)) 50%, hsl(var(--hero-to)) 100%);
   }
 
+  /* === Aurora Dashboard tokens === */
+  .aurora-bg {
+    background:
+      radial-gradient(900px 500px at 8% -10%, hsl(265 85% 60% / 0.18), transparent 60%),
+      radial-gradient(700px 420px at 105% 0%, hsl(190 90% 55% / 0.14), transparent 55%),
+      radial-gradient(600px 360px at 50% 110%, hsl(310 85% 60% / 0.12), transparent 60%),
+      hsl(var(--background));
+  }
+  .glass-card {
+    background: linear-gradient(180deg, hsl(var(--card) / 0.65), hsl(var(--card) / 0.35));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid hsl(var(--border) / 0.7);
+    border-radius: 1.25rem;
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.04) inset, 0 20px 60px -30px hsl(265 85% 30% / 0.45);
+  }
+  .glass-card-hover {
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .glass-card-hover:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.55);
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.06) inset, 0 30px 70px -25px hsl(265 85% 40% / 0.55);
+  }
+  .gradient-text {
+    background: linear-gradient(120deg, hsl(265 85% 65%) 0%, hsl(290 85% 70%) 45%, hsl(195 90% 60%) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .gradient-border {
+    position: relative;
+    border-radius: 1.25rem;
+    background: hsl(var(--card));
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(265 85% 60%), hsl(195 90% 60%) 60%, transparent 90%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+  }
+  .neon-button {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all;
+    background: linear-gradient(120deg, hsl(265 85% 58%), hsl(285 85% 60%));
+    color: hsl(0 0% 100%);
+    box-shadow: 0 10px 30px -10px hsl(265 85% 50% / 0.6);
+  }
+  .neon-button:hover { transform: translateY(-1px); box-shadow: 0 14px 40px -10px hsl(265 85% 50% / 0.75); }
+
+  .topnav-link {
+    @apply relative inline-flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-colors;
+    color: hsl(var(--muted-foreground));
+  }
+  .topnav-link:hover { color: hsl(var(--foreground)); background: hsl(var(--card) / 0.6); }
+  .topnav-link.active {
+    color: hsl(var(--foreground));
+    background: linear-gradient(120deg, hsl(265 85% 58% / 0.18), hsl(195 90% 60% / 0.18));
+    box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.4);
+  }
+
+  .stat-chip {
+    @apply inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium;
+    background: hsl(var(--card) / 0.7);
+    border: 1px solid hsl(var(--border));
+  }
+
   .sms-hero-panel {
     background: radial-gradient(circle at 92% 50%, hsl(var(--primary) / 0.34), transparent 34%),
                 linear-gradient(115deg, hsl(var(--card)) 0%, hsl(var(--hero-via)) 52%, hsl(var(--hero-to)) 100%);
