@@ -424,8 +424,8 @@ export default function HomePage() {
                             onClick={() => { setLanguage(opt.code); setLangOpen(false); }}
                             className={`flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-secondary/60 transition ${language === opt.code ? "bg-secondary/40" : ""}`}
                           >
-                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-lg leading-none">
-                              {opt.flag}
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary overflow-hidden">
+                              <img src={`https://flagcdn.com/48x36/${opt.iso}.png`} alt={opt.iso} className="w-6 h-auto rounded-[2px]" />
                             </span>
                             <span className="min-w-0">
                               <span className="block text-sm font-medium text-foreground truncate">{opt.native}</span>
