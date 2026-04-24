@@ -331,8 +331,8 @@ export default function HomePage() {
             <button onClick={requireLogin} className="hover:text-foreground">API</button>
           </div>
           <div className="flex items-center gap-2 sm:gap-5">
-            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">Telegram</Link>
-            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">{t.support}</Link>
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">Telegram</a>
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">{t.support}</a>
             <select
               value={language}
               onChange={(event) => setLanguage(event.target.value as Language)}
