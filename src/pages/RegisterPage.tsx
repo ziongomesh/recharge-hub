@@ -21,6 +21,19 @@ function formatPhone(v: string) {
   return `${d.slice(0, 2)} ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
+function getPasswordStrength(pwd: string): { score: 0 | 1 | 2 | 3; label: string; color: string; barColor: string } {
+  if (!pwd) return { score: 0, label: "", color: "", barColor: "" };
+  let score = 0;
+  if (pwd.length >= 6) score++;
+  if (pwd.length >= 10) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  if (/\d/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  if (score <= 2) return { score: 1, label: "Senha fraca", color: "text-red-500", barColor: "bg-red-500" };
+  if (score <= 3) return { score: 2, label: "Senha média", color: "text-amber-500", barColor: "bg-amber-500" };
+  return { score: 3, label: "Senha forte", color: "text-emerald-500", barColor: "bg-emerald-500" };
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
