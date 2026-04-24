@@ -107,7 +107,7 @@ export default function EsimPage() {
       {/* Confirmar */}
       {confirm && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4" onClick={() => setConfirm(null)}>
-          <div className="bg-paper border border-border max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-card rounded-2xl ring-1 ring-border max-w-sm w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="label-eyebrow">Confirmar compra</div>
             <div className="font-display text-2xl mt-2">{confirm.name}</div>
             <div className="text-sm text-muted-foreground">{confirm.operadora}</div>
@@ -119,13 +119,13 @@ export default function EsimPage() {
               Será debitado do seu saldo (R$ {(user?.balance ?? 0).toFixed(2)}). Entrega imediata.
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setConfirm(null)} className="flex-1 border border-border py-2 text-sm hover:bg-paper-2">
+              <button onClick={() => setConfirm(null)} className="flex-1 rounded-full ring-1 ring-border py-2 text-sm hover:bg-muted/60 transition">
                 Cancelar
               </button>
               <button
                 onClick={() => buy(confirm)}
                 disabled={buying !== null}
-                className="flex-1 bg-foreground text-background py-2 text-sm disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                className="flex-1 bg-primary text-primary-foreground rounded-full py-2 text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2 hover:opacity-90 transition"
               >
                 {buying !== null && <Loader2 className="animate-spin" size={12} />}
                 Confirmar
