@@ -18,8 +18,53 @@ const fallbackSmsServices: SmsService[] = [
 ];
 
 type Tab = "sms" | "recargas";
-type Language = "pt" | "en" | "es";
+type Language = "pt" | "en" | "es" | "pt-PT" | "ru" | "uk" | "de" | "tr" | "az" | "uz" | "zh" | "hi" | "bn";
 type Theme = "light" | "dark";
+
+type LangOption = { code: Language; native: string; localized: string; flag: string };
+type LangGroup = { region: string; items: LangOption[] };
+
+const languageGroups: LangGroup[] = [
+  {
+    region: "Recomendados",
+    items: [
+      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷" },
+      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧" },
+    ],
+  },
+  {
+    region: "Europa",
+    items: [
+      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺" },
+      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦" },
+      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪" },
+      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸" },
+      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹" },
+    ],
+  },
+  {
+    region: "Oriente Médio",
+    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷" }],
+  },
+  {
+    region: "Ásia Central",
+    items: [
+      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿" },
+      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿" },
+    ],
+  },
+  {
+    region: "Ásia",
+    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳" }],
+  },
+  {
+    region: "Ásia do Sul",
+    items: [
+      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳" },
+      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩" },
+    ],
+  },
+];
 
 const copy = {
   pt: {
