@@ -598,6 +598,61 @@ export default function HomePage() {
 
           {/* Coluna direita — bônus */}
           <div className="space-y-6">
+            {/* Hero — Receba SMS */}
+            <section
+              className="relative overflow-hidden rounded-2xl p-6 sm:p-10 min-h-[280px] sm:min-h-[340px]"
+              style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.18) 0%, hsl(280 85% 70% / 0.18) 60%, hsl(320 85% 75% / 0.22) 100%)" }}
+            >
+              <div className="grid gap-6 lg:grid-cols-[1fr_minmax(0,280px)] items-center">
+                <div className="relative z-10">
+                  <h1 className="font-display text-2xl sm:text-4xl leading-tight text-foreground max-w-md">
+                    {t.heroTitle}
+                  </h1>
+                  <p className="mt-4 text-sm text-muted-foreground max-w-md">
+                    {t.heroText}
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button
+                      onClick={requireLogin}
+                      className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition"
+                    >
+                      {t.buyNumber}
+                    </button>
+                    <button
+                      onClick={requireLogin}
+                      className="rounded-full border border-primary/40 bg-card text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary/10 transition"
+                    >
+                      Alugar número
+                    </button>
+                  </div>
+                </div>
+
+                {/* Notificações ao vivo */}
+                <div className="relative z-10 space-y-3">
+                  {visibleMessages.map((m) => (
+                    <div
+                      key={m.id}
+                      className="rounded-2xl border border-border/60 bg-card/90 backdrop-blur p-3 shadow-sm animate-in fade-in slide-in-from-right-2 duration-500"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <img
+                            src={iconFromServiceName(m.app) || ""}
+                            alt=""
+                            className="h-5 w-5 object-contain shrink-0"
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
+                          />
+                          <span className="text-xs font-semibold text-foreground truncate">{m.app}</span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">há 1 min.</span>
+                      </div>
+                      <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">{m.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+
             {/* Bônus */}
             <section className="sms-bonus-panel rounded-xl text-primary-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
               <img
