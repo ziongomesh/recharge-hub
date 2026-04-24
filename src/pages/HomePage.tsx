@@ -635,7 +635,7 @@ export default function HomePage() {
               <h2 className="font-display text-3xl tracking-tight">Contatos</h2>
               <div className="mt-5 grid gap-3 text-sm text-muted-foreground sm:grid-cols-3">
                 <a href="mailto:suporte@cometasms.com" className="hover:text-primary">suporte@cometasms.com</a>
-                <a href="https://t.me/" target="_blank" rel="noopener noreferrer" className="hover:text-primary">Telegram</a>
+                <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hover:text-primary">Telegram</a>
                 <span>Atendimento todos os dias</span>
               </div>
             </section>
