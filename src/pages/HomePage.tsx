@@ -510,23 +510,23 @@ export default function HomePage() {
           {/* Coluna direita — bônus */}
           <div className="space-y-6">
             {/* Bônus */}
-            <section className="sms-bonus-panel rounded-xl text-primary-foreground p-10 sm:p-12 relative overflow-hidden min-h-[280px] flex items-center">
+            <section className="sms-bonus-panel rounded-xl text-primary-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
               <img
                 src={cometaBackground}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-10 bottom-0 z-0 w-56 rotate-12 opacity-45 sm:right-6 sm:w-72 lg:right-12 lg:w-80"
+                className="pointer-events-none absolute -right-8 bottom-0 z-0 w-40 rotate-12 opacity-30 sm:right-6 sm:w-72 sm:opacity-45 lg:right-12 lg:w-80"
               />
               <div className="max-w-xl relative z-10">
-                <h2 className="font-display text-3xl sm:text-4xl leading-tight">
+                <h2 className="font-display text-2xl sm:text-4xl leading-tight">
                   {t.bonusTitle}
                 </h2>
-                <p className="mt-4 text-sm opacity-90 max-w-lg">
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm opacity-90 max-w-lg">
                   {t.bonusText}
                 </p>
                 <button
                   onClick={requireLogin}
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-6 py-3 text-sm font-semibold hover:bg-background/90"
+                  className="mt-5 sm:mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold hover:bg-background/90"
                 >
                   <Wallet size={16} /> {t.recharge}
                 </button>
