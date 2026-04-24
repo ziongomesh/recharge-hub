@@ -41,11 +41,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    let cancelled = false;
+    const stopLoading = () => {
+      if (!cancelled) setLoading(false);
+    };
+
     if (token) {
-      refreshUser().finally(() => setLoading(false));
+      const timeoutId = window.setTimeout(stopLoading, 5000);
+      refreshUser()
+        .catch(() => undefined)
+        .finally(() => {
+          window.clearTimeout(timeoutId);
+          stopLoading();
+        });
     } else {
-      setLoading(false);
+      stopLoading();
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = async (email: string, password: string): Promise<User> => {
