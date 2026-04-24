@@ -183,7 +183,7 @@ export default function EsimPage() {
 
               <button
                 onClick={() => setTermsOpen(false)}
-                className="mt-6 w-full bg-foreground text-background py-2.5 text-sm hover:opacity-90"
+                className="mt-6 w-full bg-primary text-primary-foreground rounded-full py-2.5 text-sm font-medium hover:opacity-90 transition"
               >
                 Entendi
               </button>
