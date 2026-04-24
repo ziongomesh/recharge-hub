@@ -533,11 +533,6 @@ export default function HomePage() {
               </div>
             </section>
 
-            <section>
-              <h3 className="font-display text-2xl sm:text-3xl tracking-tight">
-                {t.closing}
-              </h3>
-            </section>
 
             <section className="space-y-8 py-8">
               <h2 className="font-display text-3xl sm:text-4xl tracking-tight max-w-xl">
