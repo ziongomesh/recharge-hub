@@ -324,24 +324,24 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
       {/* Topbar superior fina */}
-      <div className="relative z-10 border-b border-border/60 bg-background/80 text-xs backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
-          <div className="flex items-center gap-5">
+      <div className="relative z-10 border-b border-border/60 bg-background/80 text-[11px] sm:text-xs backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-1.5 text-muted-foreground gap-2">
+          <div className="flex items-center gap-3 sm:gap-5">
             <a href="#faq" className="hover:text-foreground">FAQ</a>
             <button onClick={requireLogin} className="hover:text-foreground">API</button>
           </div>
-          <div className="flex items-center gap-3 sm:gap-5">
+          <div className="flex items-center gap-2 sm:gap-5">
             <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">Telegram</Link>
-            <Link to="/login" className="hover:text-foreground">{t.support}</Link>
+            <Link to="/login" className="hidden hover:text-foreground sm:inline-flex">{t.support}</Link>
             <select
               value={language}
               onChange={(event) => setLanguage(event.target.value as Language)}
-              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none"
+              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none max-w-[80px]"
               aria-label="Idioma"
             >
-              <option value="pt">Português</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
+              <option value="pt">PT</option>
+              <option value="en">EN</option>
+              <option value="es">ES</option>
             </select>
             <div className="inline-flex items-center gap-1">
               <button
@@ -356,7 +356,7 @@ export default function HomePage() {
                 className={`inline-flex items-center gap-1 transition-colors ${theme === "dark" ? "text-primary" : "hover:text-foreground"}`}
                 aria-label={t.dark}
               >
-                <Moon size={12} /> <span>{theme === "dark" ? t.dark : t.light}</span>
+                <Moon size={12} />
               </button>
             </div>
           </div>
@@ -365,11 +365,10 @@ export default function HomePage() {
 
       {/* Header com logo + nav */}
       <header className="relative z-10 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="flex items-center gap-2" aria-label="cometa sms">
-            {/* Logo estilo sms.online: bold em duas linhas */}
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 sm:px-6 py-3 sm:py-4">
+          <Link to="/" className="flex items-center gap-2 shrink-0" aria-label="cometa sms">
             <div className="leading-none">
-              <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
+              <div className="font-display text-xl sm:text-2xl text-primary tracking-tight">cometa</div>
               <div className="font-mono-x text-[10px] text-primary tracking-[0.42em] -mt-0.5 text-center">
                 sms
               </div>
@@ -385,16 +384,18 @@ export default function HomePage() {
 
           <button
             onClick={requireLogin}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-card px-5 py-2.5 text-sm font-semibold text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08),0_12px_28px_-14px_hsl(var(--primary))] transition-all hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full border border-primary/35 bg-card px-3 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.08),0_12px_28px_-14px_hsl(var(--primary))] transition-all hover:-translate-y-0.5 hover:bg-primary hover:text-primary-foreground whitespace-nowrap"
             aria-label={t.login}
           >
-            <Smartphone size={16} />
-            {t.login}
+            <Smartphone size={14} className="sm:hidden" />
+            <Smartphone size={16} className="hidden sm:block" />
+            <span className="hidden xs:inline sm:hidden">Entrar</span>
+            <span className="hidden sm:inline">{t.login}</span>
           </button>
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 py-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 py-5 sm:py-8">
         <div className="grid gap-6 lg:grid-cols-[290px_1fr]">
           {/* Coluna esquerda — abas + serviços */}
           <div className="space-y-6">
