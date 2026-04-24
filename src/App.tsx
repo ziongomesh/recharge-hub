@@ -52,8 +52,6 @@ function HomeRedirect() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
       <BrowserRouter basename={routerBasename}>
         <AuthProvider>
           <Routes>
