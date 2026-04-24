@@ -11,6 +11,7 @@ import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import TermosPage from "@/pages/TermosPage";
 import HomePage from "@/pages/HomePage";
+import PrecosPage from "@/pages/PrecosPage";
 import RecargasPage from "@/pages/RecargasPage";
 import HistoricoPage from "@/pages/HistoricoPage";
 import PagamentosPage from "@/pages/PagamentosPage";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/termos" element={<TermosPage />} />
             <Route path="/admin/pin" element={<AdminPinPage />} />
+            <Route path="/precos" element={<PrecosPage />} />
 
             <Route path="/" element={<HomeRedirect />} />
 
