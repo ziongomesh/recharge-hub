@@ -323,6 +323,8 @@ export default function HomePage() {
   const [services, setServices] = useState<SmsService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState(false);
+  const [esimProdutos, setEsimProdutos] = useState<EsimProduto[]>([]);
+  const [esimLoading, setEsimLoading] = useState(true);
   const [search, setSearch] = useState("");
   const messageIndexRef = useRef(2);
   const [visibleMessages, setVisibleMessages] = useState<LiveNotification[]>(
@@ -346,6 +348,15 @@ export default function HomePage() {
       .then((r) => { setServices(r.services); setServicesError(false); })
       .catch(() => { setServices(fallbackSmsServices); setServicesError(false); })
       .finally(() => setServicesLoading(false));
+  }, []);
+
+  // Carrega produtos eSIM disponíveis
+  useEffect(() => {
+    esimApi
+      .produtos()
+      .then((r) => setEsimProdutos(r.produtos.filter((p) => p.stock > 0)))
+      .catch(() => setEsimProdutos([]))
+      .finally(() => setEsimLoading(false));
   }, []);
 
   useEffect(() => {
