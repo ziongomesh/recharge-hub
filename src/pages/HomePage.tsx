@@ -494,10 +494,10 @@ export default function HomePage() {
           {/* Coluna esquerda — abas + serviços */}
           <div className="space-y-6">
             {/* Tabs */}
-            <div className="rounded-full bg-card p-1.5 border border-border/60 grid grid-cols-2 gap-1">
+            <div className="rounded-full bg-card p-1.5 border border-border/60 grid grid-cols-3 gap-1">
               <button
                 onClick={() => setTab("sms")}
-                className={`rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
                   tab === "sms" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -505,11 +505,19 @@ export default function HomePage() {
               </button>
               <button
                 onClick={() => setTab("recargas")}
-                className={`rounded-full py-2.5 text-sm font-semibold transition-colors ${
+                className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
                   tab === "recargas" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Recargas
+              </button>
+              <button
+                onClick={() => setTab("esim")}
+                className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
+                  tab === "esim" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                eSIM
               </button>
             </div>
 
