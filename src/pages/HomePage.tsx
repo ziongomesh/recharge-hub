@@ -196,8 +196,20 @@ function BrazilFlagIcon() {
   );
 }
 
+const operatorLogos: Record<string, string> = {
+  claro: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Claro_Logo.svg/512px-Claro_Logo.svg.png",
+  tim: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/TIM_logo_2016.svg/512px-TIM_logo_2016.svg.png",
+  vivo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Logo_Vivo.svg/512px-Logo_Vivo.svg.png",
+};
+
 function OperatorIcon({ name }: { name: string }) {
   const normalized = name.toLowerCase();
+  const logo = operatorLogos[normalized];
+  if (logo) {
+    return (
+      <img src={logo} alt={name} className="h-6 w-auto max-w-[44px] object-contain" loading="lazy" />
+    );
+  }
   return (
     <div className={`operator-icon operator-${normalized}`} aria-hidden="true">
       {normalized === "claro" ? "claro" : normalized === "tim" ? "TIM" : "Vivo"}
