@@ -517,7 +517,7 @@ export default function SmsPage() {
       <div className="label-eyebrow">Recebimento</div>
       <h1 className="font-display text-5xl mt-2 mb-8">SMS.</h1>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
         {/* Sidebar — serviço + país (cards arredondados, estilo sms.online) */}
         <div className="space-y-4">
           {/* Tabs */}
