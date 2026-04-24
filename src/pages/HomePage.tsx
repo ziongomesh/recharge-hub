@@ -817,7 +817,7 @@ export default function HomePage() {
           {paymentMethods.map((method) => (
             <span
               key={method.name}
-              className={`payment-icon ${method.className} inline-flex h-7 min-w-7 items-center justify-center px-1`}
+              className={`payment-icon ${method.className} inline-flex h-9 items-center justify-center px-3 rounded-full ring-1 ring-border bg-card`}
               aria-label={`Meio de pagamento ${method.name}`}
               title={method.name}
             >
