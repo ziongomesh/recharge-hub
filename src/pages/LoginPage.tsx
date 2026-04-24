@@ -75,7 +75,7 @@ export default function LoginPage() {
         </section>
 
         <button onClick={() => navigate("/")} className="btn-pill mt-7 w-full justify-center">
-          <Grid2X2 size={16} /> Comprar número
+          Comprar número
         </button>
       </main>
 
