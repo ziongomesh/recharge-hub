@@ -336,7 +336,9 @@ export default function HomePage() {
   const [language, setLanguage] = useState<Language>("pt");
   const [theme, setTheme] = useState<Theme>("light");
 
-  const t = copy[language];
+  const t = copy[language as "pt" | "en" | "es"] ?? copy.pt;
+  const [langOpen, setLangOpen] = useState(false);
+  const currentLang = languageGroups.flatMap((g) => g.items).find((l) => l.code === language) ?? languageGroups[0].items[0];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
