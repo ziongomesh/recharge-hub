@@ -657,7 +657,7 @@ export default function HomePage() {
             </section>
 
             {/* Bônus */}
-            <section className="sms-bonus-panel rounded-xl text-primary-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
+            <section className="sms-bonus-panel rounded-xl text-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
               <img
                 src={moneyBag}
                 alt=""
@@ -665,15 +665,15 @@ export default function HomePage() {
                 className="pointer-events-none absolute -right-4 bottom-2 z-0 w-36 sm:right-8 sm:w-56 lg:right-12 lg:w-64 drop-shadow-2xl"
               />
               <div className="max-w-xl relative z-10">
-                <h2 className="font-display text-2xl sm:text-4xl leading-tight">
+                <h2 className="font-display text-2xl sm:text-4xl leading-tight text-primary">
                   {t.bonusTitle}
                 </h2>
-                <p className="mt-3 sm:mt-4 text-xs sm:text-sm opacity-90 max-w-lg">
+                <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground max-w-lg">
                   {t.bonusText}
                 </p>
                 <button
                   onClick={requireLogin}
-                  className="mt-5 sm:mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold hover:bg-background/90"
+                  className="mt-5 sm:mt-6 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold hover:bg-primary/90 transition"
                 >
                   <Wallet size={16} /> {t.recharge}
                 </button>
