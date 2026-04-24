@@ -268,52 +268,43 @@ function OperatorIcon({ name }: { name: string }) {
 
 const paymentMethods = [
   {
-    name: "Visa",
-    className: "payment-visa",
-    icon: <span className="text-[9px] font-black italic tracking-tighter">VISA</span>,
-  },
-  {
-    name: "Mastercard",
-    className: "payment-mastercard",
-    icon: (
-      <svg viewBox="0 0 32 20" className="h-5 w-8" aria-hidden="true">
-        <circle cx="12" cy="10" r="8" className="mc-red" />
-        <circle cx="20" cy="10" r="8" className="mc-yellow" />
-      </svg>
-    ),
-  },
-  {
     name: "PIX",
     className: "payment-pix",
     icon: (
-      <svg viewBox="0 0 28 28" className="h-5 w-5" aria-hidden="true">
-        <path fill="currentColor" d="M14 2.7 25.3 14 14 25.3 2.7 14 14 2.7Zm-4.9 8.6 3.4 3.4a2.1 2.1 0 0 0 3 0l3.4-3.4-1.6-1.6-3.3 3.3-3.3-3.3-1.6 1.6Zm0 5.4 1.6 1.6 3.3-3.3 3.3 3.3 1.6-1.6-3.4-3.4a2.1 2.1 0 0 0-3 0l-3.4 3.4Z" />
-      </svg>
+      <span className="inline-flex items-center gap-1.5">
+        <svg viewBox="0 0 512 512" className="h-5 w-5" aria-hidden="true">
+          <path fill="currentColor" d="M112.57 391.19c11.43 0 22.18-4.45 30.26-12.53l59.62-59.62c3.06-3.06 8.41-3.07 11.48 0l59.84 59.84c8.07 8.08 18.82 12.53 30.25 12.53h11.74l-75.51 75.51c-23.56 23.56-61.76 23.56-85.32 0l-75.72-75.73h13.36zM304.02 120.81c-11.43 0-22.18 4.45-30.25 12.53l-59.84 59.84c-3.16 3.17-8.32 3.17-11.48 0l-59.62-59.62c-8.08-8.08-18.83-12.53-30.26-12.53H99.21l75.72-75.72c23.56-23.56 61.76-23.56 85.32 0l75.51 75.51h-11.74zM46.07 213.34l45.45-45.45h21.05c7.89 0 15.62 3.2 21.19 8.78l59.62 59.62c8.16 8.16 18.87 12.24 29.59 12.24s21.43-4.08 29.59-12.23l59.84-59.84c5.57-5.57 13.3-8.77 21.19-8.77h24.93l45.66 45.66c23.56 23.56 23.56 61.76 0 85.32L358.51 344.1h-24.93c-7.89 0-15.62-3.2-21.19-8.78l-59.84-59.83c-15.8-15.8-43.39-15.79-59.18-.01l-59.62 59.62c-5.57 5.58-13.3 8.78-21.19 8.78H91.51l-45.45-45.45c-23.55-23.56-23.55-61.76.01-85.09z" />
+        </svg>
+        <span className="text-[10px] font-bold tracking-wide">PIX</span>
+      </span>
     ),
-  },
-  {
-    name: "Crypto",
-    className: "payment-crypto",
-    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full border border-current text-[10px] font-black">₿</span>,
   },
   {
     name: "Bitcoin",
     className: "payment-bitcoin",
-    icon: <span className="flex h-5 w-5 items-center justify-center rounded-full bg-current text-[11px] font-black text-background">₿</span>,
-  },
-  {
-    name: "Solana",
-    className: "payment-solana",
     icon: (
-      <svg viewBox="0 0 32 22" className="h-5 w-7" aria-hidden="true">
-        <path fill="currentColor" d="M7 2h21l-4 4H3l4-4Zm0 7h21l-4 4H3l4-4Zm0 7h21l-4 4H3l4-4Z" />
-      </svg>
+      <span className="inline-flex items-center gap-1.5">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F7931A] text-[11px] font-black text-white">₿</span>
+        <span className="text-[10px] font-bold tracking-wide">BTC</span>
+      </span>
     ),
   },
   {
     name: "Ethereum",
     className: "payment-ethereum",
-    icon: <span className="text-[18px] leading-none">◆</span>,
+    icon: (
+      <span className="inline-flex items-center gap-1.5">
+        <svg viewBox="0 0 256 417" className="h-5 w-3" aria-hidden="true">
+          <path fill="#343434" d="m127.961 0-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" />
+          <path fill="#8C8C8C" d="M127.962 0 0 212.32l127.962 75.639V154.158z" />
+          <path fill="#3C3C3B" d="m127.961 312.187-1.575 1.92v98.199l1.575 4.6L256 236.587z" />
+          <path fill="#8C8C8C" d="M127.962 416.905v-104.72L0 236.585z" />
+          <path fill="#141414" d="m127.961 287.958 127.96-75.637-127.96-58.162z" />
+          <path fill="#393939" d="m0 212.32 127.96 75.638v-133.8z" />
+        </svg>
+        <span className="text-[10px] font-bold tracking-wide">ETH</span>
+      </span>
+    ),
   },
 ];
 
