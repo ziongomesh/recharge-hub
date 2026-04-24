@@ -470,7 +470,7 @@ export default function HomePage() {
           <nav className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
             <button onClick={requireLogin} className="hover:text-primary transition-colors">Ativação</button>
             <button onClick={requireLogin} className="hover:text-primary transition-colors">Aluguel</button>
-            <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.prices}</button>
+            <Link to="/precos" className="hover:text-primary transition-colors">{t.prices}</Link>
             <button onClick={requireLogin} className="hover:text-primary transition-colors">{t.help}</button>
           </nav>
 
@@ -798,7 +798,7 @@ export default function HomePage() {
           <div className="grid gap-3 text-foreground">
             <button onClick={requireLogin} className="text-left hover:text-primary">Ativação</button>
             <button onClick={requireLogin} className="text-left hover:text-primary">Alugar número</button>
-            <button onClick={requireLogin} className="text-left hover:text-primary">{t.prices}</button>
+            <Link to="/precos" className="text-left hover:text-primary">{t.prices}</Link>
             <button onClick={requireLogin} className="text-left hover:text-primary">Serviços</button>
           </div>
 
