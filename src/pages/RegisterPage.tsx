@@ -21,6 +21,19 @@ function formatPhone(v: string) {
   return `${d.slice(0, 2)} ${d.slice(2, 7)}-${d.slice(7)}`;
 }
 
+function getPasswordStrength(pwd: string): { score: 0 | 1 | 2 | 3; label: string; color: string; barColor: string } {
+  if (!pwd) return { score: 0, label: "", color: "", barColor: "" };
+  let score = 0;
+  if (pwd.length >= 6) score++;
+  if (pwd.length >= 10) score++;
+  if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+  if (/\d/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  if (score <= 2) return { score: 1, label: "Senha fraca", color: "text-red-500", barColor: "bg-red-500" };
+  if (score <= 3) return { score: 2, label: "Senha média", color: "text-amber-500", barColor: "bg-amber-500" };
+  return { score: 3, label: "Senha forte", color: "text-emerald-500", barColor: "bg-emerald-500" };
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
@@ -86,6 +99,22 @@ export default function RegisterPage() {
                 <input className={`${inputCls} pr-10`} type="password" required value={form.password} onChange={upd("password")} />
                 <Eye size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
+              {form.password && (() => {
+                const s = getPasswordStrength(form.password);
+                return (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex gap-1">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors ${i <= s.score ? s.barColor : "bg-border/60"}`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-[11px] font-medium ${s.color}`}>{s.label}</p>
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Confirmar senha</label>
