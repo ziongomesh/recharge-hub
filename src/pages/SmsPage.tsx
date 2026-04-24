@@ -614,7 +614,7 @@ export default function SmsPage() {
                 className="w-full px-3 py-2 text-sm bg-paper-2 border border-transparent rounded-xl outline-none flex items-center gap-2 hover:border-primary transition"
               >
                 {currentCountry?.iso ? (
-                  <img src={flagUrl(currentCountry.iso)!} alt="" className="w-5 h-auto" />
+                  <Flag iso={currentCountry.iso} size={20} />
                 ) : (
                   <div className="w-5 h-3.5 bg-muted rounded-sm" />
                 )}
