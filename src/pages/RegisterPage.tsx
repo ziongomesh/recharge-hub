@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
+import { Eye } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import PublicHeader from "@/components/PublicHeader";
 
 function formatCPF(v: string) {
   const d = v.replace(/\D/g, "").slice(0, 11);
@@ -51,38 +52,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/35 to-background text-foreground">
-      <div className="border-b border-border/60 bg-background/80 text-xs backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-1.5 text-muted-foreground">
-          <div className="flex items-center gap-5">
-            <Link to="/" className="hover:text-foreground">FAQ</Link>
-            <Link to="/" className="hover:text-foreground">API</Link>
-          </div>
-          <div className="flex items-center gap-5">
-            <span className="hidden items-center gap-1 sm:inline-flex"><Send size={12} className="text-primary" /> Telegram</span>
-            <span className="hidden items-center gap-1 sm:inline-flex"><Headphones size={12} /> Suporte</span>
-            <span>🇧🇷 Português (Brasil)</span>
-            <span className="inline-flex items-center gap-1"><Moon size={12} /> Claro</span>
-          </div>
-        </div>
-      </div>
-
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link to="/" className="leading-none" aria-label="cometa sms">
-            <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
-            <div className="font-mono-x text-[10px] text-primary tracking-[0.42em] -mt-0.5">sms</div>
-          </Link>
-          <nav className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
-            <Link to="/" className="hover:text-primary">Ativação</Link>
-            <Link to="/" className="hover:text-primary">Aluguel</Link>
-            <Link to="/" className="hover:text-primary">Lista de preços</Link>
-            <Link to="/" className="hover:text-primary">Ajuda⌄</Link>
-          </nav>
-          <Link to="/" className="h-10 w-10 rounded-full border border-border flex items-center justify-center hover:border-primary transition-colors" aria-label="Início">
-            <Grid2X2 size={16} />
-          </Link>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         <h1 className="font-display text-4xl leading-none tracking-tight">Cadastro</h1>
@@ -148,7 +118,7 @@ export default function RegisterPage() {
         </section>
 
         <button onClick={() => navigate("/")} className="btn-pill mt-7 w-full justify-center">
-          <Grid2X2 size={16} /> Comprar número
+          Comprar número
         </button>
       </main>
 
