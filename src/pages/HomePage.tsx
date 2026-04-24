@@ -346,12 +346,12 @@ export default function HomePage() {
             <select
               value={language}
               onChange={(event) => setLanguage(event.target.value as Language)}
-              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none max-w-[80px]"
+              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
               aria-label="Idioma"
             >
-              <option value="pt">PT</option>
-              <option value="en">EN</option>
-              <option value="es">ES</option>
+              <option value="pt">🇧🇷 Português (Brasil)</option>
+              <option value="en">🇬🇧 English</option>
+              <option value="es">🇪🇸 Español</option>
             </select>
             <div className="inline-flex items-center gap-1">
               <button
