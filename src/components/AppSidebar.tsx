@@ -1,4 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const menuLinks = [
@@ -17,12 +19,27 @@ export default function AppSidebar() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
   const isAdmin = user?.role === "admin";
+  const [open, setOpen] = useState(false);
 
-  return (
-    <aside
-      className="fixed left-0 top-0 h-screen flex flex-col bg-card border-r border-border/60"
-      style={{ width: "var(--sidebar-width)" }}
-    >
+  // Fecha drawer ao trocar de rota
+  useEffect(() => { setOpen(false); }, [pathname]);
+
+  // Bloqueia scroll do body quando drawer está aberto
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  const linkClass = (to: string) =>
+    `block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
+      pathname === to
+        ? "bg-primary text-primary-foreground font-semibold"
+        : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
+    }`;
+
+  const sidebarContent = (
+    <>
       <div className="px-6 pt-7 pb-5">
         <Link to="/" className="block leading-none" aria-label="cometa sms">
           <div className="font-display text-2xl text-primary tracking-tight">cometa</div>
@@ -48,36 +65,14 @@ export default function AppSidebar() {
         <div className="text-xs text-muted-foreground mb-2">Menu</div>
         <ul className="space-y-0.5">
           {menuLinks.map((l) => (
-            <li key={l.to}>
-              <Link
-                to={l.to}
-                className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
-                  pathname === l.to
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
-                }`}
-              >
-                {l.label}
-              </Link>
-            </li>
+            <li key={l.to}><Link to={l.to} className={linkClass(l.to)}>{l.label}</Link></li>
           ))}
         </ul>
 
         <div className="text-xs text-muted-foreground mt-6 mb-2">Perfil</div>
         <ul className="space-y-0.5">
           {perfilLinks.map((l) => (
-            <li key={l.to}>
-              <Link
-                to={l.to}
-                className={`block py-2 px-3 -mx-3 text-sm rounded transition-colors ${
-                  pathname === l.to
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-ink-soft hover:bg-secondary/60 hover:text-foreground"
-                }`}
-              >
-                {l.label}
-              </Link>
-            </li>
+            <li key={l.to}><Link to={l.to} className={linkClass(l.to)}>{l.label}</Link></li>
           ))}
         </ul>
 
@@ -101,6 +96,51 @@ export default function AppSidebar() {
       >
         Sair
       </button>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Topbar mobile */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 h-14 bg-card/90 backdrop-blur border-b border-border/60 flex items-center justify-between px-4">
+        <Link to="/" className="flex items-baseline gap-1.5 leading-none">
+          <span className="font-display text-xl text-primary tracking-tight">cometa</span>
+          <span className="font-mono-x text-[9px] text-primary tracking-[0.4em]">sms</span>
+        </Link>
+        <button
+          onClick={() => setOpen(true)}
+          aria-label="Abrir menu"
+          className="p-2 -mr-2 rounded-lg hover:bg-secondary/60 transition"
+        >
+          <Menu size={22} />
+        </button>
+      </div>
+
+      {/* Backdrop mobile */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm animate-in fade-in"
+        />
+      )}
+
+      {/* Sidebar (desktop fixed / mobile drawer) */}
+      <aside
+        className={`fixed left-0 top-0 h-screen flex flex-col bg-card border-r border-border/60 z-50 transition-transform duration-300 lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+        style={{ width: "var(--sidebar-width)", maxWidth: "85vw" }}
+      >
+        {/* Botão fechar mobile */}
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Fechar menu"
+          className="lg:hidden absolute top-4 right-4 p-1.5 rounded-lg hover:bg-secondary/60 transition"
+        >
+          <X size={20} />
+        </button>
+        {sidebarContent}
+      </aside>
+    </>
   );
 }
