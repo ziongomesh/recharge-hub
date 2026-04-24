@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
-import cometaBackground from "@/assets/cometa-background.png";
+import moneyBag from "@/assets/money-bag.webp";
 
 const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
 
@@ -524,10 +524,10 @@ export default function HomePage() {
             {/* Bônus */}
             <section className="sms-bonus-panel rounded-xl text-primary-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
               <img
-                src={cometaBackground}
+                src={moneyBag}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-8 bottom-0 z-0 w-40 rotate-12 opacity-30 sm:right-6 sm:w-72 sm:opacity-45 lg:right-12 lg:w-80"
+                className="pointer-events-none absolute -right-4 bottom-2 z-0 w-36 sm:right-8 sm:w-56 lg:right-12 lg:w-64 drop-shadow-2xl"
               />
               <div className="max-w-xl relative z-10">
                 <h2 className="font-display text-2xl sm:text-4xl leading-tight">
