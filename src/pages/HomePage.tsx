@@ -25,47 +25,47 @@ type Tab = "sms" | "recargas";
 type Language = "pt" | "en" | "es" | "pt-PT" | "ru" | "uk" | "de" | "tr" | "az" | "uz" | "zh" | "hi" | "bn";
 type Theme = "light" | "dark";
 
-type LangOption = { code: Language; native: string; localized: string; flag: string };
+type LangOption = { code: Language; native: string; localized: string; flag: string; iso: string };
 type LangGroup = { region: string; items: LangOption[] };
 
 const languageGroups: LangGroup[] = [
   {
     region: "Recomendados",
     items: [
-      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷" },
-      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧" },
+      { code: "pt", native: "Português", localized: "Português (Brasil)", flag: "🇧🇷", iso: "br" },
+      { code: "en", native: "English", localized: "Inglês", flag: "🇬🇧", iso: "gb" },
     ],
   },
   {
     region: "Europa",
     items: [
-      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺" },
-      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦" },
-      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪" },
-      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸" },
-      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹" },
+      { code: "ru", native: "Русский", localized: "Russo", flag: "🇷🇺", iso: "ru" },
+      { code: "uk", native: "Українська", localized: "Ucraniano", flag: "🇺🇦", iso: "ua" },
+      { code: "de", native: "Deutsch", localized: "Alemão", flag: "🇩🇪", iso: "de" },
+      { code: "es", native: "Español", localized: "Espanhol", flag: "🇪🇸", iso: "es" },
+      { code: "pt-PT", native: "Português", localized: "Português (Portugal)", flag: "🇵🇹", iso: "pt" },
     ],
   },
   {
     region: "Oriente Médio",
-    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷" }],
+    items: [{ code: "tr", native: "Türkçe", localized: "Turco", flag: "🇹🇷", iso: "tr" }],
   },
   {
     region: "Ásia Central",
     items: [
-      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿" },
-      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿" },
+      { code: "az", native: "Azərbaycan", localized: "Azerbaijano", flag: "🇦🇿", iso: "az" },
+      { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", flag: "🇺🇿", iso: "uz" },
     ],
   },
   {
     region: "Ásia",
-    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳" }],
+    items: [{ code: "zh", native: "简体中文", localized: "Chinês (simplificado)", flag: "🇨🇳", iso: "cn" }],
   },
   {
     region: "Ásia do Sul",
     items: [
-      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳" },
-      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩" },
+      { code: "hi", native: "हिन्दी", localized: "Hindi", flag: "🇮🇳", iso: "in" },
+      { code: "bn", native: "বাংলা", localized: "Bengali", flag: "🇧🇩", iso: "bd" },
     ],
   },
 ];
@@ -407,7 +407,7 @@ export default function HomePage() {
             <Popover open={langOpen} onOpenChange={setLangOpen}>
               <PopoverTrigger asChild>
                 <button className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors" aria-label="Idioma">
-                  <span className="text-base leading-none">{currentLang.flag}</span>
+                  <img src={`https://flagcdn.com/24x18/${currentLang.iso}.png`} alt={currentLang.iso} className="w-5 h-auto rounded-[2px]" />
                   <span>{currentLang.localized}</span>
                   <ChevronDown size={12} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -424,8 +424,8 @@ export default function HomePage() {
                             onClick={() => { setLanguage(opt.code); setLangOpen(false); }}
                             className={`flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-secondary/60 transition ${language === opt.code ? "bg-secondary/40" : ""}`}
                           >
-                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-lg leading-none">
-                              {opt.flag}
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary overflow-hidden">
+                              <img src={`https://flagcdn.com/48x36/${opt.iso}.png`} alt={opt.iso} className="w-6 h-auto rounded-[2px]" />
                             </span>
                             <span className="min-w-0">
                               <span className="block text-sm font-medium text-foreground truncate">{opt.native}</span>
