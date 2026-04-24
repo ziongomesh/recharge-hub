@@ -73,7 +73,7 @@ export default function EsimPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {produtos.map((p) => (
-            <div key={p.id} className="border border-border bg-card p-5 flex flex-col">
+            <div key={p.id} className="rounded-2xl ring-1 ring-border bg-card p-5 flex flex-col hover:ring-primary/40 hover:shadow-md transition">
               <div className="label-eyebrow">{p.operadora}</div>
               <div className="font-display text-2xl mt-1">{p.name}</div>
               <div className="font-display text-4xl mt-4 tabular">R$ {p.amount.toFixed(2)}</div>
@@ -81,7 +81,7 @@ export default function EsimPage() {
               <button
                 onClick={() => setConfirm(p)}
                 disabled={buying === p.id}
-                className="mt-5 inline-flex items-center justify-center gap-2 bg-foreground text-background py-3 text-sm hover:opacity-90 disabled:opacity-50"
+                className="mt-5 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full py-3 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition"
               >
                 {buying === p.id ? <Loader2 className="animate-spin" size={14} /> : <ShoppingCart size={14} />}
                 Comprar
