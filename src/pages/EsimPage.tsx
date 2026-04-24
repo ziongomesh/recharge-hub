@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { esimApi, type EsimProduto, type EsimVenda } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, ShoppingCart, X } from "lucide-react";
+import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package } from "lucide-react";
 import EsimQrModal from "@/components/EsimQrModal";
 
 export default function EsimPage() {
@@ -22,11 +22,8 @@ export default function EsimPage() {
     try {
       const { produtos: p } = await esimApi.produtos();
       setProdutos(p);
-    } catch (e: any) {
-      toast.error(e.message || "Erro ao carregar");
-    } finally {
-      setLoading(false);
-    }
+    } catch (e: any) { toast.error(e.message || "Erro ao carregar"); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
@@ -49,84 +46,91 @@ export default function EsimPage() {
       if (e.message?.toLowerCase().includes("saldo")) {
         toast.error("Saldo insuficiente. Faça uma recarga.");
         navigate("/pagamentos");
-      } else {
-        toast.error(e.message || "Erro ao comprar");
-      }
-    } finally {
-      setBuying(null);
-    }
+      } else toast.error(e.message || "Erro ao comprar");
+    } finally { setBuying(null); }
+  };
+
+  const opGradient = (op?: string) => {
+    const n = (op || "").toLowerCase();
+    if (n.includes("vivo")) return "from-violet-500 to-fuchsia-600";
+    if (n.includes("claro")) return "from-rose-500 to-red-600";
+    if (n.includes("tim")) return "from-blue-500 to-indigo-600";
+    return "from-cyan-500 to-blue-600";
   };
 
   return (
-    <div className="max-w-5xl">
-      <div className="label-eyebrow">Catálogo</div>
-      <h1 className="font-display text-5xl mt-2 mb-8">eSIM.</h1>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="inline-flex items-center gap-2 stat-chip mb-3">
+            <Wifi size={12} /> eSIM digital · entrega imediata
+          </div>
+          <h1 className="font-display text-4xl">Catálogo <span className="gradient-text">eSIM</span>.</h1>
+          <p className="text-sm text-muted-foreground mt-1">Ative uma linha brasileira em minutos, sem chip físico.</p>
+        </div>
+        <div className="stat-chip"><Package size={12} /> {produtos.length} produtos</div>
+      </div>
 
       {loading ? (
-        <div className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className="glass-card p-12 text-center text-sm text-muted-foreground flex items-center gap-2 justify-center">
           <Loader2 className="animate-spin" size={14} /> Carregando…
         </div>
       ) : produtos.length === 0 ? (
-        <div className="border border-border p-10 text-center text-sm text-muted-foreground">
+        <div className="glass-card p-12 text-center text-sm text-muted-foreground">
           Nenhum eSIM disponível no momento.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {produtos.map((p) => (
-            <div key={p.id} className="rounded-2xl ring-1 ring-border bg-card p-5 flex flex-col hover:ring-primary/40 hover:shadow-md transition">
-              <div className="label-eyebrow">{p.operadora}</div>
-              <div className="font-display text-2xl mt-1">{p.name}</div>
-              <div className="font-display text-4xl mt-4 tabular">R$ {p.amount.toFixed(2)}</div>
-              <div className="text-xs text-muted-foreground mt-1">{p.stock} em estoque</div>
+            <div key={p.id} className="glass-card glass-card-hover p-6 flex flex-col relative overflow-hidden">
+              <div className={`absolute -top-16 -right-16 w-40 h-40 rounded-full bg-gradient-to-br ${opGradient(p.operadora)} opacity-25 blur-3xl pointer-events-none`} />
+              <div className="relative flex items-start justify-between">
+                <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${opGradient(p.operadora)} flex items-center justify-center text-white shadow-lg`}>
+                  <Smartphone size={18} />
+                </div>
+                <span className="stat-chip text-[10px]">{p.stock} em estoque</span>
+              </div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mt-4">{p.operadora}</div>
+              <div className="font-display text-xl mt-1 leading-tight">{p.name}</div>
+              <div className="font-display text-4xl mt-4 tabular gradient-text">R$ {p.amount.toFixed(2)}</div>
+
               <button
                 onClick={() => setConfirm(p)}
-                disabled={buying === p.id}
-                className="mt-5 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full py-3 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition"
+                disabled={buying === p.id || p.stock === 0}
+                className="neon-button mt-5 w-full disabled:opacity-50"
               >
                 {buying === p.id ? <Loader2 className="animate-spin" size={14} /> : <ShoppingCart size={14} />}
-                Comprar
+                {p.stock === 0 ? "Esgotado" : "Comprar agora"}
               </button>
-              <p className="text-[11px] text-muted-foreground mt-2 leading-relaxed">
+              <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
                 Ao comprar você concorda com os{" "}
-                <button
-                  type="button"
-                  onClick={() => setTermsOpen(true)}
-                  className="underline underline-offset-2 hover:text-foreground"
-                >
+                <button onClick={() => setTermsOpen(true)} className="underline underline-offset-2 hover:text-foreground">
                   termos da iFlash Store
-                </button>
-                .
+                </button>.
               </p>
             </div>
           ))}
         </div>
       )}
 
-      {/* Histórico movido para a página /historico */}
-
-      {/* Confirmar */}
       {confirm && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4" onClick={() => setConfirm(null)}>
-          <div className="bg-card rounded-2xl ring-1 ring-border max-w-sm w-full p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="label-eyebrow">Confirmar compra</div>
-            <div className="font-display text-2xl mt-2">{confirm.name}</div>
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 backdrop-blur p-4" onClick={() => setConfirm(null)}>
+          <div className="glass-card max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Confirmar compra</div>
+            <div className="font-display text-2xl mt-1">{confirm.name}</div>
             <div className="text-sm text-muted-foreground">{confirm.operadora}</div>
-            <div className="my-4 border-y border-border py-3 flex justify-between items-baseline">
+            <div className="my-4 rounded-xl bg-card/60 border border-border p-4 flex justify-between items-baseline">
               <span className="text-sm text-muted-foreground">Valor</span>
-              <span className="font-mono tabular text-lg">R$ {confirm.amount.toFixed(2)}</span>
+              <span className="font-display text-2xl tabular gradient-text">R$ {confirm.amount.toFixed(2)}</span>
             </div>
             <div className="text-xs text-muted-foreground mb-4">
               Será debitado do seu saldo (R$ {(user?.balance ?? 0).toFixed(2)}). Entrega imediata.
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setConfirm(null)} className="flex-1 rounded-full ring-1 ring-border py-2 text-sm hover:bg-muted/60 transition">
+              <button onClick={() => setConfirm(null)} className="flex-1 rounded-full border border-border py-2.5 text-sm hover:bg-card/60 transition">
                 Cancelar
               </button>
-              <button
-                onClick={() => buy(confirm)}
-                disabled={buying !== null}
-                className="flex-1 bg-primary text-primary-foreground rounded-full py-2 text-sm font-medium disabled:opacity-50 inline-flex items-center justify-center gap-2 hover:opacity-90 transition"
-              >
+              <button onClick={() => buy(confirm)} disabled={buying !== null} className="neon-button flex-1 disabled:opacity-50">
                 {buying !== null && <Loader2 className="animate-spin" size={12} />}
                 Confirmar
               </button>
@@ -135,58 +139,29 @@ export default function EsimPage() {
         </div>
       )}
 
-      <EsimQrModal
-        open={!!modalVenda}
-        onClose={() => { setModalVenda(null); setModalQr(null); }}
-        venda={modalVenda}
-        qr={modalQr}
-      />
+      <EsimQrModal open={!!modalVenda} onClose={() => { setModalVenda(null); setModalQr(null); }} venda={modalVenda} qr={modalQr} />
 
-      {/* Modal de Termos */}
       {termsOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setTermsOpen(false)}
-        >
-          <div
-            className="bg-card rounded-2xl ring-1 ring-border max-w-lg w-full max-h-[85vh] overflow-y-auto relative shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setTermsOpen(false)}
-              className="absolute top-3 right-3 p-1 hover:bg-paper-2 rounded"
-              aria-label="Fechar"
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur p-4" onClick={() => setTermsOpen(false)}>
+          <div className="glass-card max-w-lg w-full max-h-[85vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => setTermsOpen(false)} className="absolute top-3 right-3 p-1.5 hover:bg-card/60 rounded-lg">
               <X size={18} />
             </button>
             <div className="p-6 pr-12">
-              <div className="label-eyebrow">iFlash Store</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">iFlash Store</div>
               <h3 className="font-display text-2xl mt-1 mb-4">Termos de Uso — eSIM</h3>
-
-              <div className="border border-warning/40 bg-warning/5 p-3 text-xs mb-5">
-                ⚠️ Ao comprar você declara que leu e concorda com todas as regras da
-                <strong> iFlash Store</strong>.
+              <div className="border border-warning/40 bg-warning/10 rounded-xl p-3 text-xs mb-5">
+                ⚠️ Ao comprar você declara que leu e concorda com todas as regras da <strong>iFlash Store</strong>.
               </div>
-
-              <p className="text-sm text-muted-foreground mb-3">
-                Ao adquirir um eSIM conosco, você concorda com as seguintes condições:
-              </p>
-
               <ul className="space-y-2.5 text-sm leading-relaxed">
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>Após a ativação, <strong>não há garantia</strong>.</span></li>
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>Se o eSIM apresentar erro ou ficar sem sinal na primeira ativação, a troca poderá ser realizada mediante análise.</span></li>
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>Trabalhamos com eSIM das operadoras <strong>Vivo (Controle)</strong> e <strong>Claro</strong>.</span></li>
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>O eSIM é vinculado a apenas um aparelho. Após ativado, o EID fica associado ao dispositivo, não sendo possível usar em outro.</span></li>
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>Não há garantia em casos de uso incorreto, incluindo tentativa de reutilizar o QR Code.</span></li>
-                <li className="flex gap-2"><span className="text-muted-foreground">•</span><span>Não garantimos funcionamento em aparelhos que já foram usados anteriormente para ativação de eSIM da Vivo Controle ou Claro.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>Após a ativação, <strong>não há garantia</strong>.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>Erro ou sem sinal na primeira ativação: troca mediante análise.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>Operadoras: <strong>Vivo (Controle)</strong> e <strong>Claro</strong>.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>O eSIM é vinculado a um único aparelho (EID).</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>Sem garantia em caso de uso incorreto ou QR reaproveitado.</span></li>
+                <li className="flex gap-2"><span className="text-primary">•</span><span>Sem garantia em aparelhos já usados para Vivo Controle ou Claro.</span></li>
               </ul>
-
-              <button
-                onClick={() => setTermsOpen(false)}
-                className="mt-6 w-full bg-primary text-primary-foreground rounded-full py-2.5 text-sm font-medium hover:opacity-90 transition"
-              >
-                Entendi
-              </button>
+              <button onClick={() => setTermsOpen(false)} className="neon-button mt-6 w-full">Entendi</button>
             </div>
           </div>
         </div>
