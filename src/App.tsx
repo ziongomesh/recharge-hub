@@ -35,6 +35,14 @@ import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function getRouterBasename() {
+  if (typeof window === "undefined") return undefined;
+  const firstSegment = window.location.pathname.split("/").filter(Boolean)[0];
+  return firstSegment === "painel" ? "/painel" : undefined;
+}
+
+const routerBasename = getRouterBasename();
+
 function HomeRedirect() {
   const { user, loading, adminVerified } = useAuth();
 
@@ -51,7 +59,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
