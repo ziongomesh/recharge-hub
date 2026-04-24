@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { esimApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
+import { API_BASE_URL, esimApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, Upload, Package, X, Pencil } from "lucide-react";
 
@@ -8,8 +8,7 @@ function EstoqueThumb({ id, onRemove }: { id: number; onRemove: () => void }) {
   useEffect(() => {
     let url: string | null = null;
     const token = localStorage.getItem("token");
-    const base = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
-    fetch(`${base}/esim/admin/estoque/${id}/image`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    fetch(`${API_BASE_URL}/esim/admin/estoque/${id}/image`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
       .then((r) => r.blob())
       .then((b) => { url = URL.createObjectURL(b); setSrc(url); })
       .catch(() => {});
