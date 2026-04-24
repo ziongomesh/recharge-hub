@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Eye, Grid2X2, Headphones, Moon, Send } from "lucide-react";
+import { Eye } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
+import PublicHeader from "@/components/PublicHeader";
 
 export default function LoginPage() {
   const navigate = useNavigate();
