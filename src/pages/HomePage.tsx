@@ -658,8 +658,8 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-10 text-foreground backdrop-blur">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 text-sm md:grid-cols-[1.6fr_1fr_1fr_1fr]">
+      <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-8 sm:py-10 text-foreground backdrop-blur">
+        <div className="mx-auto grid max-w-7xl gap-8 px-3 sm:px-6 text-sm sm:grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div>
             <Link to="/" className="block leading-none" aria-label="cometa sms">
               <div className="font-display text-3xl text-foreground tracking-tight">cometa</div>
@@ -696,7 +696,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        <div className="mx-auto mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-6">
+        <div className="mx-auto mt-8 sm:mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-3 sm:px-6">
           {paymentMethods.map((method) => (
             <span
               key={method.name}
