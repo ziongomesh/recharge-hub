@@ -99,6 +99,22 @@ export default function RegisterPage() {
                 <input className={`${inputCls} pr-10`} type="password" required value={form.password} onChange={upd("password")} />
                 <Eye size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
+              {form.password && (() => {
+                const s = getPasswordStrength(form.password);
+                return (
+                  <div className="mt-2 space-y-1">
+                    <div className="flex gap-1">
+                      {[1, 2, 3].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors ${i <= s.score ? s.barColor : "bg-border/60"}`}
+                        />
+                      ))}
+                    </div>
+                    <p className={`text-[11px] font-medium ${s.color}`}>{s.label}</p>
+                  </div>
+                );
+              })()}
             </div>
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Confirmar senha</label>
