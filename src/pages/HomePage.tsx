@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
+import { ArrowRight, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { smsApi, type SmsService } from "@/lib/api";
 import cometaBackground from "@/assets/cometa-background.png";
 
@@ -336,40 +336,42 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-secondary/35 to-background text-foreground dark:[background-image:linear-gradient(90deg,hsl(var(--border)/0.55)_1px,transparent_1px),linear-gradient(180deg,hsl(var(--border)/0.45)_1px,transparent_1px)] dark:[background-size:160px_160px]">
       {/* Topbar superior fina */}
-      <div className="relative z-10 border-b border-border/60 bg-background/80 text-[11px] sm:text-xs backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-6 py-1.5 text-muted-foreground gap-2">
-          <div className="flex items-center gap-3 sm:gap-5">
-          </div>
-          <div className="flex items-center gap-2 sm:gap-5">
-            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">Telegram</a>
-            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden hover:text-foreground sm:inline-flex">{t.support}</a>
-            <select
-              value={language}
-              onChange={(event) => setLanguage(event.target.value as Language)}
-              className="bg-transparent text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
-              aria-label="Idioma"
-            >
-              <option value="pt">🇧🇷 Português (Brasil)</option>
-              <option value="en">🇬🇧 English</option>
-              <option value="es">🇪🇸 Español</option>
-            </select>
-            <div className="inline-flex items-center gap-1">
-              <button
-                onClick={() => setTheme("light")}
-                className={`inline-flex items-center gap-1 transition-colors ${theme === "light" ? "text-primary" : "hover:text-foreground"}`}
-                aria-label={t.light}
+      <div className="relative z-10 text-[11px] sm:text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-end px-3 sm:px-6 py-2 text-muted-foreground gap-4 sm:gap-6">
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="hidden sm:inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Send size={13} className="text-primary" />
+              <span>Telegram</span>
+            </a>
+            <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+              <Headphones size={13} className="text-primary" />
+              <span>{t.support}</span>
+            </a>
+            <div className="inline-flex items-center gap-1.5">
+              <Globe2 size={13} className="text-primary" />
+              <select
+                value={language}
+                onChange={(event) => setLanguage(event.target.value as Language)}
+                className="bg-transparent text-muted-foreground hover:text-primary focus:outline-none cursor-pointer"
+                aria-label="Idioma"
               >
-                <Sun size={12} />
-              </button>
-              <button
-                onClick={() => setTheme("dark")}
-                className={`inline-flex items-center gap-1 transition-colors ${theme === "dark" ? "text-primary" : "hover:text-foreground"}`}
-                aria-label={t.dark}
-              >
-                <Moon size={12} />
-              </button>
+                <option value="pt">Português (Brasil)</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
             </div>
-          </div>
+            <div className="inline-flex items-center gap-1.5">
+              {theme === "light" ? (
+                <button onClick={() => setTheme("dark")} className="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition" aria-label={t.dark}>
+                  <Sun size={13} />
+                  <span>{t.light}</span>
+                </button>
+              ) : (
+                <button onClick={() => setTheme("light")} className="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition" aria-label={t.light}>
+                  <Moon size={13} />
+                  <span>{t.dark}</span>
+                </button>
+              )}
+            </div>
         </div>
       </div>
 
