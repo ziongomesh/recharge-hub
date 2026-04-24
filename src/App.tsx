@@ -41,7 +41,7 @@ const routerBasename = undefined;
 function HomeRedirect() {
   const { user, loading, adminVerified } = useAuth();
 
-  if (loading) return null;
+  if (loading && !user) return <HomePage />;
   if (!user) return <HomePage />;
   if (user.role === "admin" || user.role === "mod") {
     return <Navigate to={adminVerified ? "/admin" : "/admin/pin"} replace />;
