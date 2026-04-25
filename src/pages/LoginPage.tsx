@@ -10,14 +10,21 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { login } = useAuth();
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    try { await login(email, password); }
-    catch { /* mantém a tela sem notificação lateral */ }
-    finally { setLoading(false); }
+    setErrorMsg(null);
+    try {
+      await login(email, password);
+    } catch (err: any) {
+      console.error("[login] falhou:", err);
+      setErrorMsg(err?.message || "Não foi possível entrar. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
