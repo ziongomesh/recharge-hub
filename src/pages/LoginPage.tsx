@@ -60,6 +60,12 @@ export default function LoginPage() {
             </div>
 
 
+            {errorMsg && (
+              <div className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-2.5 text-sm text-destructive">
+                {errorMsg}
+              </div>
+            )}
+
             <button type="submit" disabled={loading} className="btn-pill w-full justify-center disabled:opacity-50">
               {loading ? "Entrando…" : "Entrar"}
             </button>
