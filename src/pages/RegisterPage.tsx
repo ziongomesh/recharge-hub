@@ -70,6 +70,7 @@ export default function RegisterPage() {
     const cpf = form.cpf.replace(/\D/g, "");
     const phone = form.phone.replace(/\D/g, "");
     if (cpf.length !== 11) return toast.error("CPF deve ter 11 dígitos");
+    if (!isValidCPF(cpf)) return toast.error("CPF inválido. Verifique os dígitos.");
     if (phone.length < 10) return toast.error("Telefone inválido");
     if (form.password !== confirmPassword) return toast.error("As senhas não conferem");
     setLoading(true);
