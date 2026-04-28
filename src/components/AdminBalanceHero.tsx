@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RefreshCw, Wallet, AlertTriangle } from "lucide-react";
 
 interface Props {
-  /** Nome da API (ex: "Hero-SMS", "Poeki", "VizzionPay") */
+  /** Rótulo exibido (ex: "Provedor SMS", "API de Recargas", "Provedor PIX") */
   label: string;
   /** Função que retorna o saldo em BRL (e opcionalmente extra info) */
   fetcher: () => Promise<{ balance: number | null; extra?: string | null }>;

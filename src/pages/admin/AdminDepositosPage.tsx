@@ -36,7 +36,7 @@ export default function AdminDepositosPage() {
         {(["recargas", "esim", "sms"] as const).map((mod) => (
           <AdminBalanceHero
             key={mod}
-            label={`VizzionPay · ${mod === "recargas" ? "Recargas" : mod === "esim" ? "eSIM" : "SMS"}`}
+            label={`Provedor PIX · ${mod === "recargas" ? "Recargas" : mod === "esim" ? "eSIM" : "SMS"}`}
             fetcher={async () => {
               const r = await pagamentosApi.adminBalance(mod);
               return {
