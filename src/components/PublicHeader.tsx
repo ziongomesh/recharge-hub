@@ -72,7 +72,7 @@ export default function PublicHeader() {
 
           <nav className="hidden items-center gap-9 text-sm font-medium text-muted-foreground md:flex">
             <Link to="/" className="hover:text-primary transition-colors">Ativação</Link>
-            <Link to="/precos" className="hover:text-primary transition-colors">Lista de preços</Link>
+            
             <Link to="/" className="hover:text-primary transition-colors">Ajuda</Link>
           </nav>
 
