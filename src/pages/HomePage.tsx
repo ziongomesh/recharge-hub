@@ -601,6 +601,24 @@ export default function HomePage() {
             <Link to="/termos" className="hover:text-primary transition">{t.terms}</Link>
           </nav>
 
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            {paymentMethods.map((method) => (
+              <span
+                key={method.name}
+                className={`payment-icon ${method.className} relative inline-flex h-9 items-center justify-center px-3 rounded-full ring-1 ring-border bg-card ${method.soon ? "opacity-60" : ""}`}
+                aria-label={`Meio de pagamento ${method.name}${method.soon ? " (em breve)" : ""}`}
+                title={method.soon ? `${method.name} — em breve` : method.name}
+              >
+                {method.icon}
+                {method.soon && (
+                  <span className="ml-1.5 text-[8px] font-semibold uppercase tracking-wider bg-secondary text-muted-foreground px-1.5 py-0.5 rounded-full">
+                    em breve
+                  </span>
+                )}
+              </span>
+            ))}
+          </div>
+
           <p className="mt-6 text-[11px] text-foreground/50">
             © {new Date().getFullYear()} CometaSMS
           </p>
