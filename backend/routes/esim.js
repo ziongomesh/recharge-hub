@@ -29,18 +29,35 @@ const upload = multer({
 
 // ============ PUBLIC (user) ============
 
-// Lista produtos com estoque > 0
+// Helper para listar produtos disponíveis (estoque > 0)
+async function listAvailableProdutos() {
+  const [rows] = await db.query(
+    `SELECT p.id, p.name, p.operadora, p.amount, p.observacao,
+            (SELECT COUNT(*) FROM esim_estoque e WHERE e.produto_id = p.id) AS stock
+     FROM esim_produtos p
+     WHERE p.enabled = TRUE
+     HAVING stock > 0
+     ORDER BY p.operadora, p.amount`
+  );
+  return rows;
+}
+
+// Vitrine pública (sem auth) — usada na home pública
+router.get('/publicos', async (req, res) => {
+  try {
+    const produtos = await listAvailableProdutos();
+    res.json({ produtos });
+  } catch (err) {
+    console.error('eSIM list públicos:', err);
+    res.status(500).json({ message: 'Erro ao listar produtos' });
+  }
+});
+
+// Lista produtos com estoque > 0 (autenticada — usada dentro do sistema)
 router.get('/produtos', authMiddleware, async (req, res) => {
   try {
-    const [rows] = await db.query(
-      `SELECT p.id, p.name, p.operadora, p.amount, p.observacao,
-              (SELECT COUNT(*) FROM esim_estoque e WHERE e.produto_id = p.id) AS stock
-       FROM esim_produtos p
-       WHERE p.enabled = TRUE
-       HAVING stock > 0
-       ORDER BY p.operadora, p.amount`
-    );
-    res.json({ produtos: rows });
+    const produtos = await listAvailableProdutos();
+    res.json({ produtos });
   } catch (err) {
     console.error('eSIM list produtos:', err);
     res.status(500).json({ message: 'Erro ao listar produtos' });

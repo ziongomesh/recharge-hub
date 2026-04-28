@@ -306,6 +306,11 @@ export const esimApi = {
     api<{ produtos: EsimProduto[] }>("/esim/produtos").then((r) => ({
       produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
     })),
+  // vitrine pública (sem auth) — usada na home
+  produtosPublicos: () =>
+    api<{ produtos: EsimProduto[] }>("/esim/publicos").then((r) => ({
+      produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
+    })),
   comprar: (produtoId: number) =>
     api<{ venda: EsimVenda; qr: string | null }>(`/esim/comprar/${produtoId}`, { method: "POST" }).then((r) => ({
       ...r,
