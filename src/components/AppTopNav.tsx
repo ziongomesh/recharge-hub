@@ -43,9 +43,16 @@ export default function AppTopNav() {
           {/* Primary nav (desktop) */}
           <nav className="hidden lg:flex items-center gap-1 ml-4">
             {primaryLinks.map((l) => (
-              <NavLink key={l.to} to={l.to} className={({isActive}) => `topnav-link ${isActive ? "active" : ""}`}>
-                <l.icon size={15} /> {l.label}
-              </NavLink>
+              l.soon ? (
+                <span key={l.to} className="topnav-link opacity-60 cursor-not-allowed" title="Em breve">
+                  <l.icon size={15} /> {l.label}
+                  <span className="ml-1 text-[9px] uppercase tracking-wider px-1 py-0.5 rounded bg-secondary/80 text-muted-foreground">em breve</span>
+                </span>
+              ) : (
+                <NavLink key={l.to} to={l.to} className={({isActive}) => `topnav-link ${isActive ? "active" : ""}`}>
+                  <l.icon size={15} /> {l.label}
+                </NavLink>
+              )
             ))}
             <span className="mx-2 h-5 w-px bg-border/70" />
             {secondaryLinks.map((l) => (
@@ -116,9 +123,16 @@ export default function AppTopNav() {
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-2">Serviços</div>
             <nav className="flex flex-col gap-1 mb-4">
               {primaryLinks.map((l) => (
-                <NavLink key={l.to} to={l.to} className={({isActive}) => `topnav-link justify-start ${isActive ? "active" : ""}`}>
-                  <l.icon size={16} /> {l.label}
-                </NavLink>
+                l.soon ? (
+                  <span key={l.to} className="topnav-link justify-start opacity-60 cursor-not-allowed" title="Em breve">
+                    <l.icon size={16} /> {l.label}
+                    <span className="ml-auto text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-secondary/80 text-muted-foreground">em breve</span>
+                  </span>
+                ) : (
+                  <NavLink key={l.to} to={l.to} className={({isActive}) => `topnav-link justify-start ${isActive ? "active" : ""}`}>
+                    <l.icon size={16} /> {l.label}
+                  </NavLink>
+                )
               ))}
             </nav>
 
