@@ -587,46 +587,21 @@ export default function HomePage() {
 
 
 
-      <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-10 sm:py-12 text-foreground backdrop-blur">
+      <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-10 text-foreground backdrop-blur">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 flex flex-col items-center text-center">
           <Link to="/" className="leading-none" aria-label="cometa sms">
-            <div className="font-display text-3xl text-foreground tracking-tight">cometa</div>
-            <div className="font-mono-x text-[11px] text-foreground tracking-[0.45em] -mt-0.5">sms</div>
+            <div className="font-display text-2xl text-foreground tracking-tight">cometa</div>
+            <div className="font-mono-x text-[10px] text-foreground tracking-[0.45em] -mt-0.5">sms</div>
           </Link>
-          <p className="mt-5 max-w-md text-xs leading-relaxed text-foreground/75">
-            Números virtuais, recargas e SMS para seu app ou site.
-            Ativações rápidas, saldo via PIX e comunicação sem complicação.
-          </p>
-          <p className="mt-2 max-w-md text-xs leading-relaxed text-foreground/60">
-            Pagamentos em PIX — em breve também em crypto.
-          </p>
 
-          {/* Links centralizados em linha */}
-          <nav className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
-            <button onClick={requireLogin} className="hover:text-primary transition">Ativação</button>
+          <nav className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
             <Link to="/precos" className="hover:text-primary transition">{t.prices}</Link>
-            <button onClick={requireLogin} className="hover:text-primary transition">Serviços</button>
-            <button onClick={requireLogin} className="hover:text-primary transition">Programa de referência</button>
-            <button onClick={requireLogin} className="hover:text-primary transition">Programa de fidelidade</button>
-            <button onClick={requireLogin} className="hover:text-primary transition">Regras do projeto</button>
             <Link to="/termos" className="hover:text-primary transition">{t.terms}</Link>
           </nav>
 
-          <p className="mt-7 text-[11px] text-foreground/50">
-            © {new Date().getFullYear()} CometaSMS · Seu código chega mais rápido.
+          <p className="mt-6 text-[11px] text-foreground/50">
+            © {new Date().getFullYear()} CometaSMS
           </p>
-        </div>
-        <div className="mx-auto mt-8 sm:mt-10 flex max-w-7xl flex-wrap items-center justify-center gap-3 px-3 sm:px-6">
-          {paymentMethods.map((method) => (
-            <span
-              key={method.name}
-              className={`payment-icon ${method.className} inline-flex h-9 items-center justify-center px-3 rounded-full ring-1 ring-border bg-card`}
-              aria-label={`Meio de pagamento ${method.name}`}
-              title={method.name}
-            >
-              {method.icon}
-            </span>
-          ))}
         </div>
       </footer>
     </div>
