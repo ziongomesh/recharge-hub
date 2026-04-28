@@ -562,12 +562,9 @@ export default function HomePage() {
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2 min-w-0">
-                          <img
-                            src={iconFromServiceName(m.app) || ""}
-                            alt=""
-                            className="h-5 w-5 object-contain shrink-0"
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.visibility = "hidden"; }}
-                          />
+                          <span className="inline-flex h-6 w-8 items-center justify-center shrink-0">
+                            <OperatorIcon name={m.app} />
+                          </span>
                           <span className="text-xs font-semibold text-foreground truncate">{m.app}</span>
                         </div>
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">há 1 min.</span>
