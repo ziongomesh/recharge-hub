@@ -33,7 +33,7 @@ export default function AdminOperadorasPage() {
       setPoekiError(null);
     } catch (e: any) {
       setPoekiStatus([]);
-      setPoekiError(e?.message || "Erro ao consultar Poeki");
+      setPoekiError(e?.message || "Erro ao consultar API de Recargas");
     }
   };
 
