@@ -33,8 +33,9 @@ interface FormState {
   amount: string;
   observacao: string;
   enabled: boolean;
+  logo_image?: string | null;
 }
-const empty: FormState = { name: "", operadora: "Vivo", amount: "", observacao: "", enabled: true };
+const empty: FormState = { name: "", operadora: "Vivo", amount: "", observacao: "", enabled: true, logo_image: null };
 
 export default function AdminEsimPage() {
   const [produtos, setProdutos] = useState<EsimProduto[]>([]);
@@ -43,7 +44,9 @@ export default function AdminEsimPage() {
   const [estoqueOf, setEstoqueOf] = useState<EsimProduto | null>(null);
   const [estoque, setEstoque] = useState<EsimEstoqueItem[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const logoRef = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     setLoading(true);
