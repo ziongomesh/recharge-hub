@@ -73,12 +73,42 @@ export default function AdminEsimPage() {
       enabled: form.enabled,
     };
     try {
-      if (form.id) await esimApi.adminUpdate(form.id, payload);
-      else await esimApi.adminCreate(payload);
+      if (form.id) {
+        await esimApi.adminUpdate(form.id, payload);
+      } else {
+        const r = await esimApi.adminCreate(payload);
+        // mantém o modal aberto com o id setado para permitir upload de logo logo após criar
+        setForm({ ...form, id: r.id });
+        toast.success("Criado. Adicione uma logo se quiser.");
+        load();
+        return;
+      }
       toast.success("Salvo");
       setForm(null);
       load();
     } catch (e: any) { toast.error(e.message || "Erro"); }
+  };
+
+  const handleLogoUpload = async (file: File | null) => {
+    if (!file || !form?.id) return;
+    setUploadingLogo(true);
+    try {
+      const r = await esimApi.adminUploadLogo(form.id, file);
+      setForm({ ...form, logo_image: r.logo_image });
+      toast.success("Logo enviada");
+      load();
+    } catch (e: any) { toast.error(e.message || "Erro ao enviar logo"); }
+    finally { setUploadingLogo(false); if (logoRef.current) logoRef.current.value = ""; }
+  };
+
+  const handleLogoRemove = async () => {
+    if (!form?.id) return;
+    try {
+      await esimApi.adminRemoveLogo(form.id);
+      setForm({ ...form, logo_image: null });
+      toast.success("Logo removida");
+      load();
+    } catch (e: any) { toast.error(e.message); }
   };
 
   const remove = async (p: EsimProduto) => {
