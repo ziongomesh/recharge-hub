@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { esimApi, type EsimProduto, type EsimVenda } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package } from "lucide-react";
+import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package, AlertTriangle } from "lucide-react";
 import EsimQrModal from "@/components/EsimQrModal";
 
 export default function EsimPage() {
@@ -71,6 +71,11 @@ export default function EsimPage() {
         <div className="stat-chip"><Package size={12} /> {produtos.length} produtos</div>
       </div>
 
+      <div className="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 flex items-start gap-2.5 text-sm">
+        <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
+        <span><strong>Atenção:</strong> assim que você ativar seu eSIM, não damos garantia.</span>
+      </div>
+
       {loading ? (
         <div className="glass-card p-12 text-center text-sm text-muted-foreground flex items-center gap-2 justify-center">
           <Loader2 className="animate-spin" size={14} /> Carregando…
@@ -123,8 +128,12 @@ export default function EsimPage() {
               <span className="text-sm text-muted-foreground">Valor</span>
               <span className="font-display text-2xl tabular gradient-text">R$ {confirm.amount.toFixed(2)}</span>
             </div>
-            <div className="text-xs text-muted-foreground mb-4">
+            <div className="text-xs text-muted-foreground mb-3">
               Será debitado do seu saldo (R$ {(user?.balance ?? 0).toFixed(2)}). Entrega imediata.
+            </div>
+            <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs flex items-start gap-2 mb-4">
+              <AlertTriangle size={13} className="text-warning shrink-0 mt-0.5" />
+              <span>Assim que você ativar seu eSIM, <strong>não damos garantia</strong>.</span>
             </div>
             <div className="flex gap-2">
               <button onClick={() => setConfirm(null)} className="flex-1 rounded-full border border-border py-2.5 text-sm hover:bg-card/60 transition">
