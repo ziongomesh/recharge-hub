@@ -29,7 +29,14 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
-    const [existing] = await db.query('SELECT id FROM users WHERE username = ? OR email = ? OR cpf = ?', [username, email, cpf]);
+    const { isValidCPF, onlyDigits } = require('../lib/cpf');
+    const cpfDigits = onlyDigits(cpf);
+    if (!isValidCPF(cpfDigits)) {
+      return res.status(400).json({ message: 'CPF inválido. Verifique os dígitos.' });
+    }
+    const phoneDigits = onlyDigits(phone);
+
+    const [existing] = await db.query('SELECT id FROM users WHERE username = ? OR email = ? OR cpf = ?', [username, email, cpfDigits]);
     if (existing.length > 0) {
       return res.status(409).json({ message: 'Usuário, email ou CPF já cadastrado' });
     }
@@ -37,7 +44,7 @@ router.post('/register', async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     const [result] = await db.query(
       'INSERT INTO users (username, email, password, phone, cpf) VALUES (?, ?, ?, ?, ?)',
-      [username, email, hash, phone, cpf]
+      [username, email, hash, phoneDigits, cpfDigits]
     );
 
     const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
