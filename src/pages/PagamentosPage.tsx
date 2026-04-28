@@ -9,7 +9,7 @@ export default function PagamentosPage() {
   const [tab, setTab] = useState<"depositar" | "historico">("depositar");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pix, setPix] = useState<{ qrCode: string; qrCodeBase64: string; pixCopiaECola: string; txId: string } | null>(null);
+  const [pix, setPix] = useState<{ qrCode: string; qrCodeBase64: string; pixCopiaECola: string; txId: string; amount: number } | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval>>();
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
@@ -23,7 +23,7 @@ export default function PagamentosPage() {
     setLoading(true);
     try {
       const r = await pagamentosApi.deposit(v);
-      setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id });
+      setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id, amount: v });
       pollRef.current = setInterval(async () => {
         try {
           const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
@@ -145,7 +145,11 @@ export default function PagamentosPage() {
             </div>
             <div className="glass-card p-7">
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Aguardando</div>
-              <h3 className="font-display text-2xl mt-1 mb-5">Pague o PIX para creditar.</h3>
+              <h3 className="font-display text-2xl mt-1 mb-2">Pague o PIX para creditar.</h3>
+              <div className="mb-5 rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3">
+                <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Valor a pagar</div>
+                <div className="font-display text-3xl tabular gradient-text">{formatMoney(pix.amount)}</div>
+              </div>
               <label className="text-[10px] uppercase tracking-widest text-muted-foreground block mb-2">Código copia &amp; cola</label>
               <div className="flex gap-2">
                 <input value={pix.pixCopiaECola} readOnly className="flex-1 bg-card/60 border border-border rounded-xl px-3 py-2.5 font-mono text-xs outline-none" />

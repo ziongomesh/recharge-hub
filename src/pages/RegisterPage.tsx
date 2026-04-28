@@ -14,6 +14,21 @@ function formatCPF(v: string) {
   return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
 }
 
+function isValidCPF(value: string): boolean {
+  const cpf = value.replace(/\D/g, "");
+  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(cpf[i], 10) * (10 - i);
+  let d1 = 11 - (sum % 11);
+  if (d1 >= 10) d1 = 0;
+  if (d1 !== parseInt(cpf[9], 10)) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(cpf[i], 10) * (11 - i);
+  let d2 = 11 - (sum % 11);
+  if (d2 >= 10) d2 = 0;
+  return d2 === parseInt(cpf[10], 10);
+}
+
 function formatPhone(v: string) {
   const d = v.replace(/\D/g, "").slice(0, 11);
   if (d.length <= 2) return d;
@@ -55,6 +70,7 @@ export default function RegisterPage() {
     const cpf = form.cpf.replace(/\D/g, "");
     const phone = form.phone.replace(/\D/g, "");
     if (cpf.length !== 11) return toast.error("CPF deve ter 11 dígitos");
+    if (!isValidCPF(cpf)) return toast.error("CPF inválido. Verifique os dígitos.");
     if (phone.length < 10) return toast.error("Telefone inválido");
     if (form.password !== confirmPassword) return toast.error("As senhas não conferem");
     setLoading(true);
@@ -93,6 +109,7 @@ export default function RegisterPage() {
               <div>
                 <label className="mb-2 block text-sm text-muted-foreground">CPF</label>
                 <input className={`${inputCls} font-mono`} required value={form.cpf} onChange={upd("cpf")} placeholder="000.000.000-00" />
+                <p className="mt-1.5 text-[11px] text-amber-500/90">⚠ Use seu CPF real — será validado ao gerar PIX.</p>
               </div>
             </div>
             <div>
