@@ -561,12 +561,9 @@ export default function HomePage() {
                       className="rounded-2xl border border-border/60 bg-card/90 backdrop-blur p-3 shadow-sm animate-in fade-in slide-in-from-right-2 duration-500"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="inline-flex h-6 w-8 items-center justify-center shrink-0">
-                            <OperatorIcon name={m.app} />
-                          </span>
-                          <span className="text-xs font-semibold text-foreground truncate">{m.app}</span>
-                        </div>
+                        <span className="inline-flex h-6 items-center justify-center shrink-0">
+                          <OperatorIcon name={m.app} />
+                        </span>
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap">há 1 min.</span>
                       </div>
                       <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">{m.text}</p>
