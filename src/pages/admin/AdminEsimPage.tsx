@@ -193,6 +193,7 @@ export default function AdminEsimPage() {
                       <button onClick={() => setForm({
                         id: p.id, name: p.name, operadora: p.operadora,
                         amount: String(p.amount), observacao: p.observacao || "", enabled: p.enabled !== false,
+                        logo_image: p.logo_image ?? null,
                       })} className="text-muted-foreground hover:text-foreground">
                         <Pencil size={13} />
                       </button>
@@ -245,6 +246,41 @@ export default function AdminEsimPage() {
                 <input type="checkbox" checked={form.enabled} onChange={(e) => setForm({ ...form, enabled: e.target.checked })} />
                 Ativo (visível para clientes)
               </label>
+
+              {/* Logo do plano */}
+              <div className="pt-2 border-t border-border">
+                <label className="label-eyebrow block mb-2">Logo do plano (opcional)</label>
+                {!form.id ? (
+                  <div className="text-xs text-muted-foreground border border-dashed border-border p-3">
+                    Salve o produto primeiro para enviar uma logo.
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="h-16 w-16 border border-border bg-paper-2 flex items-center justify-center overflow-hidden shrink-0">
+                      {form.logo_image ? (
+                        <img src={esimLogoUrl(form.id, form.logo_image) || ""} alt="logo" className="w-full h-full object-contain" />
+                      ) : (
+                        <ImageIcon size={20} className="text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <input ref={logoRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        onChange={(e) => handleLogoUpload(e.target.files?.[0] || null)} className="hidden" />
+                      <button type="button" onClick={() => logoRef.current?.click()} disabled={uploadingLogo}
+                        className="inline-flex items-center justify-center gap-2 border border-border py-2 text-xs hover:bg-paper-2 disabled:opacity-50">
+                        {uploadingLogo ? <Loader2 className="animate-spin" size={12} /> : <Upload size={12} />}
+                        {form.logo_image ? "Trocar logo" : "Enviar logo"}
+                      </button>
+                      {form.logo_image && (
+                        <button type="button" onClick={handleLogoRemove}
+                          className="inline-flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-destructive">
+                          <Trash2 size={12} /> Remover
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="mt-6 flex gap-2">
               <button onClick={() => setForm(null)} className="flex-1 border border-border py-2 text-sm">Cancelar</button>
