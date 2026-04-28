@@ -101,7 +101,7 @@ export default function LoginPage() {
             </Link>
             <p className="mt-5 max-w-sm leading-relaxed">© {new Date().getFullYear()} CometaSMS.<br />Números virtuais e recargas com fluxo rápido e seguro.</p>
           </div>
-          <div className="grid gap-3 text-muted-foreground"><Link to="/" className="hover:text-primary">Ativação</Link><Link to="/" className="hover:text-primary">Alugar número</Link><Link to="/" className="hover:text-primary">Lista de preços</Link><Link to="/" className="hover:text-primary">Serviços</Link></div>
+          <div className="grid gap-3 text-muted-foreground"><Link to="/" className="hover:text-primary">Ativação</Link><Link to="/" className="hover:text-primary">Lista de preços</Link><Link to="/" className="hover:text-primary">Serviços</Link></div>
           <div className="grid gap-3 text-muted-foreground"><Link to="/" className="hover:text-primary">Programa de referência</Link><Link to="/" className="hover:text-primary">Programa de fidelidade</Link><Link to="/" className="hover:text-primary">Regras do projeto</Link><Link to="/termos" className="hover:text-primary">Política e condições</Link></div>
           <div className="grid content-start gap-3 text-muted-foreground"><Link to="/" className="hover:text-primary">Feedback</Link><Link to="/login" className="hover:text-primary">Contatos</Link><Link to="/" className="hover:text-primary">API</Link><Link to="/" className="hover:text-primary">FAQ</Link></div>
         </div>

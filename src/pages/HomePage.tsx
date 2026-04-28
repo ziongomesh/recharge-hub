@@ -573,12 +573,6 @@ export default function HomePage() {
                     >
                       {t.buyNumber}
                     </button>
-                    <button
-                      onClick={requireLogin}
-                      className="rounded-full border border-primary/40 bg-card text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary/10 transition"
-                    >
-                      Alugar número
-                    </button>
                   </div>
                 </div>
 
@@ -749,7 +743,6 @@ export default function HomePage() {
           {/* Links centralizados em linha */}
           <nav className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm">
             <button onClick={requireLogin} className="hover:text-primary transition">Ativação</button>
-            <button onClick={requireLogin} className="hover:text-primary transition">Alugar número</button>
             <Link to="/precos" className="hover:text-primary transition">{t.prices}</Link>
             <button onClick={requireLogin} className="hover:text-primary transition">Serviços</button>
             <button onClick={requireLogin} className="hover:text-primary transition">Programa de referência</button>
