@@ -9,7 +9,7 @@ export default function PagamentosPage() {
   const [tab, setTab] = useState<"depositar" | "historico">("depositar");
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pix, setPix] = useState<{ qrCode: string; qrCodeBase64: string; pixCopiaECola: string; txId: string } | null>(null);
+  const [pix, setPix] = useState<{ qrCode: string; qrCodeBase64: string; pixCopiaECola: string; txId: string; amount: number } | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval>>();
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
