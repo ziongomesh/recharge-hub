@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { API_BASE_URL, esimApi, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
+import { API_BASE_URL, esimApi, esimLogoUrl, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Upload, Package, X, Pencil } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload, Package, X, Pencil, Image as ImageIcon } from "lucide-react";
 
 function EstoqueThumb({ id, onRemove }: { id: number; onRemove: () => void }) {
   const [src, setSrc] = useState<string | null>(null);
