@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const menuLinks = [
   { to: "/recargas",   label: "Recargas" },
-  { to: "/sms",        label: "SMS" },
+  { to: "/sms",        label: "SMS", soon: true },
   { to: "/esim",       label: "eSIM" },
 ];
 
@@ -65,7 +65,19 @@ export default function AppSidebar() {
         <div className="text-xs text-muted-foreground mb-2">Menu</div>
         <ul className="space-y-0.5">
           {menuLinks.map((l) => (
-            <li key={l.to}><Link to={l.to} className={linkClass(l.to)}>{l.label}</Link></li>
+            <li key={l.to}>
+              {l.soon ? (
+                <span
+                  className="flex items-center justify-between py-2 px-3 -mx-3 text-sm rounded text-muted-foreground/60 cursor-not-allowed"
+                  title="Em breve"
+                >
+                  <span>{l.label}</span>
+                  <span className="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-secondary/80 text-muted-foreground">em breve</span>
+                </span>
+              ) : (
+                <Link to={l.to} className={linkClass(l.to)}>{l.label}</Link>
+              )}
+            </li>
           ))}
         </ul>
 
