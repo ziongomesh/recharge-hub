@@ -311,7 +311,7 @@ const paymentMethods = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("sms");
+  const [tab, setTab] = useState<Tab>("recargas");
   const [services, setServices] = useState<SmsService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState(false);
