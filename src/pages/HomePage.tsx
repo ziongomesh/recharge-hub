@@ -526,21 +526,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Card país — somente Brasil */}
-            <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
-              <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
-              <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
-                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
-                  <BrazilFlagIcon />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{t.brazil}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {servicesLoading ? t.loading : servicesError ? "API indisponível" : `${totalSmsNumbers.toLocaleString("pt-BR")} ${t.available}`}
-                  </div>
-                </div>
-              </div>
-            </div>
+          </div>
           </div>
 
           {/* Coluna direita — bônus */}
