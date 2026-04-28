@@ -41,7 +41,7 @@ export default function PagamentosPage() {
           const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
           if (s.status === "paid") {
             clearInterval(pollRef.current!);
-            setConfirmed(true); await refreshUser(); toast.success("Pagamento confirmado!");
+            setConfirmed(true); await refreshUser(); fireConfetti(); toast.success("Pagamento confirmado!");
           }
         } catch {}
       }, 3000);
