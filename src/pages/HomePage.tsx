@@ -165,13 +165,12 @@ const copy = {
 };
 
 const liveMessages = [
-  { app: "Amazon", text: "Amazon code: 1234567890" },
-  { app: "Twitter", text: "191919 is your Twitter code" },
-  { app: "Instagram", text: "Use 191919 to verify your Instagram account" },
-  { app: "WhatsApp", text: "Seu código WhatsApp é 482-910" },
-  { app: "Telegram", text: "Telegram code: 73418" },
-  { app: "iFood", text: "Código de verificação iFood: 225604" },
-  { app: "Uber", text: "Uber code: 6812" },
+  { app: "Claro", text: "Recarga de R$ 20,00 confirmada para (11) ••••-1234" },
+  { app: "Vivo", text: "Recarga de R$ 50,00 confirmada para (21) ••••-5678" },
+  { app: "TIM", text: "Recarga de R$ 30,00 confirmada para (31) ••••-9012" },
+  { app: "Claro", text: "Recarga de R$ 15,00 confirmada para (47) ••••-3344" },
+  { app: "Vivo", text: "Recarga de R$ 100,00 confirmada para (51) ••••-7788" },
+  { app: "TIM", text: "Recarga de R$ 25,00 confirmada para (85) ••••-2211" },
 ];
 
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
