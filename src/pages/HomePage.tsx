@@ -396,14 +396,6 @@ export default function HomePage() {
             {/* Tabs */}
             <div className="rounded-full bg-card p-1.5 border border-border/60 grid grid-cols-3 gap-1">
               <button
-                onClick={() => setTab("sms")}
-                className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
-                  tab === "sms" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                SMS
-              </button>
-              <button
                 onClick={() => setTab("recargas")}
                 className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
                   tab === "recargas" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
@@ -418,6 +410,15 @@ export default function HomePage() {
                 }`}
               >
                 eSIM
+              </button>
+              <button
+                disabled
+                aria-disabled="true"
+                title="Em breve"
+                className="rounded-full py-2.5 text-[11px] sm:text-xs font-semibold text-muted-foreground/70 cursor-not-allowed flex items-center justify-center gap-1"
+              >
+                SMS
+                <span className="text-[9px] bg-secondary px-1.5 py-0.5 rounded-full">em breve</span>
               </button>
             </div>
 
