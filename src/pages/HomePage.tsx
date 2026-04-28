@@ -9,7 +9,7 @@ import opClaro from "@/assets/op-claro.png";
 import opTim from "@/assets/op-tim.png";
 import opVivo from "@/assets/op-vivo.png";
 
-const BRAZIL_COUNTRY_ID = 73; // Padrão Poeki/SMS-Activate para Brasil
+const BRAZIL_COUNTRY_ID = 73; // Padrão SMS-Activate para Brasil
 
 const fallbackSmsServices: SmsService[] = [
   { code: "wa", name: "WhatsApp", icon_url: null, stock: 1248, price: 3.9 },

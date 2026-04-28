@@ -173,7 +173,7 @@ export default function AdminSmsPage() {
           }}
         />
         <AdminBalanceHero
-          label="VizzionPay · SMS"
+          label="Provedor PIX · SMS"
           fetcher={async () => {
             const r = await pagamentosApi.adminBalance("sms");
             return {

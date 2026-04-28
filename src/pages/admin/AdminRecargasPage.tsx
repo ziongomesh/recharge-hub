@@ -39,7 +39,7 @@ export default function AdminRecargasPage() {
     <div>
       <div className="mb-6">
         <AdminBalanceHero
-          label="Poeki"
+          label="API de Recargas"
           fetcher={async () => {
             const r: any = await planosApi.poekiBalance();
             const bal = r?.data?.balance ?? r?.balance ?? r?.data?.amount ?? null;
