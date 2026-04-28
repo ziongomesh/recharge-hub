@@ -345,7 +345,7 @@ export default function HomePage() {
   // Carrega produtos eSIM disponíveis
   useEffect(() => {
     esimApi
-      .produtos()
+      .produtosPublicos()
       .then((r) => setEsimProdutos(r.produtos.filter((p) => p.stock > 0)))
       .catch(() => setEsimProdutos([]))
       .finally(() => setEsimLoading(false));
