@@ -282,6 +282,7 @@ const paymentMethods = [
   {
     name: "Bitcoin",
     className: "payment-bitcoin",
+    soon: true,
     icon: (
       <span className="inline-flex items-center gap-1.5">
         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F7931A] text-[11px] font-black text-white">₿</span>
@@ -292,6 +293,7 @@ const paymentMethods = [
   {
     name: "Ethereum",
     className: "payment-ethereum",
+    soon: true,
     icon: (
       <span className="inline-flex items-center gap-1.5">
         <svg viewBox="0 0 256 417" className="h-5 w-3" aria-hidden="true">
