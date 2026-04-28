@@ -93,6 +93,7 @@ export default function RegisterPage() {
               <div>
                 <label className="mb-2 block text-sm text-muted-foreground">CPF</label>
                 <input className={`${inputCls} font-mono`} required value={form.cpf} onChange={upd("cpf")} placeholder="000.000.000-00" />
+                <p className="mt-1.5 text-[11px] text-amber-500/90">⚠ Use seu CPF real — será validado ao gerar PIX.</p>
               </div>
             </div>
             <div>
