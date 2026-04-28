@@ -198,4 +198,88 @@ router.get('/admin/balance', authMiddleware, adminMiddleware, async (req, res) =
   });
 });
 
+// ---- ADMIN: reconciliar pagamentos pendentes consultando VizzionPay ----
+// Uso pontual (não polling automático). Consulta cada pendente com delay e
+// confirma os que já foram pagos, creditando saldo do usuário.
+router.post('/admin/reconcile-pending', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
+      return res.status(500).json({ message: 'Chaves VizzionPay não configuradas' });
+    }
+
+    // Pendentes das últimas 48h (ou todas se ?all=1)
+    const all = req.query.all === '1';
+    const sql = all
+      ? "SELECT * FROM pagamentos WHERE status = 'pending' ORDER BY created_at DESC"
+      : "SELECT * FROM pagamentos WHERE status = 'pending' AND created_at >= NOW() - INTERVAL 48 HOUR ORDER BY created_at DESC";
+    const [pendentes] = await db.query(sql);
+
+    const headers = {
+      'x-public-key': process.env.VIZZION_PUBLIC_KEY,
+      'x-secret-key': process.env.VIZZION_SECRET_KEY,
+    };
+
+    const results = [];
+    let confirmed = 0;
+    let stillPending = 0;
+    let errors = 0;
+
+    // Endpoints possíveis para consulta (a Vizzion não documenta um único)
+    const buildUrls = (txId) => [
+      `${VIZZION_URL}/gateway/transactions?id=${encodeURIComponent(txId)}`,
+      `${VIZZION_URL}/transaction/${encodeURIComponent(txId)}`,
+      `${VIZZION_URL}/gateway/pix/${encodeURIComponent(txId)}`,
+    ];
+
+    for (const p of pendentes) {
+      let found = null;
+      let lastErr = null;
+      for (const url of buildUrls(p.transaction_id)) {
+        try {
+          const { data } = await axios.get(url, { headers, timeout: 10000 });
+          // Procura status no payload (vários formatos possíveis)
+          const tx = data?.transaction || data?.data || data;
+          const status = (tx?.status || '').toString().toUpperCase();
+          if (status) { found = { status, raw: tx }; break; }
+        } catch (e) {
+          lastErr = e.response?.data?.error || e.response?.data?.message || e.message;
+          // Se for 404, tenta próximo endpoint
+          if (e.response?.status && e.response.status !== 404) break;
+        }
+      }
+
+      if (!found) {
+        errors++;
+        results.push({ tx: p.transaction_id, action: 'error', error: lastErr || 'não encontrado' });
+      } else if (['PAID', 'APPROVED', 'COMPLETED', 'CONFIRMED'].includes(found.status)) {
+        // Confirma e credita
+        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['paid', p.id]);
+        await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [p.amount, p.user_id]);
+        await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
+          [p.user_id, 'deposit_reconciled', `PIX reconciliado R$ ${p.amount} - TX: ${p.transaction_id}`]);
+        logger.webhook?.vizzionConfirmed?.(p.user_id, p.amount);
+        confirmed++;
+        results.push({ tx: p.transaction_id, action: 'confirmed', amount: Number(p.amount), userId: p.user_id });
+      } else {
+        stillPending++;
+        results.push({ tx: p.transaction_id, action: 'still_pending', status: found.status });
+      }
+
+      // Delay entre chamadas para não acionar bloqueio anti-polling
+      await new Promise(r => setTimeout(r, 1500));
+    }
+
+    res.json({
+      total: pendentes.length,
+      confirmed,
+      stillPending,
+      errors,
+      results,
+    });
+  } catch (err) {
+    console.error('Reconcile error:', err);
+    res.status(500).json({ message: 'Erro ao reconciliar', error: err.message });
+  }
+});
+
 module.exports = router;
