@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { esimApi, type EsimProduto, type EsimVenda } from "@/lib/api";
+import { esimApi, esimLogoUrl, type EsimProduto, type EsimVenda } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package, AlertTriangle } from "lucide-react";
@@ -90,8 +90,12 @@ export default function EsimPage() {
             <div key={p.id} className="glass-card glass-card-hover p-6 flex flex-col relative overflow-hidden">
               <div className={`absolute -top-16 -right-16 w-40 h-40 rounded-full bg-gradient-to-br ${opGradient(p.operadora)} opacity-25 blur-3xl pointer-events-none`} />
               <div className="relative flex items-start justify-between">
-                <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${opGradient(p.operadora)} flex items-center justify-center text-white shadow-lg`}>
-                  <Smartphone size={18} />
+                <div className={`h-11 w-11 rounded-2xl bg-gradient-to-br ${opGradient(p.operadora)} flex items-center justify-center text-white shadow-lg overflow-hidden`}>
+                  {p.logo_image ? (
+                    <img src={esimLogoUrl(p.id, p.logo_image) || ""} alt={p.name} className="w-full h-full object-contain bg-white/95 p-1" />
+                  ) : (
+                    <Smartphone size={18} />
+                  )}
                 </div>
                 <span className="stat-chip text-[10px]">{p.stock} em estoque</span>
               </div>
