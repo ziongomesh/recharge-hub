@@ -101,58 +101,10 @@ router.get('/status/:txId', authMiddleware, async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM pagamentos WHERE transaction_id = ?', [req.params.txId]);
     if (rows.length === 0) return res.status(404).json({ message: 'Pagamento não encontrado' });
-    let pagamento = rows[0];
+    const pagamento = rows[0];
 
-    // Se ainda pendente, consulta a VizzionPay diretamente (fallback sem webhook/ngrok)
-    if (pagamento.status === 'pending') {
-      const headers = {
-        'x-public-key': process.env.VIZZION_PUBLIC_KEY,
-        'x-secret-key': process.env.VIZZION_SECRET_KEY,
-      };
-      const txId = req.params.txId;
-      const candidates = [
-        `${VIZZION_URL}/gateway/transactions?id=${encodeURIComponent(txId)}`,
-        `${VIZZION_URL}/gateway/transactions/${encodeURIComponent(txId)}`,
-        `${VIZZION_URL}/transaction/${encodeURIComponent(txId)}`,
-      ];
-      let vizzionStatus = '';
-      for (const url of candidates) {
-        try {
-          const { data } = await axios.get(url, { headers, timeout: 8000 });
-          // Resposta pode vir em vários formatos
-          const tx = Array.isArray(data)
-            ? data[0]
-            : (data?.transaction || data?.data?.transaction || data?.data || data);
-          vizzionStatus = String(tx?.status || tx?.transactionStatus || '').toUpperCase();
-          if (vizzionStatus) break;
-        } catch (vErr) {
-          // tenta próximo path se 404, senão loga e segue
-          const st = vErr.response?.status;
-          if (st && st !== 404) {
-            console.error('[Vizzion poll]', url, st, vErr.response?.data || vErr.message);
-          }
-        }
-      }
-
-      const PAID = ['APPROVED', 'PAID', 'COMPLETED', 'CONFIRMED', 'SUCCESS'];
-      const FAILED = ['REFUSED', 'CANCELLED', 'CANCELED', 'EXPIRED', 'FAILED', 'CHARGEBACK'];
-
-      if (PAID.includes(vizzionStatus)) {
-        // proteção contra dupla-creditação
-        const [check] = await db.query('SELECT status FROM pagamentos WHERE id = ? FOR UPDATE', [pagamento.id]);
-        if (check[0]?.status === 'pending') {
-          await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['paid', pagamento.id]);
-          await db.query('UPDATE users SET balance = balance + ? WHERE id = ?', [pagamento.amount, pagamento.user_id]);
-          await db.query('INSERT INTO activity_logs (user_id, action, details) VALUES (?, ?, ?)',
-            [pagamento.user_id, 'deposit_confirmed_polling', `PIX confirmado via polling R$ ${pagamento.amount}`]);
-          logger.webhook?.vizzionConfirmed?.(pagamento.user_id, pagamento.amount);
-        }
-        pagamento = { ...pagamento, status: 'paid' };
-      } else if (FAILED.includes(vizzionStatus)) {
-        await db.query('UPDATE pagamentos SET status = ? WHERE id = ?', ['failed', pagamento.id]);
-        pagamento = { ...pagamento, status: 'failed' };
-      }
-    }
+    // VizzionPay BLOQUEIA polling. Status é atualizado exclusivamente via webhook
+    // (POST /api/webhooks/vizzion). Aqui apenas lemos o estado atual do banco.
 
     logger.pagamento.statusCheck(req.params.txId, pagamento.status);
     res.json({ status: pagamento.status, pagamento });
