@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { esimApi, type EsimProduto, type EsimVenda } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package } from "lucide-react";
+import { Loader2, ShoppingCart, X, Smartphone, Wifi, Package, AlertTriangle } from "lucide-react";
 import EsimQrModal from "@/components/EsimQrModal";
 
 export default function EsimPage() {
