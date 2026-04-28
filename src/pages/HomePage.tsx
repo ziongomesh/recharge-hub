@@ -90,9 +90,9 @@ const copy = {
     selectCountry: "Selecione o país",
     brazil: "Brasil",
     available: "números disponíveis",
-    heroTitle: "Receba SMS rapidamente em números virtuais em todo o mundo",
-    heroText: "Compre um número virtual e receba SMS sem limites. Para qualquer site ou aplicativo.",
-    buyNumber: "Comprar número",
+    heroTitle: "Recarregue seu número e compre chips virtuais de todo o Brasil",
+    heroText: "Recargas rápidas para Claro, TIM e Vivo, e eSIMs prontos para ativar em segundos.",
+    buyNumber: "Recarregar agora",
     new: "novo",
     ago: "há",
     bonusTitle: "Ganhe 15% de bônus no primeiro depósito",
@@ -120,9 +120,9 @@ const copy = {
     selectCountry: "Select country",
     brazil: "Brazil",
     available: "numbers available",
-    heroTitle: "Receive SMS fast on virtual numbers worldwide",
-    heroText: "Buy a virtual number and receive SMS without limits for any website or app.",
-    buyNumber: "Buy number",
+    heroTitle: "Top up your number and get virtual SIMs across Brazil",
+    heroText: "Fast top-ups for Claro, TIM and Vivo, plus eSIMs ready to activate in seconds.",
+    buyNumber: "Top up now",
     new: "new",
     ago: "min ago",
     bonusTitle: "Get a 15% bonus on your first deposit",
@@ -150,9 +150,9 @@ const copy = {
     selectCountry: "Selecciona el país",
     brazil: "Brasil",
     available: "números disponibles",
-    heroTitle: "Recibe SMS rápido en números virtuales de todo el mundo",
-    heroText: "Compra un número virtual y recibe SMS sin límites para cualquier sitio o aplicación.",
-    buyNumber: "Comprar número",
+    heroTitle: "Recarga tu número y compra chips virtuales en todo Brasil",
+    heroText: "Recargas rápidas para Claro, TIM y Vivo, y eSIMs listos para activar en segundos.",
+    buyNumber: "Recargar ahora",
     new: "nuevo",
     ago: "hace",
     bonusTitle: "Gana 15% de bono en tu primer depósito",
@@ -165,13 +165,12 @@ const copy = {
 };
 
 const liveMessages = [
-  { app: "Amazon", text: "Amazon code: 1234567890" },
-  { app: "Twitter", text: "191919 is your Twitter code" },
-  { app: "Instagram", text: "Use 191919 to verify your Instagram account" },
-  { app: "WhatsApp", text: "Seu código WhatsApp é 482-910" },
-  { app: "Telegram", text: "Telegram code: 73418" },
-  { app: "iFood", text: "Código de verificação iFood: 225604" },
-  { app: "Uber", text: "Uber code: 6812" },
+  { app: "Claro", text: "Recarga de R$ 20,00 confirmada para (11) ••••-1234" },
+  { app: "Vivo", text: "Recarga de R$ 50,00 confirmada para (21) ••••-5678" },
+  { app: "TIM", text: "Recarga de R$ 30,00 confirmada para (31) ••••-9012" },
+  { app: "Claro", text: "Recarga de R$ 15,00 confirmada para (47) ••••-3344" },
+  { app: "Vivo", text: "Recarga de R$ 100,00 confirmada para (51) ••••-7788" },
+  { app: "TIM", text: "Recarga de R$ 25,00 confirmada para (85) ••••-2211" },
 ];
 
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
@@ -312,7 +311,7 @@ const paymentMethods = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("sms");
+  const [tab, setTab] = useState<Tab>("recargas");
   const [services, setServices] = useState<SmsService[]>([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState(false);
@@ -397,14 +396,6 @@ export default function HomePage() {
             {/* Tabs */}
             <div className="rounded-full bg-card p-1.5 border border-border/60 grid grid-cols-3 gap-1">
               <button
-                onClick={() => setTab("sms")}
-                className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
-                  tab === "sms" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                SMS
-              </button>
-              <button
                 onClick={() => setTab("recargas")}
                 className={`rounded-full py-2.5 text-xs sm:text-sm font-semibold transition-colors ${
                   tab === "recargas" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
@@ -419,6 +410,15 @@ export default function HomePage() {
                 }`}
               >
                 eSIM
+              </button>
+              <button
+                disabled
+                aria-disabled="true"
+                title="Em breve"
+                className="rounded-full py-2.5 text-[11px] sm:text-xs font-semibold text-muted-foreground/70 cursor-not-allowed flex items-center justify-center gap-1"
+              >
+                SMS
+                <span className="text-[9px] bg-secondary px-1.5 py-0.5 rounded-full">em breve</span>
               </button>
             </div>
 
@@ -526,21 +526,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Card país — somente Brasil */}
-            <div className="rounded-xl border border-border/60 bg-card p-3 sm:p-4">
-              <div className="text-sm font-semibold mb-3">{t.selectCountry}</div>
-              <div className="flex items-center gap-3 rounded-xl px-2 py-2 bg-secondary/40">
-                <div className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center">
-                  <BrazilFlagIcon />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">{t.brazil}</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    {servicesLoading ? t.loading : servicesError ? "API indisponível" : `${totalSmsNumbers.toLocaleString("pt-BR")} ${t.available}`}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           {/* Coluna direita — bônus */}
@@ -594,29 +579,6 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* Bônus */}
-            <section className="sms-bonus-panel rounded-xl text-foreground p-6 sm:p-12 relative overflow-hidden min-h-[220px] sm:min-h-[280px] flex items-center">
-              <img
-                src={moneyBag}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-4 bottom-2 z-0 w-36 sm:right-8 sm:w-56 lg:right-12 lg:w-64 drop-shadow-2xl"
-              />
-              <div className="max-w-xl relative z-10">
-                <h2 className="font-display text-2xl sm:text-4xl leading-tight text-primary">
-                  {t.bonusTitle}
-                </h2>
-                <p className="mt-3 sm:mt-4 text-xs sm:text-sm text-muted-foreground max-w-lg">
-                  {t.bonusText}
-                </p>
-                <button
-                  onClick={requireLogin}
-                  className="mt-5 sm:mt-6 inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold hover:bg-primary/90 transition"
-                >
-                  <Wallet size={16} /> {t.recharge}
-                </button>
-              </div>
-            </section>
 
 
           </div>
