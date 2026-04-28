@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Eye } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import PublicHeader from "@/components/PublicHeader";
 
@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { login } = useAuth();
 
@@ -52,10 +53,12 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   className="w-full rounded-xl border border-border/60 bg-background/35 px-4 py-2.5 pr-10 text-sm backdrop-blur focus:outline-none focus:border-primary transition-colors"
-                  type="password" required value={password}
+                  type={showPassword ? "text" : "password"} required value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <Eye size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}>
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
               </div>
             </div>
 
