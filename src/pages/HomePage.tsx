@@ -175,7 +175,7 @@ const liveMessages = [
 ];
 
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
-type FaqItem = { question: string; answer: string };
+
 
 const serviceIconDomains: Record<string, string> = {
   "99app": "99app.com", "99": "99app.com", adobe: "adobe.com", agibank: "agibank.com.br",
