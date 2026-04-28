@@ -26,6 +26,13 @@ export default function SupportBubble() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => {}, []);
+
+  useEffect(() => {
+    const handler = () => { void start(); };
+    window.addEventListener("open-support", handler);
+    return () => window.removeEventListener("open-support", handler);
+  });
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, agentTyping]);
