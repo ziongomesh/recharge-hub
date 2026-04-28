@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const primaryLinks = [
   { to: "/recargas", label: "Recargas", icon: Zap },
-  { to: "/sms",      label: "SMS",      icon: MessageSquare },
+  { to: "/sms",      label: "SMS",      icon: MessageSquare, soon: true },
   { to: "/esim",     label: "eSIM",     icon: Smartphone },
 ];
 
