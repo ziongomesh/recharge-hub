@@ -23,7 +23,7 @@ export default function PagamentosPage() {
     setLoading(true);
     try {
       const r = await pagamentosApi.deposit(v);
-      setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id });
+      setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id, amount: v });
       pollRef.current = setInterval(async () => {
         try {
           const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
