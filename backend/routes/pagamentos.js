@@ -14,31 +14,56 @@ router.post('/deposit', authMiddleware, async (req, res) => {
     const { amount } = req.body;
     if (!amount || amount < 1) return res.status(400).json({ message: 'Valor mínimo: R$ 1,00' });
 
-    const [users] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
+    // Valida configuração do provedor PIX antes de tentar
+    if (!process.env.VIZZION_PUBLIC_KEY || !process.env.VIZZION_SECRET_KEY) {
+      console.error('[Deposit] Chaves do provedor PIX ausentes no .env (VIZZION_PUBLIC_KEY / VIZZION_SECRET_KEY)');
+      return res.status(500).json({ message: 'Provedor de pagamento não configurado. Contate o suporte.' });
+    }
+
+    const [users] = await db.query('SELECT id, username, email, phone, cpf FROM users WHERE id = ?', [req.userId]);
     const user = users[0];
+    if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
 
     const identifier = uuidv4();
-    const callbackUrl = `${process.env.NGROK_URL}/api/webhooks/vizzion`;
+    const baseUrl = process.env.PUBLIC_BASE_URL || process.env.NGROK_URL || '';
+    const callbackUrl = baseUrl ? `${baseUrl.replace(/\/$/, '')}/api/webhooks/vizzion` : undefined;
 
-    const { data } = await axios.post(`${VIZZION_URL}/gateway/pix/receive`, {
+    const payload = {
       identifier,
       amount: parseFloat(amount),
       client: {
-        name: user.username,
-        email: user.email,
-        phone: user.phone,
-        document: user.cpf,
+        name: user.username || 'Cliente',
+        email: user.email || 'noreply@cometasms.com',
+        phone: user.phone || '11999999999',
+        document: user.cpf || '00000000000',
       },
-      callbackUrl,
-    }, {
-      headers: {
-        'x-public-key': process.env.VIZZION_PUBLIC_KEY,
-        'x-secret-key': process.env.VIZZION_SECRET_KEY,
-        'Content-Type': 'application/json',
-      },
-    });
+    };
+    if (callbackUrl) payload.callbackUrl = callbackUrl;
 
-    const txId = data.transactionId;
+    let data;
+    try {
+      const resp = await axios.post(`${VIZZION_URL}/gateway/pix/receive`, payload, {
+        headers: {
+          'x-public-key': process.env.VIZZION_PUBLIC_KEY,
+          'x-secret-key': process.env.VIZZION_SECRET_KEY,
+          'Content-Type': 'application/json',
+        },
+        timeout: 15000,
+      });
+      data = resp.data;
+    } catch (apiErr) {
+      const status = apiErr.response?.status;
+      const body = apiErr.response?.data;
+      console.error('[Deposit] Provedor PIX falhou:', { status, body, message: apiErr.message });
+      const detail = body?.message || body?.error || apiErr.message || 'sem detalhes';
+      return res.status(502).json({ message: `Provedor PIX recusou (${status || 'sem status'}): ${detail}` });
+    }
+
+    const txId = data?.transactionId;
+    if (!txId) {
+      console.error('[Deposit] Provedor PIX não retornou transactionId. Resposta:', data);
+      return res.status(502).json({ message: 'Provedor PIX retornou resposta inválida.' });
+    }
 
     await db.query(
       'INSERT INTO pagamentos (user_id, transaction_id, amount, status) VALUES (?, ?, ?, ?)',
@@ -59,8 +84,8 @@ router.post('/deposit', authMiddleware, async (req, res) => {
       pixCopiaECola: data.pix?.code || '',
     });
   } catch (err) {
-    console.error('Deposit error:', err.response?.data || err.message);
-    res.status(500).json({ message: 'Erro ao gerar PIX' });
+    console.error('Deposit error:', err.message);
+    res.status(500).json({ message: 'Erro interno ao gerar PIX' });
   }
 });
 
