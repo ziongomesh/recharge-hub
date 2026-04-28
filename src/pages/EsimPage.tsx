@@ -110,7 +110,7 @@ export default function EsimPage() {
               <p className="text-[10px] text-muted-foreground mt-3 leading-relaxed">
                 Ao comprar você concorda com os{" "}
                 <button onClick={() => setTermsOpen(true)} className="underline underline-offset-2 hover:text-foreground">
-                  termos da iFlash Store
+                  termos da CometaSMS
                 </button>.
               </p>
             </div>
@@ -157,10 +157,10 @@ export default function EsimPage() {
               <X size={18} />
             </button>
             <div className="p-6 pr-12">
-              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">iFlash Store</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground">CometaSMS</div>
               <h3 className="font-display text-2xl mt-1 mb-4">Termos de Uso — eSIM</h3>
               <div className="border border-warning/40 bg-warning/10 rounded-xl p-3 text-xs mb-5">
-                ⚠️ Ao comprar você declara que leu e concorda com todas as regras da <strong>iFlash Store</strong>.
+                ⚠️ Ao comprar você declara que leu e concorda com todas as regras da <strong>CometaSMS</strong>.
               </div>
               <ul className="space-y-2.5 text-sm leading-relaxed">
                 <li className="flex gap-2"><span className="text-primary">•</span><span>Após a ativação, <strong>não há garantia</strong>.</span></li>
