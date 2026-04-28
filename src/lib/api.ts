@@ -285,8 +285,11 @@ export interface EsimProduto {
   observacao: string;
   enabled?: boolean;
   stock?: number;
+  logo_image?: string | null;
   created_at?: string;
 }
+export const esimLogoUrl = (id: number, logo_image?: string | null) =>
+  logo_image ? `${API_BASE_URL}/esim/produtos/${id}/logo?v=${encodeURIComponent(logo_image)}` : null;
 export interface EsimVenda {
   id: number;
   produto_name: string;
@@ -346,6 +349,20 @@ export const esimApi = {
   },
   adminDeleteEstoque: (estoqueId: number) =>
     api(`/esim/admin/estoque/${estoqueId}`, { method: "DELETE" }),
+  adminUploadLogo: async (id: number, file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_BASE_URL}/esim/admin/produtos/${id}/logo`, {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: fd,
+    });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || "Erro upload logo");
+    return res.json() as Promise<{ ok: true; logo_image: string }>;
+  },
+  adminRemoveLogo: (id: number) =>
+    api(`/esim/admin/produtos/${id}/logo`, { method: "DELETE" }),
 };
 
 // SMS (hero-sms)
