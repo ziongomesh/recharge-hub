@@ -27,7 +27,68 @@ export default function PagamentosPage() {
   const [pagamentos, setPagamentos] = useState<Pagamento[]>([]);
 
   useEffect(() => { if (tab === "historico") pagamentosApi.list("limit=1000").then((r) => setPagamentos(r.pagamentos)).catch(() => {}); }, [tab]);
-  useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
+
+  // Inicia (ou reinicia) o polling de uma TX, sobrevive a remontagem via localStorage.
+  const startPolling = (txId: string, amount: number) => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    localStorage.setItem("pendingPix", JSON.stringify({ txId, amount, ts: Date.now() }));
+    pollRef.current = setInterval(async () => {
+      try {
+        const s = await pagamentosApi.checkStatus(txId);
+        if (s.status === "paid") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = undefined;
+          localStorage.removeItem("pendingPix");
+          setConfirmed(true);
+          await refreshUser();
+          // Dispara o confete no próximo frame para garantir que o DOM já trocou
+          requestAnimationFrame(() => fireConfetti());
+          toast.success("Pagamento confirmado!");
+        } else if (s.status === "failed") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          pollRef.current = undefined;
+          localStorage.removeItem("pendingPix");
+        }
+      } catch {}
+    }, 3000);
+  };
+
+  // Ao montar: se houver uma TX pendente recente (<30min), reativa o polling.
+  useEffect(() => {
+    const raw = localStorage.getItem("pendingPix");
+    if (raw) {
+      try {
+        const { txId, amount, ts } = JSON.parse(raw);
+        if (txId && Date.now() - (ts || 0) < 30 * 60 * 1000) {
+          // Verifica imediatamente o status atual antes de re-mostrar o card de PIX
+          pagamentosApi.checkStatus(txId).then((s) => {
+            if (s.status === "paid") {
+              localStorage.removeItem("pendingPix");
+              setConfirmed(true);
+              refreshUser();
+              requestAnimationFrame(() => fireConfetti());
+              toast.success("Pagamento confirmado!");
+            } else if (s.status === "pending") {
+              setPix({
+                qrCode: "",
+                qrCodeBase64: "",
+                pixCopiaECola: "",
+                txId,
+                amount,
+              });
+              startPolling(txId, amount);
+            } else {
+              localStorage.removeItem("pendingPix");
+            }
+          }).catch(() => {});
+        } else {
+          localStorage.removeItem("pendingPix");
+        }
+      } catch { localStorage.removeItem("pendingPix"); }
+    }
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const deposit = async () => {
     const v = parseFloat(amount);
@@ -36,21 +97,17 @@ export default function PagamentosPage() {
     try {
       const r = await pagamentosApi.deposit(v);
       setPix({ qrCode: r.qrCode, qrCodeBase64: r.qrCodeBase64, pixCopiaECola: r.pixCopiaECola, txId: r.pagamento.transaction_id, amount: v });
-      pollRef.current = setInterval(async () => {
-        try {
-          const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
-          if (s.status === "paid") {
-            clearInterval(pollRef.current!);
-            setConfirmed(true); await refreshUser(); fireConfetti(); toast.success("Pagamento confirmado!");
-          }
-        } catch {}
-      }, 3000);
+      startPolling(r.pagamento.transaction_id, v);
     } catch (e: any) { toast.error(e.message || "Erro ao gerar PIX"); }
     finally { setLoading(false); }
   };
 
   const copy = () => { if (pix) { navigator.clipboard.writeText(pix.pixCopiaECola); toast.success("Código PIX copiado!"); } };
-  const reset = () => { setPix(null); setConfirmed(false); setAmount(""); if (pollRef.current) clearInterval(pollRef.current); };
+  const reset = () => {
+    setPix(null); setConfirmed(false); setAmount("");
+    if (pollRef.current) clearInterval(pollRef.current);
+    localStorage.removeItem("pendingPix");
+  };
   const formatMoney = (value: number) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   const balanceTimeline = pagamentos
     .slice()
