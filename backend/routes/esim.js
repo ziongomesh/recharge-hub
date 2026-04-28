@@ -210,6 +210,11 @@ router.delete('/admin/produtos/:id', authMiddleware, adminMiddleware, async (req
     for (const s of stock) {
       try { fs.unlinkSync(path.join(UPLOAD_DIR, s.qr_image)); } catch {}
     }
+    // Apaga logo se existir
+    const [prod] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (prod[0]?.logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, prod[0].logo_image)); } catch {}
+    }
     await db.query('DELETE FROM esim_produtos WHERE id = ?', [req.params.id]);
     res.json({ ok: true });
   } catch (err) {
