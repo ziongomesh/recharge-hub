@@ -175,7 +175,7 @@ const liveMessages = [
 ];
 
 type LiveNotification = (typeof liveMessages)[number] & { id: string };
-type FaqItem = { question: string; answer: string };
+
 
 const serviceIconDomains: Record<string, string> = {
   "99app": "99app.com", "99": "99app.com", adobe: "adobe.com", agibank: "agibank.com.br",
@@ -309,14 +309,6 @@ const paymentMethods = [
   },
 ];
 
-const faqItems: FaqItem[] = [
-  { question: "O que é um número virtual?", answer: "É um número temporário usado para receber SMS de confirmação sem expor seu telefone pessoal." },
-  { question: "Como funciona o CometaSMS?", answer: "Você escolhe o serviço, compra um número disponível e acompanha o SMS recebido em tempo real." },
-  { question: "A segurança é garantida após o término do aluguel do número?", answer: "Sim. O número é descartável e usado apenas durante o período da ativação." },
-  { question: "O que fazer se o SMS não chegar?", answer: "Aguarde alguns minutos, tente outro número disponível ou fale com o suporte pelos contatos públicos." },
-  { question: "Onde posso usar o número comprado?", answer: "Em serviços compatíveis com verificação por SMS, conforme disponibilidade do catálogo." },
-  { question: "Como pagar por um número virtual?", answer: "Após criar conta, você adiciona saldo e usa para comprar números ou recargas." },
-];
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -631,100 +623,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Por que escolher — stats */}
-      <section className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 mt-12 sm:mt-16">
-        <h2 className="font-display text-2xl sm:text-4xl text-foreground tracking-tight">
-          Por que escolher o CometaSMS
-        </h2>
-        <div className="mt-6 grid gap-6 rounded-2xl border border-border/60 bg-card/70 backdrop-blur p-8 sm:p-12 sm:grid-cols-3">
-          {[
-            { num: "180+", label: "suporte a mais de 180 países" },
-            { num: "1500+", label: "serviços e aplicativos do mundo todo" },
-            { num: "35%", label: "até 35% de desconto para usuários frequentes" },
-          ].map((s) => (
-            <div key={s.num}>
-              <div className="font-display text-4xl sm:text-5xl text-primary tracking-tight">{s.num}</div>
-              <p className="mt-2 text-sm text-muted-foreground max-w-[220px]">{s.label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Pague com criptomoeda */}
-      <section className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 mt-10 sm:mt-14">
-        <div className="relative overflow-hidden rounded-2xl p-8 sm:p-12 text-primary-foreground" style={{ background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(280 85% 55%) 100%)" }}>
-          <div className="relative z-10 max-w-xl">
-            <h2 className="font-display text-3xl sm:text-5xl leading-tight">Pague com criptomoeda.</h2>
-            <div className="mt-6 flex items-center gap-3 flex-wrap">
-              <button onClick={requireLogin} className="rounded-full bg-background text-foreground px-5 py-2.5 text-sm font-semibold hover:bg-background/90">
-                Recarregar saldo
-              </button>
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#26A17B] text-white text-xs font-black">₮</span>
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#F7931A] text-white text-sm font-black">₿</span>
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#627EEA] text-white text-sm font-black">◆</span>
-            </div>
-          </div>
-          <div aria-hidden="true" className="pointer-events-none absolute -right-4 -bottom-6 sm:right-6 sm:bottom-2 opacity-90">
-            <svg viewBox="0 0 200 220" className="w-40 sm:w-56 drop-shadow-2xl">
-              <defs>
-                <linearGradient id="shieldG" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#f5f7fa" />
-                  <stop offset="100%" stopColor="#c3cdd9" />
-                </linearGradient>
-              </defs>
-              <path d="M100 10 L180 40 V110 C180 160 140 200 100 210 C60 200 20 160 20 110 V40 Z" fill="url(#shieldG)" stroke="#94a3b8" strokeWidth="3" />
-              <circle cx="100" cy="105" r="42" fill="#F7931A" />
-              <text x="100" y="125" textAnchor="middle" fontSize="60" fontWeight="900" fill="#fff" fontFamily="system-ui">₿</text>
-            </svg>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section id="faq" className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 mt-12 sm:mt-16">
-        <h2 className="font-display text-2xl sm:text-4xl text-foreground tracking-tight">
-          Respostas para perguntas frequentes
-        </h2>
-        <div className="mt-6 rounded-2xl border border-border/60 bg-card/70 backdrop-blur divide-y divide-border/60 overflow-hidden">
-          {faqItems.map((item, i) => (
-            <details key={i} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between px-6 py-5 text-sm sm:text-base font-medium text-foreground hover:bg-secondary/40 transition">
-                <span>{item.question}</span>
-                <ChevronRight size={18} className="text-muted-foreground transition-transform group-open:rotate-90" />
-              </summary>
-              <div className="px-6 pb-5 text-sm text-muted-foreground">{item.answer}</div>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      {/* Guia */}
-      <section className="relative z-10 mx-auto max-w-7xl px-3 sm:px-6 mt-12 sm:mt-16 mb-8">
-        <div className="rounded-2xl border border-border/60 bg-card/70 backdrop-blur p-8 sm:p-12">
-          <h2 className="font-display text-2xl sm:text-4xl text-foreground tracking-tight">
-            Guia do CometaSMS e seus serviços
-          </h2>
-          <p className="mt-4 text-sm text-muted-foreground max-w-3xl">
-            CometaSMS é um serviço conveniente para usuários que precisam de um número de telefone virtual para receber SMS online. Você pode obter números descartáveis e de longo prazo, projetados para confirmações via SMS — adequados para registro em mensageiros, redes sociais e plataformas de comércio.
-          </p>
-
-          <h3 className="font-display text-lg sm:text-xl text-foreground mt-8">Como adquirir um número virtual para receber SMS</h3>
-          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            {[
-              ["Escolha o serviço:", "selecione o serviço desejado na lista da página inicial."],
-              ["Configuração:", "indique o país e a quantidade de números virtuais ou descartáveis."],
-              ["Compra do número:", "clique em comprar para confirmar e pagar pelo número."],
-              ["Ativação:", "use o número virtual recebido no campo necessário para registro."],
-              ["Recebendo SMS:", "o código de verificação aparecerá ao lado do seu número."],
-            ].map(([k, v], i) => (
-              <li key={i} className="flex gap-3">
-                <span className="mt-2 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                <span><span className="font-semibold text-foreground">{k}</span> {v}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
 
       <footer className="relative z-10 mt-10 border-t border-border/50 bg-background/90 py-10 sm:py-12 text-foreground backdrop-blur">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 flex flex-col items-center text-center">
@@ -749,9 +648,6 @@ export default function HomePage() {
             <button onClick={requireLogin} className="hover:text-primary transition">Programa de fidelidade</button>
             <button onClick={requireLogin} className="hover:text-primary transition">Regras do projeto</button>
             <Link to="/termos" className="hover:text-primary transition">{t.terms}</Link>
-            <a href="#feedbacks" className="hover:text-primary transition">Feedback</a>
-            <a href="#contatos" className="hover:text-primary transition">Contatos</a>
-            <a href="#faq" className="hover:text-primary transition">FAQ</a>
           </nav>
 
           <p className="mt-7 text-[11px] text-foreground/50">
