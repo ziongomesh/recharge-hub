@@ -527,7 +527,6 @@ export default function HomePage() {
             </div>
 
           </div>
-          </div>
 
           {/* Coluna direita — bônus */}
           <div className="space-y-6">
