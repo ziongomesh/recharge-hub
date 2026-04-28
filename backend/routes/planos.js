@@ -34,9 +34,10 @@ router.get('/poeki-balance', authMiddleware, adminMiddleware, async (req, res) =
     res.json(data);
   } catch (err) {
     const status = err.response?.status;
-    const poekiMsg = err.response?.data?.message || err.response?.data?.error || JSON.stringify(err.response?.data || {});
-    console.error('Poeki balance error:', status, poekiMsg, err.message);
-    res.status(500).json({ message: `Poeki ${status || ''}: ${poekiMsg || err.message}` });
+    // Não expõe payload bruto da API parceira ao cliente
+    const safeMsg = err.response?.data?.message || err.response?.data?.error || 'Falha ao consultar saldo';
+    console.error('Provider balance error:', status, err.response?.data || err.message);
+    res.status(500).json({ message: status ? `Provider ${status}: ${safeMsg}` : safeMsg });
   }
 });
 

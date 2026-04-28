@@ -89,9 +89,12 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM users WHERE id = ?', [req.userId]);
+    const [rows] = await db.query(
+      'SELECT id, username, email, phone, cpf, role, balance, created_at, last_login_at FROM users WHERE id = ?',
+      [req.userId]
+    );
     if (rows.length === 0) return res.status(404).json({ message: 'Usuário não encontrado' });
-    const user = sanitizeUser(rows[0]);
+    const user = rows[0];
     logger.auth.me(user.id, user.username);
     res.json({ user, adminVerified: !!req.adminVerified });
   } catch (err) {
