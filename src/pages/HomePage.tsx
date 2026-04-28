@@ -309,14 +309,6 @@ const paymentMethods = [
   },
 ];
 
-const faqItems: FaqItem[] = [
-  { question: "O que é um número virtual?", answer: "É um número temporário usado para receber SMS de confirmação sem expor seu telefone pessoal." },
-  { question: "Como funciona o CometaSMS?", answer: "Você escolhe o serviço, compra um número disponível e acompanha o SMS recebido em tempo real." },
-  { question: "A segurança é garantida após o término do aluguel do número?", answer: "Sim. O número é descartável e usado apenas durante o período da ativação." },
-  { question: "O que fazer se o SMS não chegar?", answer: "Aguarde alguns minutos, tente outro número disponível ou fale com o suporte pelos contatos públicos." },
-  { question: "Onde posso usar o número comprado?", answer: "Em serviços compatíveis com verificação por SMS, conforme disponibilidade do catálogo." },
-  { question: "Como pagar por um número virtual?", answer: "Após criar conta, você adiciona saldo e usa para comprar números ou recargas." },
-];
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -656,9 +648,6 @@ export default function HomePage() {
             <button onClick={requireLogin} className="hover:text-primary transition">Programa de fidelidade</button>
             <button onClick={requireLogin} className="hover:text-primary transition">Regras do projeto</button>
             <Link to="/termos" className="hover:text-primary transition">{t.terms}</Link>
-            <a href="#feedbacks" className="hover:text-primary transition">Feedback</a>
-            <a href="#contatos" className="hover:text-primary transition">Contatos</a>
-            <a href="#faq" className="hover:text-primary transition">FAQ</a>
           </nav>
 
           <p className="mt-7 text-[11px] text-foreground/50">
