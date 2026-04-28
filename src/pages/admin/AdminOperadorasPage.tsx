@@ -143,12 +143,12 @@ export default function AdminOperadorasPage() {
       </div>
 
 
-      {/* Comparativo lado a lado: Poeki API vs. Sistema local */}
+      {/* Comparativo lado a lado: API de Recargas vs. Sistema local */}
       <Card className="mb-6">
         <CardHeader className="py-3">
           <CardTitle className="text-sm flex items-center justify-between">
             <span>
-              Status Poeki <span className="text-muted-foreground font-normal">(chave …{poekiKeyTail || "?"})</span>
+              Status do Provedor <span className="text-muted-foreground font-normal">(chave …{poekiKeyTail || "?"})</span>
             </span>
             <button onClick={loadPoekiStatus} className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1">
               <RefreshCw size={12} /> Atualizar
@@ -157,11 +157,11 @@ export default function AdminOperadorasPage() {
         </CardHeader>
         <CardContent>
           {poekiError && (
-            <p className="text-xs text-destructive mb-2">Erro ao consultar Poeki: {poekiError}</p>
+            <p className="text-xs text-destructive mb-2">Erro ao consultar provedor: {poekiError}</p>
           )}
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <div className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground mb-2">Poeki API retorna</div>
+              <div className="text-[10px] uppercase tracking-widest font-mono text-muted-foreground mb-2">Provedor retorna</div>
               {poekiStatus === null ? (
                 <p className="text-xs text-muted-foreground">Carregando…</p>
               ) : poekiStatus.length === 0 ? (
