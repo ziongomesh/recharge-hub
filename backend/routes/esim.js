@@ -11,6 +11,9 @@ const router = express.Router();
 const UPLOAD_DIR = path.join(__dirname, '..', 'uploads', 'esim');
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+const LOGO_DIR = path.join(__dirname, '..', 'uploads', 'esim_logos');
+if (!fs.existsSync(LOGO_DIR)) fs.mkdirSync(LOGO_DIR, { recursive: true });
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => {
@@ -27,12 +30,28 @@ const upload = multer({
   },
 });
 
+const logoStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, LOGO_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase() || '.png';
+    cb(null, `logo_${req.params.id}_${Date.now()}${ext}`);
+  },
+});
+const logoUpload = multer({
+  storage: logoStorage,
+  limits: { fileSize: 2 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/^image\/(png|jpe?g|webp|svg\+xml)$/.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Formato inválido (PNG/JPG/WEBP/SVG)'));
+  },
+});
+
 // ============ PUBLIC (user) ============
 
 // Helper para listar produtos disponíveis (estoque > 0)
 async function listAvailableProdutos() {
   const [rows] = await db.query(
-    `SELECT p.id, p.name, p.operadora, p.amount, p.observacao,
+    `SELECT p.id, p.name, p.operadora, p.amount, p.observacao, p.logo_image,
             (SELECT COUNT(*) FROM esim_estoque e WHERE e.produto_id = p.id) AS stock
      FROM esim_produtos p
      WHERE p.enabled = TRUE
@@ -191,6 +210,11 @@ router.delete('/admin/produtos/:id', authMiddleware, adminMiddleware, async (req
     for (const s of stock) {
       try { fs.unlinkSync(path.join(UPLOAD_DIR, s.qr_image)); } catch {}
     }
+    // Apaga logo se existir
+    const [prod] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (prod[0]?.logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, prod[0].logo_image)); } catch {}
+    }
     await db.query('DELETE FROM esim_produtos WHERE id = ?', [req.params.id]);
     res.json({ ok: true });
   } catch (err) {
@@ -243,6 +267,58 @@ router.get('/admin/estoque/:id/image', authMiddleware, adminMiddleware, async (r
     res.sendFile(path.join(UPLOAD_DIR, rows[0].qr_image));
   } catch {
     res.status(500).end();
+  }
+});
+
+// ============ LOGO do produto ============
+
+// Servir a logo publicamente (sem auth) — usada na vitrine/cards
+router.get('/produtos/:id/logo', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0 || !rows[0].logo_image) return res.status(404).end();
+    const filePath = path.join(LOGO_DIR, rows[0].logo_image);
+    if (!fs.existsSync(filePath)) return res.status(404).end();
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(filePath);
+  } catch {
+    res.status(500).end();
+  }
+});
+
+// Upload da logo (admin)
+router.post('/admin/produtos/:id/logo', authMiddleware, adminMiddleware, logoUpload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'Nenhum arquivo' });
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) {
+      try { fs.unlinkSync(req.file.path); } catch {}
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+    // remove logo antiga se existir
+    if (rows[0].logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, rows[0].logo_image)); } catch {}
+    }
+    await db.query('UPDATE esim_produtos SET logo_image = ? WHERE id = ?', [req.file.filename, req.params.id]);
+    res.json({ ok: true, logo_image: req.file.filename });
+  } catch (err) {
+    console.error('upload logo eSIM:', err);
+    res.status(500).json({ message: err.message || 'Erro no upload' });
+  }
+});
+
+// Remover a logo (admin)
+router.delete('/admin/produtos/:id/logo', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Não encontrado' });
+    if (rows[0].logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, rows[0].logo_image)); } catch {}
+    }
+    await db.query('UPDATE esim_produtos SET logo_image = NULL WHERE id = ?', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro' });
   }
 });
 
