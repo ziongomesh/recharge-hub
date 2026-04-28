@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Eye } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { SocialAuthButtons } from "@/components/SocialAuthButtons";
 import PublicHeader from "@/components/PublicHeader";
 
@@ -39,6 +39,8 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ username: "", email: "", password: "", phone: "", cpf: "" });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { register } = useAuth();
 
   const upd = (f: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,8 +98,10 @@ export default function RegisterPage() {
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Sua senha</label>
               <div className="relative">
-                <input className={`${inputCls} pr-10`} type="password" required value={form.password} onChange={upd("password")} />
-                <Eye size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input className={`${inputCls} pr-10`} type={showPassword ? "text" : "password"} required value={form.password} onChange={upd("password")} />
+                <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}>
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
               </div>
               {form.password && (() => {
                 const s = getPasswordStrength(form.password);
@@ -119,8 +123,10 @@ export default function RegisterPage() {
             <div>
               <label className="mb-2 block text-sm text-muted-foreground">Confirmar senha</label>
               <div className="relative">
-                <input className={`${inputCls} pr-10`} type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-                <Eye size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input className={`${inputCls} pr-10`} type={showConfirmPassword ? "text" : "password"} required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                <button type="button" onClick={() => setShowConfirmPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}>
+                  {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
               </div>
             </div>
 
