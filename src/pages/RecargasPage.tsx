@@ -225,7 +225,10 @@ export default function RecargasPage() {
 
         {!selectedOp ? (
           <div className="rounded-2xl border border-dashed border-border/70 p-10 text-center">
-            <div className="text-4xl mb-3">📱</div>
+            <div className="mx-auto mb-4 h-10 w-10 rounded-full border border-border/70 bg-card/40 relative">
+              <span className="absolute inset-1.5 rounded-full border border-border/60" />
+              <span className="absolute left-1/2 top-1/2 h-1 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-muted-foreground/60" />
+            </div>
             <p className="text-sm text-muted-foreground">Digite o número à esquerda para liberar os planos.</p>
           </div>
         ) : loadingPlanos ? (
