@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Headphones, Moon, Send, Smartphone, Sun } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const currentLang = { code: "pt", localized: "Português (Brasil)", iso: "br" };
 
