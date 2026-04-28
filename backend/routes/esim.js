@@ -265,4 +265,56 @@ router.get('/admin/estoque/:id/image', authMiddleware, adminMiddleware, async (r
   }
 });
 
+// ============ LOGO do produto ============
+
+// Servir a logo publicamente (sem auth) — usada na vitrine/cards
+router.get('/produtos/:id/logo', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0 || !rows[0].logo_image) return res.status(404).end();
+    const filePath = path.join(LOGO_DIR, rows[0].logo_image);
+    if (!fs.existsSync(filePath)) return res.status(404).end();
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(filePath);
+  } catch {
+    res.status(500).end();
+  }
+});
+
+// Upload da logo (admin)
+router.post('/admin/produtos/:id/logo', authMiddleware, adminMiddleware, logoUpload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'Nenhum arquivo' });
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) {
+      try { fs.unlinkSync(req.file.path); } catch {}
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+    // remove logo antiga se existir
+    if (rows[0].logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, rows[0].logo_image)); } catch {}
+    }
+    await db.query('UPDATE esim_produtos SET logo_image = ? WHERE id = ?', [req.file.filename, req.params.id]);
+    res.json({ ok: true, logo_image: req.file.filename });
+  } catch (err) {
+    console.error('upload logo eSIM:', err);
+    res.status(500).json({ message: err.message || 'Erro no upload' });
+  }
+});
+
+// Remover a logo (admin)
+router.delete('/admin/produtos/:id/logo', authMiddleware, adminMiddleware, async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT logo_image FROM esim_produtos WHERE id = ?', [req.params.id]);
+    if (rows.length === 0) return res.status(404).json({ message: 'Não encontrado' });
+    if (rows[0].logo_image) {
+      try { fs.unlinkSync(path.join(LOGO_DIR, rows[0].logo_image)); } catch {}
+    }
+    await db.query('UPDATE esim_produtos SET logo_image = NULL WHERE id = ?', [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ message: 'Erro' });
+  }
+});
+
 module.exports = router;
