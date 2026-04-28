@@ -1,51 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronDown, Headphones, Moon, Send, Smartphone, Sun } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Headphones, Moon, Send, Smartphone, Sun } from "lucide-react";
 
-type LangOption = { code: string; native: string; localized: string; iso: string };
-type LangGroup = { region: string; items: LangOption[] };
-
-const languageGroups: LangGroup[] = [
-  { region: "Recomendados", items: [
-    { code: "pt", native: "Português", localized: "Português (Brasil)", iso: "br" },
-    { code: "en", native: "English", localized: "Inglês", iso: "gb" },
-  ]},
-  { region: "Europa", items: [
-    { code: "ru", native: "Русский", localized: "Russo", iso: "ru" },
-    { code: "uk", native: "Українська", localized: "Ucraniano", iso: "ua" },
-    { code: "de", native: "Deutsch", localized: "Alemão", iso: "de" },
-    { code: "es", native: "Español", localized: "Espanhol", iso: "es" },
-    { code: "pt-PT", native: "Português", localized: "Português (Portugal)", iso: "pt" },
-  ]},
-  { region: "Oriente Médio", items: [
-    { code: "tr", native: "Türkçe", localized: "Turco", iso: "tr" },
-  ]},
-  { region: "Ásia Central", items: [
-    { code: "az", native: "Azərbaycan", localized: "Azerbaijano", iso: "az" },
-    { code: "uz", native: "Oʻzbekcha", localized: "Uzbeque", iso: "uz" },
-  ]},
-  { region: "Ásia", items: [
-    { code: "zh", native: "简体中文", localized: "Chinês (simplificado)", iso: "cn" },
-  ]},
-  { region: "Ásia do Sul", items: [
-    { code: "hi", native: "हिन्दी", localized: "Hindi", iso: "in" },
-    { code: "bn", native: "বাংলা", localized: "Bengali", iso: "bd" },
-  ]},
-];
+const currentLang = { code: "pt", localized: "Português (Brasil)", iso: "br" };
 
 type Theme = "light" | "dark";
 
 export default function PublicHeader() {
   const navigate = useNavigate();
-  const [langOpen, setLangOpen] = useState(false);
-  const [language, setLanguage] = useState<string>(() => localStorage.getItem("lang") || "pt");
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) || "light");
-  const currentLang = languageGroups.flatMap((g) => g.items).find((l) => l.code === language) ?? languageGroups[0].items[0];
-
-  useEffect(() => {
-    localStorage.setItem("lang", language);
-  }, [language]);
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
@@ -65,41 +28,10 @@ export default function PublicHeader() {
             <Headphones size={13} className="text-primary" />
             <span>Suporte</span>
           </a>
-          <Popover open={langOpen} onOpenChange={setLangOpen}>
-            <PopoverTrigger asChild>
-              <button className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors" aria-label="Idioma">
-                <img src={`https://flagcdn.com/24x18/${currentLang.iso}.png`} alt={currentLang.iso} className="w-5 h-auto rounded-[2px]" />
-                <span>{currentLang.localized}</span>
-                <ChevronDown size={12} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-[640px] max-w-[90vw] max-h-[70vh] overflow-y-auto p-6 rounded-xl">
-              <div className="space-y-5">
-                {languageGroups.map((group) => (
-                  <div key={group.region}>
-                    <div className="text-sm font-semibold text-foreground mb-3">{group.region}</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-2">
-                      {group.items.map((opt) => (
-                        <button
-                          key={opt.code}
-                          onClick={() => { setLanguage(opt.code); setLangOpen(false); }}
-                          className={`flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-secondary/60 transition ${language === opt.code ? "bg-secondary/40" : ""}`}
-                        >
-                          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary overflow-hidden">
-                            <img src={`https://flagcdn.com/48x36/${opt.iso}.png`} alt={opt.iso} className="w-6 h-auto rounded-[2px]" />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block text-sm font-medium text-foreground truncate">{opt.native}</span>
-                            <span className="block text-xs text-muted-foreground truncate">{opt.localized}</span>
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </PopoverContent>
-          </Popover>
+          <span className="inline-flex items-center gap-1.5 text-muted-foreground" aria-label="Idioma">
+            <img src={`https://flagcdn.com/24x18/${currentLang.iso}.png`} alt={currentLang.iso} className="w-5 h-auto rounded-[2px]" />
+            <span>{currentLang.localized}</span>
+          </span>
           <div className="inline-flex items-center gap-1.5">
             {theme === "light" ? (
               <button onClick={() => setTheme("dark")} className="inline-flex items-center gap-1.5 text-primary hover:opacity-80 transition" aria-label="Escuro">
