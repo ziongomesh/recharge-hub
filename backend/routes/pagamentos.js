@@ -24,13 +24,13 @@ router.post('/deposit', authMiddleware, async (req, res) => {
     const user = users[0];
     if (!user) return res.status(404).json({ message: 'Usuário não encontrado' });
 
-    // Valida CPF (apenas dígitos, 11 chars, não pode ser sequência repetida)
-    const cpfDigits = String(user.cpf || '').replace(/\D/g, '');
-    if (cpfDigits.length !== 11 || /^(\d)\1{10}$/.test(cpfDigits)) {
+    const { isValidCPF, onlyDigits } = require('../lib/cpf');
+    const cpfDigits = onlyDigits(user.cpf);
+    if (!isValidCPF(cpfDigits)) {
       return res.status(400).json({ message: 'CPF inválido ou não cadastrado. Atualize seu perfil antes de gerar PIX.' });
     }
 
-    const phoneDigits = String(user.phone || '').replace(/\D/g, '') || '11999999999';
+    const phoneDigits = onlyDigits(user.phone) || '11999999999';
 
     const identifier = uuidv4();
     const baseUrl = process.env.PUBLIC_BASE_URL || process.env.NGROK_URL || '';
