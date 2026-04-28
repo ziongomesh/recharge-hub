@@ -3,6 +3,18 @@ import { pagamentosApi, type Pagamento } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Loader2, Copy, ArrowUpRight, TrendingUp, Wallet, QrCode, CheckCircle2 } from "lucide-react";
+import confetti from "canvas-confetti";
+
+function fireConfetti() {
+  const end = Date.now() + 1500;
+  const colors = ["#f59e0b", "#fbbf24", "#10b981", "#3b82f6", "#ec4899"];
+  (function frame() {
+    confetti({ particleCount: 4, angle: 60, spread: 75, origin: { x: 0 }, colors });
+    confetti({ particleCount: 4, angle: 120, spread: 75, origin: { x: 1 }, colors });
+    if (Date.now() < end) requestAnimationFrame(frame);
+  })();
+  confetti({ particleCount: 120, spread: 100, origin: { y: 0.6 }, colors });
+}
 
 export default function PagamentosPage() {
   const { user, refreshUser } = useAuth();
@@ -29,7 +41,7 @@ export default function PagamentosPage() {
           const s = await pagamentosApi.checkStatus(r.pagamento.transaction_id);
           if (s.status === "paid") {
             clearInterval(pollRef.current!);
-            setConfirmed(true); await refreshUser(); toast.success("Pagamento confirmado!");
+            setConfirmed(true); await refreshUser(); fireConfetti(); toast.success("Pagamento confirmado!");
           }
         } catch {}
       }, 3000);
