@@ -10,7 +10,17 @@ type Theme = "light" | "dark";
 
 export default function PublicHeader() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem("theme") as Theme) || "light");
+
+  const handleSupport = () => {
+    if (user) {
+      window.dispatchEvent(new CustomEvent("open-support"));
+    } else {
+      toast.info("Faça login para acessar o chat de suporte");
+      navigate("/login");
+    }
+  };
 
   useEffect(() => {
     localStorage.setItem("theme", theme);
@@ -26,10 +36,10 @@ export default function PublicHeader() {
             <Send size={13} className="text-primary" />
             <span>Telegram</span>
           </a>
-          <a href="https://t.me/cometasms_support" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+          <button onClick={handleSupport} className="inline-flex items-center gap-1.5 hover:text-primary transition-colors" aria-label="Suporte">
             <Headphones size={13} className="text-primary" />
             <span>Suporte</span>
-          </a>
+          </button>
           <span className="inline-flex items-center gap-1.5 text-muted-foreground" aria-label="Idioma">
             <img src={`https://flagcdn.com/24x18/${currentLang.iso}.png`} alt={currentLang.iso} className="w-5 h-auto rounded-[2px]" />
             <span>{currentLang.localized}</span>
