@@ -73,7 +73,7 @@ export default function EsimPage() {
 
       <div className="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 flex items-start gap-2.5 text-sm">
         <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
-        <span><strong>Atenção:</strong> assim que você ativar seu eSIM, não damos garantia.</span>
+        <span><strong>Atenção:</strong> garantimos somente a ativação do eSIM. Após ativado, não há garantia.</span>
       </div>
 
       {loading ? (
