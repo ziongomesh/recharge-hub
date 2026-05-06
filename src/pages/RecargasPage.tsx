@@ -242,7 +242,21 @@ export default function RecargasPage() {
         ) : (
           <>
             <Alert tone="destructive" icon={AlertTriangle} title="Antes de prosseguir">
-              Confirme que o número é <strong className="uppercase">{selectedOp.name}</strong>. Sem reembolso em caso de erro.
+              {(() => {
+                const n = selectedOp.name.toLowerCase();
+                const afiliada = n.includes("tim")
+                  ? "PagSeguro (que usa rede TIM)"
+                  : n.includes("vivo")
+                  ? "operadoras afiliadas (ex.: Surf, Fluke)"
+                  : n.includes("claro")
+                  ? "operadoras afiliadas (ex.: Datora, Virgin)"
+                  : "operadoras afiliadas";
+                return (
+                  <>
+                    Não recarregamos para <strong>{afiliada}</strong>. Confirme que o número é realmente <strong className="uppercase">{selectedOp.name}</strong> e não de uma afiliada — sem reembolso em caso de erro.
+                  </>
+                );
+              })()}
             </Alert>
             <div className="grid grid-cols-2 gap-2.5 mt-4">
               {planos.map((p) => {
