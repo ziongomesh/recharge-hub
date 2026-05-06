@@ -135,10 +135,11 @@ router.post('/', authMiddleware, async (req, res) => {
     const webhookUrl = `${process.env.NGROK_URL}/api/webhooks/poeki`;
 
     const operatorName = ops[0].name.toLowerCase().trim();
+    const rechargeAmount = parseFloat(plano.face_value ?? plano.cost);
     const payload = {
       operator: operatorName,
       phone,
-      amount: parseFloat(plano.amount),
+      amount: rechargeAmount,
       webhookUrl,
       idempotencyKey,
     };

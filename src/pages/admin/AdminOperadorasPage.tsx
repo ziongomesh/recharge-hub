@@ -15,6 +15,7 @@ export default function AdminOperadorasPage() {
   const [selected, setSelected] = useState<Operadora | null>(null);
   const [allPlanos, setAllPlanos] = useState<Plano[]>([]);
   const [editing, setEditing] = useState<Record<number, string>>({});
+  const [editingFace, setEditingFace] = useState<Record<number, string>>({});
   const [markupOpen, setMarkupOpen] = useState(false);
   const [markupPct, setMarkupPct] = useState("30");
   const [syncing, setSyncing] = useState(false);
@@ -69,6 +70,17 @@ export default function AdminOperadorasPage() {
       setAllPlanos((prev) => prev.map((p) => p.id === plano.id ? { ...p, amount: newAmount } : p));
       setEditing((prev) => { const n = { ...prev }; delete n[plano.id]; return n; });
       toast.success("Preço atualizado");
+    } catch { toast.error("Erro ao salvar"); }
+  };
+
+  const saveFaceValue = async (plano: Plano) => {
+    const newFace = Number(editingFace[plano.id]);
+    if (!Number.isFinite(newFace) || newFace <= 0) { toast.error("Valor inválido"); return; }
+    try {
+      await planosApi.update(plano.id, { face_value: newFace } as any);
+      setAllPlanos((prev) => prev.map((p) => p.id === plano.id ? { ...p, face_value: newFace } : p));
+      setEditingFace((prev) => { const n = { ...prev }; delete n[plano.id]; return n; });
+      toast.success("Valor da recarga atualizado");
     } catch { toast.error("Erro ao salvar"); }
   };
 
@@ -259,6 +271,7 @@ export default function AdminOperadorasPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Custo API</TableHead>
+                        <TableHead>Vai p/ celular</TableHead>
                         <TableHead>Preço cliente</TableHead>
                         <TableHead>Lucro</TableHead>
                         <TableHead>Margem</TableHead>
@@ -268,11 +281,29 @@ export default function AdminOperadorasPage() {
                     <TableBody>
                       {ps.map((p) => {
                         const editVal = editing[p.id];
+                        const editFace = editingFace[p.id];
+                        const face = p.face_value ?? p.cost;
                         const profit = p.amount - p.cost;
                         const margin = p.cost > 0 ? (profit / p.cost) * 100 : 0;
                         return (
                           <TableRow key={p.id}>
                             <TableCell className="font-mono text-muted-foreground">R$ {p.cost.toFixed(2)}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  className="h-8 w-24"
+                                  value={editFace !== undefined ? editFace : face.toFixed(2)}
+                                  onChange={(e) => setEditingFace((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                                />
+                                {editFace !== undefined && (
+                                  <button onClick={() => saveFaceValue(p)} className="text-success hover:text-success/80" title="Salvar">
+                                    <Check size={16} />
+                                  </button>
+                                )}
+                              </div>
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Input

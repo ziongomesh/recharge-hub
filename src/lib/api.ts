@@ -60,6 +60,7 @@ function normalizePlano(plano: Plano): Plano {
     ...plano,
     amount: toNumber(plano.amount),
     cost: toNumber(plano.cost),
+    face_value: plano.face_value != null ? toNumber(plano.face_value) : toNumber(plano.cost),
   };
 }
 
@@ -600,6 +601,7 @@ export interface Plano {
   operadora_id: number;
   amount: number;
   cost: number;
+  face_value?: number;
 }
 
 export interface Pagamento {
