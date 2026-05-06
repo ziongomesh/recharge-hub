@@ -307,7 +307,7 @@ export default function AdminOperadorasPage() {
                         return (
                           <TableRow key={p.id}>
                             <TableCell className="font-mono text-muted-foreground">R$ {p.cost.toFixed(2)}</TableCell>
-                            <TableCell className="font-mono" title="Valor fixo definido pela API Poeki">
+                            <TableCell className="font-mono" title="Valor fixo definido pela API do provedor">
                               R$ {face.toFixed(2)}
                             </TableCell>
                             <TableCell>
