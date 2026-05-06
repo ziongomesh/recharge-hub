@@ -135,8 +135,11 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { amount, cost } = req.body;
-    await db.query('UPDATE planos SET amount = COALESCE(?, amount), cost = COALESCE(?, cost) WHERE id = ?', [amount, cost, req.params.id]);
+    const { amount, cost, face_value } = req.body;
+    await db.query(
+      'UPDATE planos SET amount = COALESCE(?, amount), cost = COALESCE(?, cost), face_value = COALESCE(?, face_value) WHERE id = ?',
+      [amount, cost, face_value, req.params.id]
+    );
     const [rows] = await db.query('SELECT * FROM planos WHERE id = ?', [req.params.id]);
     res.json(rows[0]);
   } catch (err) {
