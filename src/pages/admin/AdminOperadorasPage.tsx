@@ -271,7 +271,7 @@ export default function AdminOperadorasPage() {
                   <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px]">
                     <div className="rounded border border-border bg-muted/30 p-2">
                       <div className="font-mono uppercase tracking-wider text-muted-foreground">1 · Custo API</div>
-                      <div className="text-foreground/80 mt-0.5">O que <strong>nós pagamos</strong> à Poeki por essa recarga.</div>
+                      <div className="text-foreground/80 mt-0.5">O que <strong>nós pagamos</strong> ao provedor por essa recarga.</div>
                     </div>
                     <div className="rounded border border-border bg-muted/30 p-2">
                       <div className="font-mono uppercase tracking-wider text-muted-foreground">2 · Crédito no celular</div>
@@ -307,7 +307,7 @@ export default function AdminOperadorasPage() {
                         return (
                           <TableRow key={p.id}>
                             <TableCell className="font-mono text-muted-foreground">R$ {p.cost.toFixed(2)}</TableCell>
-                            <TableCell className="font-mono" title="Valor fixo definido pela API Poeki">
+                            <TableCell className="font-mono" title="Valor fixo definido pela API do provedor">
                               R$ {face.toFixed(2)}
                             </TableCell>
                             <TableCell>
