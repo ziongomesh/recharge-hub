@@ -601,6 +601,7 @@ export interface Plano {
   operadora_id: number;
   amount: number;
   cost: number;
+  face_value?: number;
 }
 
 export interface Pagamento {
