@@ -257,10 +257,13 @@ export default function RecargasPage() {
                         : "bg-card/60 border border-border hover:border-primary/50 hover:-translate-y-0.5"
                     }`}
                   >
-                    <div className={`text-[10px] uppercase tracking-widest ${active ? "text-white/70" : "text-muted-foreground"}`}>Receba</div>
-                    <div className="font-display text-3xl mt-1 tabular">R$ {p.amount.toFixed(0)}</div>
-                    <div className={`mt-2 text-[10px] font-mono uppercase tracking-widest ${active ? "text-white/80" : "text-muted-foreground"}`}>
-                      pague R$ {p.amount.toFixed(2)}
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${active ? "text-white/80" : "text-success"}`}>Receba</span>
+                      <span className="font-display text-3xl tabular leading-none">R$ {p.amount.toFixed(0)}</span>
+                    </div>
+                    <div className={`mt-3 pt-3 border-t flex items-baseline justify-between gap-2 ${active ? "border-white/20" : "border-border"}`}>
+                      <span className={`text-[10px] font-bold uppercase tracking-widest ${active ? "text-white/80" : "text-primary"}`}>Você paga</span>
+                      <span className={`font-display text-xl tabular leading-none ${active ? "text-white" : "text-foreground"}`}>R$ {p.amount.toFixed(2)}</span>
                     </div>
                   </button>
                 );
