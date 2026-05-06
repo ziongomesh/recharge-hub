@@ -271,6 +271,7 @@ export default function AdminOperadorasPage() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Custo API</TableHead>
+                        <TableHead>Vai p/ celular</TableHead>
                         <TableHead>Preço cliente</TableHead>
                         <TableHead>Lucro</TableHead>
                         <TableHead>Margem</TableHead>
@@ -280,11 +281,29 @@ export default function AdminOperadorasPage() {
                     <TableBody>
                       {ps.map((p) => {
                         const editVal = editing[p.id];
+                        const editFace = editingFace[p.id];
+                        const face = p.face_value ?? p.cost;
                         const profit = p.amount - p.cost;
                         const margin = p.cost > 0 ? (profit / p.cost) * 100 : 0;
                         return (
                           <TableRow key={p.id}>
                             <TableCell className="font-mono text-muted-foreground">R$ {p.cost.toFixed(2)}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  className="h-8 w-24"
+                                  value={editFace !== undefined ? editFace : face.toFixed(2)}
+                                  onChange={(e) => setEditingFace((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                                />
+                                {editFace !== undefined && (
+                                  <button onClick={() => saveFaceValue(p)} className="text-success hover:text-success/80" title="Salvar">
+                                    <Check size={16} />
+                                  </button>
+                                )}
+                              </div>
+                            </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <Input
