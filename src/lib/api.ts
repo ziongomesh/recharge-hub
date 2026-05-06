@@ -60,6 +60,7 @@ function normalizePlano(plano: Plano): Plano {
     ...plano,
     amount: toNumber(plano.amount),
     cost: toNumber(plano.cost),
+    face_value: plano.face_value != null ? toNumber(plano.face_value) : toNumber(plano.cost),
   };
 }
 
