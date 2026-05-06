@@ -341,6 +341,7 @@ export default function AdminOperadorasPage() {
                       })}
                     </TableBody>
                   </Table>
+                  </>
                 )}
               </CardContent>
             </Card>
