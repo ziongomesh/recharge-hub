@@ -15,6 +15,7 @@ export default function AdminOperadorasPage() {
   const [selected, setSelected] = useState<Operadora | null>(null);
   const [allPlanos, setAllPlanos] = useState<Plano[]>([]);
   const [editing, setEditing] = useState<Record<number, string>>({});
+  const [editingFace, setEditingFace] = useState<Record<number, string>>({});
   const [markupOpen, setMarkupOpen] = useState(false);
   const [markupPct, setMarkupPct] = useState("30");
   const [syncing, setSyncing] = useState(false);
