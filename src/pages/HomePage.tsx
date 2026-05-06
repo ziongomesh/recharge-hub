@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, ChevronDown, ChevronRight, Globe2, Grid2X2, Headphones, Lock, Moon, Search, MessageSquare, Send, ShieldCheck, Smartphone, Sun, Wallet } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { smsApi, esimApi, type SmsService, type EsimProduto } from "@/lib/api";
+import { smsApi, esimApi, esimLogoUrl, type SmsService, type EsimProduto } from "@/lib/api";
 import moneyBag from "@/assets/money-bag.webp";
 import PublicHeader from "@/components/PublicHeader";
 import opClaro from "@/assets/op-claro.png";
@@ -499,8 +499,12 @@ export default function HomePage() {
                             onClick={requireLogin}
                             className="w-full flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-secondary/50 transition-colors text-left"
                           >
-                            <div className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center shrink-0">
-                              <Smartphone size={16} className="text-primary" />
+                            <div className="h-9 w-9 rounded-xl bg-secondary flex items-center justify-center shrink-0 overflow-hidden">
+                              {p.logo_image ? (
+                                <img src={esimLogoUrl(p.id, p.logo_image) || ""} alt={p.name} className="w-full h-full object-contain bg-white/95 p-0.5" />
+                              ) : (
+                                <Smartphone size={16} className="text-primary" />
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium truncate">{p.name}</div>
