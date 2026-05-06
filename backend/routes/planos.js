@@ -63,29 +63,29 @@ router.post('/sync', authMiddleware, adminMiddleware, async (req, res) => {
       const poekiAmounts = values.map((v) => Number(v.amount));
 
       for (const v of values) {
-        const amount = Number(v.amount);
-        const cost = Number(v.cost);
-        // UPSERT by (operadora_id, amount): keep admin price, only update cost
+        const faceValue = Number(v.amount); // valor que vai pro celular do cliente
+        const cost = Number(v.cost);        // o que pagamos pra API
+        // UPSERT by (operadora_id, face_value): preserva preço admin, atualiza só o cost
         const [existing] = await db.query(
-          'SELECT id FROM planos WHERE operadora_id = ? AND amount = ?',
-          [operadora_id, amount]
+          'SELECT id FROM planos WHERE operadora_id = ? AND face_value = ?',
+          [operadora_id, faceValue]
         );
         if (existing.length > 0) {
           await db.query('UPDATE planos SET cost = ? WHERE id = ?', [cost, existing[0].id]);
           updated++;
         } else {
-          // New plan: default amount = cost (admin can edit later)
-          await db.query('INSERT INTO planos (operadora_id, amount, cost) VALUES (?, ?, ?)',
-            [operadora_id, amount, cost]);
+          // Novo plano: amount (preço cliente) começa = cost (admin edita depois)
+          await db.query('INSERT INTO planos (operadora_id, amount, cost, face_value) VALUES (?, ?, ?, ?)',
+            [operadora_id, cost, cost, faceValue]);
           created++;
         }
       }
 
-      // Remove planos that no longer exist in Poeki catalog for this operadora
+      // Remove planos que não existem mais no catálogo Poeki dessa operadora
       if (poekiAmounts.length > 0) {
         const placeholders = poekiAmounts.map(() => '?').join(',');
         await db.query(
-          `DELETE FROM planos WHERE operadora_id = ? AND amount NOT IN (${placeholders})`,
+          `DELETE FROM planos WHERE operadora_id = ? AND face_value NOT IN (${placeholders})`,
           [operadora_id, ...poekiAmounts]
         );
       }
