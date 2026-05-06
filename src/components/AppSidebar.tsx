@@ -138,7 +138,7 @@ export default function AppSidebar() {
 
       {/* Sidebar (desktop fixed / mobile drawer) */}
       <aside
-        className={`fixed left-0 top-0 h-screen flex flex-col bg-card border-r border-border/60 z-50 transition-transform duration-300 lg:translate-x-0 ${
+        className={`fixed left-0 top-0 h-screen flex flex-col bg-background border-r border-border/60 z-50 transition-transform duration-300 lg:translate-x-0 shadow-2xl lg:shadow-none ${
           open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
         style={{ width: "var(--sidebar-width)", maxWidth: "85vw" }}
