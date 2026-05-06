@@ -267,13 +267,32 @@ export default function AdminOperadorasPage() {
                 {ps.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">Nenhum plano. Sincronize com a API.</p>
                 ) : (
+                  <>
+                  <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px]">
+                    <div className="rounded border border-border bg-muted/30 p-2">
+                      <div className="font-mono uppercase tracking-wider text-muted-foreground">1 · Custo API</div>
+                      <div className="text-foreground/80 mt-0.5">O que <strong>nós pagamos</strong> à Poeki por essa recarga.</div>
+                    </div>
+                    <div className="rounded border border-border bg-muted/30 p-2">
+                      <div className="font-mono uppercase tracking-wider text-muted-foreground">2 · Crédito no celular</div>
+                      <div className="text-foreground/80 mt-0.5">Valor que o <strong>cliente recebe</strong> no chip (fixo, vem da API).</div>
+                    </div>
+                    <div className="rounded border border-border bg-muted/30 p-2">
+                      <div className="font-mono uppercase tracking-wider text-muted-foreground">3 · Preço final cliente</div>
+                      <div className="text-foreground/80 mt-0.5">Quanto o <strong>cliente paga</strong> aqui no site (você define).</div>
+                    </div>
+                    <div className="rounded border border-border bg-muted/30 p-2">
+                      <div className="font-mono uppercase tracking-wider text-muted-foreground">4 · Lucro / Margem</div>
+                      <div className="text-foreground/80 mt-0.5"><strong>Preço final − Custo API</strong>. Margem = lucro sobre o custo.</div>
+                    </div>
+                  </div>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Custo API</TableHead>
-                        <TableHead>Vai p/ celular</TableHead>
-                        <TableHead>Preço cliente</TableHead>
-                        <TableHead>Lucro</TableHead>
+                        <TableHead>1 · Custo API <span className="text-muted-foreground font-normal">(pagamos)</span></TableHead>
+                        <TableHead>2 · Crédito no celular <span className="text-muted-foreground font-normal">(cliente recebe)</span></TableHead>
+                        <TableHead>3 · Preço final <span className="text-muted-foreground font-normal">(cliente paga)</span></TableHead>
+                        <TableHead>4 · Lucro</TableHead>
                         <TableHead>Margem</TableHead>
                         <TableHead className="w-10"></TableHead>
                       </TableRow>
