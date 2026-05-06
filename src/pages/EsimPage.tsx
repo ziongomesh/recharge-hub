@@ -73,7 +73,7 @@ export default function EsimPage() {
 
       <div className="rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 flex items-start gap-2.5 text-sm">
         <AlertTriangle size={16} className="text-warning shrink-0 mt-0.5" />
-        <span><strong>Atenção:</strong> assim que você ativar seu eSIM, não damos garantia.</span>
+        <span><strong>Atenção:</strong> garantimos somente a ativação do eSIM. Após ativado, não há garantia.</span>
       </div>
 
       {loading ? (
@@ -137,7 +137,7 @@ export default function EsimPage() {
             </div>
             <div className="rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs flex items-start gap-2 mb-4">
               <AlertTriangle size={13} className="text-warning shrink-0 mt-0.5" />
-              <span>Assim que você ativar seu eSIM, <strong>não damos garantia</strong>.</span>
+              <span>Garantimos <strong>somente a ativação</strong>. Após ativado, não há garantia.</span>
             </div>
             <div className="flex gap-2">
               <button onClick={() => setConfirm(null)} className="flex-1 rounded-full border border-border py-2.5 text-sm hover:bg-card/60 transition">
