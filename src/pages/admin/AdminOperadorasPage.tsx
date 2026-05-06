@@ -73,6 +73,17 @@ export default function AdminOperadorasPage() {
     } catch { toast.error("Erro ao salvar"); }
   };
 
+  const saveFaceValue = async (plano: Plano) => {
+    const newFace = Number(editingFace[plano.id]);
+    if (!Number.isFinite(newFace) || newFace <= 0) { toast.error("Valor inválido"); return; }
+    try {
+      await planosApi.update(plano.id, { face_value: newFace } as any);
+      setAllPlanos((prev) => prev.map((p) => p.id === plano.id ? { ...p, face_value: newFace } : p));
+      setEditingFace((prev) => { const n = { ...prev }; delete n[plano.id]; return n; });
+      toast.success("Valor da recarga atualizado");
+    } catch { toast.error("Erro ao salvar"); }
+  };
+
   const syncCatalog = async () => {
     setSyncing(true);
     try {
