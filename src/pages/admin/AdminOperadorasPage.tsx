@@ -288,21 +288,8 @@ export default function AdminOperadorasPage() {
                         return (
                           <TableRow key={p.id}>
                             <TableCell className="font-mono text-muted-foreground">R$ {p.cost.toFixed(2)}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  className="h-8 w-24"
-                                  value={editFace !== undefined ? editFace : face.toFixed(2)}
-                                  onChange={(e) => setEditingFace((prev) => ({ ...prev, [p.id]: e.target.value }))}
-                                />
-                                {editFace !== undefined && (
-                                  <button onClick={() => saveFaceValue(p)} className="text-success hover:text-success/80" title="Salvar">
-                                    <Check size={16} />
-                                  </button>
-                                )}
-                              </div>
+                            <TableCell className="font-mono" title="Valor fixo definido pela API Poeki">
+                              R$ {face.toFixed(2)}
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
