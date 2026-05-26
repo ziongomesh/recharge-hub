@@ -121,6 +121,13 @@ export async function api<T = unknown>(path: string, options: RequestOptions = {
       (responseData && typeof responseData === "object" && "message" in responseData && typeof responseData.message === "string" && responseData.message) ||
       responseText ||
       `Erro ${res.status}`;
+    if (res.status === 401 && typeof window !== "undefined") {
+      removeToken();
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.assign("/login");
+      }
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
     throw new Error(errorMessage);
   }
 
