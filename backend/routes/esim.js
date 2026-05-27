@@ -51,11 +51,15 @@ const logoUpload = multer({
 // Helper para listar produtos disponíveis (estoque > 0)
 async function listAvailableProdutos() {
   const [rows] = await db.query(
-    `SELECT p.id, p.name, p.operadora, p.amount, p.observacao, p.logo_image,
-            (SELECT COUNT(*) FROM esim_estoque e WHERE e.produto_id = p.id) AS stock
+    `SELECT p.id, p.name, p.operadora, p.amount, p.observacao, p.logo_image, s.stock
      FROM esim_produtos p
+     INNER JOIN (
+       SELECT produto_id, COUNT(*) AS stock
+       FROM esim_estoque
+       GROUP BY produto_id
+     ) s ON s.produto_id = p.id
      WHERE p.enabled = TRUE
-     HAVING stock > 0
+       AND s.stock > 0
      ORDER BY p.operadora, p.amount`
   );
   return rows;
