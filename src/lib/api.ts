@@ -295,6 +295,7 @@ export interface EsimProduto {
   stock?: number;
   logo_image?: string | null;
   created_at?: string;
+  ddds?: string[];
 }
 export const esimLogoUrl = (id: number, logo_image?: string | null) =>
   logo_image ? `${API_BASE_URL}/esim/produtos/${id}/logo?v=${encodeURIComponent(logo_image)}` : null;
@@ -304,34 +305,40 @@ export interface EsimVenda {
   operadora: string;
   amount: number;
   observacao: string;
+  ddd?: string | null;
   created_at?: string;
 }
 export interface EsimEstoqueItem {
   id: number;
   qr_image: string;
+  ddd?: string | null;
   created_at: string;
 }
+export interface EsimDddItem { ddd: string; stock: number }
 export const esimApi = {
-  // user
   produtos: () =>
     api<{ produtos: EsimProduto[] }>("/esim/produtos").then((r) => ({
       produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
     })),
-  // vitrine pública (sem auth) — usada na home
   produtosPublicos: () =>
     api<{ produtos: EsimProduto[] }>("/esim/publicos").then((r) => ({
       produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
     })),
-  comprar: (produtoId: number) =>
-    api<{ venda: EsimVenda; qr: string | null }>(`/esim/comprar/${produtoId}`, { method: "POST" }).then((r) => ({
+  ddds: (produtoId: number) =>
+    api<{ ddds: EsimDddItem[] }>(`/esim/produtos/${produtoId}/ddds`).then((r) => ({
+      ddds: r.ddds.map((d) => ({ ddd: d.ddd || "", stock: toNumber(d.stock) })),
+    })),
+  comprar: (produtoId: number, ddd?: string | null) => {
+    const qs = ddd ? `?ddd=${encodeURIComponent(ddd)}` : "";
+    return api<{ venda: EsimVenda; qr: string | null }>(`/esim/comprar/${produtoId}${qs}`, { method: "POST" }).then((r) => ({
       ...r,
       venda: { ...r.venda, amount: toNumber(r.venda.amount) },
-    })),
+    }));
+  },
   minhas: () =>
     api<{ vendas: EsimVenda[] }>("/esim/minhas").then((r) => ({
       vendas: r.vendas.map((v) => ({ ...v, amount: toNumber(v.amount) })),
     })),
-  // admin
   adminProdutos: () =>
     api<{ produtos: EsimProduto[] }>("/esim/admin/produtos").then((r) => ({
       produtos: r.produtos.map((p) => ({ ...p, amount: toNumber(p.amount), stock: toNumber(p.stock) })),
@@ -343,9 +350,10 @@ export const esimApi = {
   adminDelete: (id: number) => api(`/esim/admin/produtos/${id}`, { method: "DELETE" }),
   adminEstoque: (id: number) =>
     api<{ estoque: EsimEstoqueItem[] }>(`/esim/admin/produtos/${id}/estoque`),
-  adminUploadEstoque: async (id: number, files: File[]) => {
+  adminUploadEstoque: async (id: number, files: File[], ddd?: string | null) => {
     const fd = new FormData();
     files.forEach((f) => fd.append("files", f));
+    if (ddd) fd.append("ddd", ddd);
     const token = localStorage.getItem("token");
     const res = await fetch(`${API_BASE_URL}/esim/admin/produtos/${id}/estoque`, {
       method: "POST",
@@ -355,6 +363,8 @@ export const esimApi = {
     if (!res.ok) throw new Error((await res.json().catch(() => ({}))).message || "Erro upload");
     return res.json() as Promise<{ added: number }>;
   },
+  adminUpdateEstoqueDdd: (estoqueId: number, ddd: string | null) =>
+    api<{ ok: true; ddd: string | null }>(`/esim/admin/estoque/${estoqueId}`, { method: "PUT", body: { ddd } }),
   adminDeleteEstoque: (estoqueId: number) =>
     api(`/esim/admin/estoque/${estoqueId}`, { method: "DELETE" }),
   adminUploadLogo: async (id: number, file: File) => {
