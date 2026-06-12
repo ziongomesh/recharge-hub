@@ -38,7 +38,7 @@ export default function EsimQrModal({ open, onClose, venda, qr }: Props) {
             <div className="label-eyebrow">Entrega imediata</div>
             <h2 className="font-display mt-2 text-3xl leading-tight">Seu eSIM está pronto</h2>
             <div className="mt-2 text-sm text-muted-foreground">
-              {venda.produto_name} · {venda.operadora} · R$ {venda.amount.toFixed(2)}
+              {venda.produto_name} · {venda.operadora}{venda.ddd ? ` · DDD ${venda.ddd}` : ""} · R$ {venda.amount.toFixed(2)}
             </div>
 
             <div className="mt-6 rounded-2xl border border-primary/25 bg-primary/10 p-4 text-sm text-foreground">
