@@ -1,22 +1,57 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { API_BASE_URL, esimApi, esimLogoUrl, type EsimProduto, type EsimEstoqueItem } from "@/lib/api";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, Upload, Package, X, Pencil, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload, Package, X, Pencil, Image as ImageIcon, MapPin, Check } from "lucide-react";
 
-function EstoqueThumb({ id, onRemove }: { id: number; onRemove: () => void }) {
+function EstoqueThumb({ item, onRemove, onSaveDdd }: { item: EsimEstoqueItem; onRemove: () => void; onSaveDdd: (ddd: string | null) => Promise<void> }) {
   const [src, setSrc] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(item.ddd || "");
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
     let url: string | null = null;
     const token = localStorage.getItem("token");
-    fetch(`${API_BASE_URL}/esim/admin/estoque/${id}/image`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    fetch(`${API_BASE_URL}/esim/admin/estoque/${item.id}/image`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
       .then((r) => r.blob())
       .then((b) => { url = URL.createObjectURL(b); setSrc(url); })
       .catch(() => {});
     return () => { if (url) URL.revokeObjectURL(url); };
-  }, [id]);
+  }, [item.id]);
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const clean = val.replace(/\D/g, "").slice(0, 2);
+      await onSaveDdd(clean || null);
+      setEditing(false);
+    } finally { setSaving(false); }
+  };
+
   return (
     <div className="relative border border-border bg-white aspect-square group">
       {src ? <img src={src} alt="" className="w-full h-full object-contain" /> : <div className="w-full h-full animate-pulse bg-paper-2" />}
+
+      {/* DDD badge */}
+      <div className="absolute top-1 left-1">
+        {editing ? (
+          <div className="flex items-center gap-1 bg-black/85 rounded px-1 py-0.5">
+            <input
+              value={val}
+              onChange={(e) => setVal(e.target.value.replace(/\D/g, "").slice(0, 2))}
+              autoFocus
+              placeholder="DDD"
+              className="w-10 bg-transparent text-white text-[11px] tabular outline-none placeholder:text-white/40"
+            />
+            <button onClick={save} disabled={saving} className="text-white"><Check size={11} /></button>
+          </div>
+        ) : (
+          <button onClick={() => { setVal(item.ddd || ""); setEditing(true); }} className="bg-black/75 text-white text-[10px] px-1.5 py-0.5 rounded tabular inline-flex items-center gap-1">
+            <MapPin size={9} /> {item.ddd || "—"}
+          </button>
+        )}
+      </div>
+
       <button onClick={onRemove} className="absolute top-1 right-1 bg-black/70 text-white p-1 opacity-0 group-hover:opacity-100 transition">
         <Trash2 size={12} />
       </button>
@@ -45,6 +80,7 @@ export default function AdminEsimPage() {
   const [estoque, setEstoque] = useState<EsimEstoqueItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadDdd, setUploadDdd] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const logoRef = useRef<HTMLInputElement>(null);
 
@@ -53,11 +89,8 @@ export default function AdminEsimPage() {
     try {
       const r = await esimApi.adminProdutos();
       setProdutos(r.produtos);
-    } catch (e: any) {
-      toast.error(e.message || "Erro");
-    } finally {
-      setLoading(false);
-    }
+    } catch (e: any) { toast.error(e.message || "Erro"); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { load(); }, []);
@@ -77,7 +110,6 @@ export default function AdminEsimPage() {
         await esimApi.adminUpdate(form.id, payload);
       } else {
         const r = await esimApi.adminCreate(payload);
-        // mantém o modal aberto com o id setado para permitir upload de logo logo após criar
         setForm({ ...form, id: r.id });
         toast.success("Criado. Adicione uma logo se quiser.");
         load();
@@ -119,16 +151,18 @@ export default function AdminEsimPage() {
 
   const openEstoque = async (p: EsimProduto) => {
     setEstoqueOf(p);
+    setUploadDdd("");
     try { const r = await esimApi.adminEstoque(p.id); setEstoque(r.estoque); }
     catch (e: any) { toast.error(e.message); }
   };
 
   const handleUpload = async (files: FileList | null) => {
     if (!files || !estoqueOf) return;
+    const dddClean = uploadDdd.replace(/\D/g, "").slice(0, 2) || null;
     setUploading(true);
     try {
-      const r = await esimApi.adminUploadEstoque(estoqueOf.id, Array.from(files));
-      toast.success(`${r.added} eSIM(s) adicionado(s)`);
+      const r = await esimApi.adminUploadEstoque(estoqueOf.id, Array.from(files), dddClean);
+      toast.success(`${r.added} eSIM(s) adicionado(s)${dddClean ? ` · DDD ${dddClean}` : ""}`);
       const e2 = await esimApi.adminEstoque(estoqueOf.id);
       setEstoque(e2.estoque);
       load();
@@ -144,6 +178,26 @@ export default function AdminEsimPage() {
       load();
     } catch (e: any) { toast.error(e.message); }
   };
+
+  const saveDdd = async (id: number, ddd: string | null) => {
+    try {
+      await esimApi.adminUpdateEstoqueDdd(id, ddd);
+      setEstoque((s) => s.map((x) => x.id === id ? { ...x, ddd } : x));
+      toast.success(ddd ? `DDD ${ddd} salvo` : "DDD removido");
+    } catch (e: any) { toast.error(e.message); }
+  };
+
+  const grouped = useMemo(() => {
+    const m = new Map<string, EsimEstoqueItem[]>();
+    for (const u of estoque) {
+      const k = u.ddd || "";
+      if (!m.has(k)) m.set(k, []);
+      m.get(k)!.push(u);
+    }
+    return Array.from(m.entries()).sort(([a], [b]) => {
+      if (!a) return 1; if (!b) return -1; return a.localeCompare(b);
+    });
+  }, [estoque]);
 
   return (
     <div>
@@ -247,7 +301,6 @@ export default function AdminEsimPage() {
                 Ativo (visível para clientes)
               </label>
 
-              {/* Logo do plano */}
               <div className="pt-2 border-t border-border">
                 <label className="label-eyebrow block mb-2">Logo do plano (opcional)</label>
                 {!form.id ? (
@@ -293,33 +346,65 @@ export default function AdminEsimPage() {
       {/* Estoque modal */}
       {estoqueOf && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-4" onClick={() => setEstoqueOf(null)}>
-          <div className="bg-paper border border-border max-w-2xl w-full max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-paper border border-border max-w-3xl w-full max-h-[90vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
                 <div className="label-eyebrow">Estoque</div>
                 <div className="font-display text-xl">{estoqueOf.name}</div>
-                <div className="text-xs text-muted-foreground">{estoque.length} unidade(s)</div>
+                <div className="text-xs text-muted-foreground">{estoque.length} unidade(s) · {grouped.length} grupo(s) de DDD</div>
               </div>
               <button onClick={() => setEstoqueOf(null)}><X size={18} /></button>
             </div>
 
-            <div className="p-6 border-b border-border">
-              <input ref={fileRef} type="file" multiple accept="image/png,image/jpeg,image/webp"
-                onChange={(e) => handleUpload(e.target.files)} className="hidden" />
-              <button onClick={() => fileRef.current?.click()} disabled={uploading}
-                className="w-full inline-flex items-center justify-center gap-2 border-2 border-dashed border-border py-6 text-sm hover:bg-paper-2 disabled:opacity-50">
-                {uploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
-                Enviar imagens de QR Code (selecione múltiplas)
-              </button>
+            <div className="p-6 border-b border-border space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] gap-3 items-end">
+                <div>
+                  <label className="label-eyebrow block mb-1">DDD deste lote</label>
+                  <input
+                    value={uploadDdd}
+                    onChange={(e) => setUploadDdd(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                    placeholder="ex: 11"
+                    className="w-full border border-border bg-background px-3 py-2 text-sm tabular"
+                  />
+                  <div className="text-[10px] text-muted-foreground mt-1">Vazio = sem DDD (sai como aleatório)</div>
+                </div>
+                <div>
+                  <input ref={fileRef} type="file" multiple accept="image/png,image/jpeg,image/webp"
+                    onChange={(e) => handleUpload(e.target.files)} className="hidden" />
+                  <button onClick={() => fileRef.current?.click()} disabled={uploading}
+                    className="w-full inline-flex items-center justify-center gap-2 border-2 border-dashed border-border py-5 text-sm hover:bg-paper-2 disabled:opacity-50">
+                    {uploading ? <Loader2 className="animate-spin" size={14} /> : <Upload size={14} />}
+                    Enviar QR Codes{uploadDdd ? ` · DDD ${uploadDdd}` : " · sem DDD"}
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6">
               {estoque.length === 0 ? (
                 <div className="text-center text-sm text-muted-foreground py-10">Sem unidades. Faça upload acima.</div>
               ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                  {estoque.map((u) => (
-                    <EstoqueThumb key={u.id} id={u.id} onRemove={() => removeUnit(u.id)} />
+                <div className="space-y-6">
+                  {grouped.map(([ddd, items]) => (
+                    <div key={ddd || "_none"}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <MapPin size={13} className="text-muted-foreground" />
+                        <div className="text-sm font-medium tabular">
+                          {ddd ? `DDD ${ddd}` : "Sem DDD (entrega aleatória)"}
+                        </div>
+                        <div className="text-xs text-muted-foreground">· {items.length} unidade(s)</div>
+                      </div>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                        {items.map((u) => (
+                          <EstoqueThumb
+                            key={u.id}
+                            item={u}
+                            onRemove={() => removeUnit(u.id)}
+                            onSaveDdd={(d) => saveDdd(u.id, d)}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
