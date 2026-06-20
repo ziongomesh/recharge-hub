@@ -534,43 +534,61 @@ export default function HomePage() {
 
           {/* Coluna direita — bônus */}
           <div className="space-y-6">
-            {/* Hero — Receba SMS */}
+            {/* Hero — estilo HeroSMS (roxo vivo + cards translúcidos) */}
             <section
-              className="relative overflow-hidden rounded-2xl p-6 sm:p-10 min-h-[280px] sm:min-h-[340px]"
-              style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.18) 0%, hsl(280 85% 70% / 0.18) 60%, hsl(320 85% 75% / 0.22) 100%)" }}
+              className="relative overflow-hidden rounded-3xl p-6 sm:p-10 min-h-[340px] sm:min-h-[420px] text-white shadow-[0_30px_80px_-30px_hsl(265_80%_30%/0.6)]"
+              style={{
+                background:
+                  "radial-gradient(120% 90% at 85% 20%, hsl(280 90% 70% / 0.55) 0%, transparent 55%), radial-gradient(110% 80% at 10% 100%, hsl(255 90% 55% / 0.55) 0%, transparent 60%), linear-gradient(135deg, #4f2bd6 0%, #6a3df0 45%, #8b5bff 100%)",
+              }}
             >
-              <div className="grid gap-6 lg:grid-cols-[1fr_minmax(0,280px)] items-center">
-                <div className="relative z-10">
-                  <h1 className="font-display text-2xl sm:text-4xl leading-tight text-foreground max-w-md">
+              {/* highlights decorativos */}
+              <div aria-hidden className="pointer-events-none absolute inset-0">
+                <div className="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-white/10 blur-3xl" />
+                <div className="absolute bottom-0 right-1/3 h-80 w-80 rounded-full bg-fuchsia-400/20 blur-3xl" />
+              </div>
+
+              <div className="relative z-10 grid gap-8 lg:grid-cols-[1fr_minmax(0,320px)] items-center">
+                <div>
+                  <h1 className="font-display text-3xl sm:text-5xl leading-[1.05] tracking-tight text-white max-w-xl">
                     {t.heroTitle}
                   </h1>
-                  <p className="mt-4 text-sm text-muted-foreground max-w-md">
+                  <p className="mt-5 text-sm sm:text-base text-white/80 max-w-md leading-relaxed">
                     {t.heroText}
                   </p>
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-7 flex flex-wrap gap-3">
                     <button
                       onClick={requireLogin}
-                      className="rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-semibold hover:bg-primary/90 transition"
+                      className="rounded-full bg-white text-[#5b2bd6] px-6 py-3 text-sm font-bold hover:bg-white/90 transition shadow-lg shadow-black/10"
                     >
                       {t.buyNumber}
                     </button>
+                    <Link
+                      to="/precos"
+                      className="rounded-full border border-white/30 bg-white/5 text-white px-6 py-3 text-sm font-semibold hover:bg-white/10 backdrop-blur transition"
+                    >
+                      {t.prices}
+                    </Link>
                   </div>
                 </div>
 
-                {/* Notificações ao vivo */}
-                <div className="relative z-10 space-y-3">
+                {/* Notificações ao vivo — estilo HeroSMS (cards de vidro escuro) */}
+                <div className="relative space-y-3">
                   {visibleMessages.map((m) => (
                     <div
                       key={m.id}
-                      className="rounded-2xl border border-border/60 bg-card/90 backdrop-blur p-3 shadow-sm animate-in fade-in slide-in-from-right-2 duration-500"
+                      className="rounded-2xl border border-white/15 bg-white/10 backdrop-blur-xl p-3.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] animate-in fade-in slide-in-from-right-2 duration-500"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="inline-flex h-6 items-center justify-center shrink-0">
-                          <OperatorIcon name={m.app} />
-                        </span>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">há 1 min.</span>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="inline-flex h-7 w-7 items-center justify-center shrink-0 rounded-full bg-white/95 p-0.5">
+                            <OperatorIcon name={m.app} />
+                          </span>
+                          <span className="text-xs font-semibold text-white truncate">{m.app}</span>
+                        </div>
+                        <span className="text-[10px] text-white/60 whitespace-nowrap">há 1 min.</span>
                       </div>
-                      <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2">{m.text}</p>
+                      <p className="mt-2 text-xs text-white/80 line-clamp-2 leading-snug">{m.text}</p>
                     </div>
                   ))}
                 </div>
