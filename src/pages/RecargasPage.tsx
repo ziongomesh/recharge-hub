@@ -139,8 +139,8 @@ export default function RecargasPage() {
             {[
               ["Telefone", phone],
               ["Operadora", selectedOp?.name],
-              ["Receba", `R$ ${selectedPlano?.amount.toFixed(2)}`],
-              ["Você paga", `R$ ${selectedPlano?.amount.toFixed(2)}`],
+              ["Receba", `R$ ${(selectedPlano?.face_value ?? selectedPlano?.amount ?? 0).toFixed(2)}`],
+              ["Você paga", `R$ ${(selectedPlano?.amount ?? 0).toFixed(2)}`],
             ].map(([k, v], i) => (
               <div key={k as string} className={`flex items-center justify-between px-5 py-4 ${i % 2 ? "bg-card/40" : "bg-card/20"}`}>
                 <span className="text-xs uppercase tracking-widest text-muted-foreground">{k}</span>
